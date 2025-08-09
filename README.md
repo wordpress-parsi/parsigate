@@ -44,4 +44,4 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 GNU General Public License v2.0 or later.
 
 ## Author
-[Parsidata](https://parsidata.ir)
+[wordpress-parsi](https://parsidate.com)
