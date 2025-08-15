@@ -23,6 +23,7 @@ use ParsiGate\gateways\Shepa;
 use ParsiGate\gateways\SnappPay;
 use ParsiGate\gateways\Tara;
 use ParsiGate\gateways\Test;
+use ParsiGate\gateways\Torob;
 use ParsiGate\Gateways\ZarinPal;
 use ParsiGate\gateways\Zibal;
 
@@ -197,6 +198,13 @@ class Gateways
                 'title' => __('Azkivam', 'parsigate'),
                 'class' => Azkivam::class,
                 'website' => 'azkivam.com',
+                'type' => 'installment',
+                'usage' => ['standalone', 'woocommerce']
+            ],
+            'torob' => [
+                'title' => __('Torob', 'parsigate'),
+                'class' => Torob::class,
+                'website' => 'torobpay.com',
                 'type' => 'installment',
                 'usage' => ['standalone', 'woocommerce']
             ],

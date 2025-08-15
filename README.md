@@ -25,6 +25,7 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 - Tara
 - DigiPay
 - Azki Vam
+- Torob
 
 ### Intermediary Gateways
 - Zibal
