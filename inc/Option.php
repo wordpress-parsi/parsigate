@@ -5,7 +5,7 @@ namespace ParsiGate;
 class Option
 {
 
-    public static string $gateways = 'parsigate_gateways';
+    public static string $prefix = 'pg_';
 
     public function __construct()
     {
@@ -19,6 +19,11 @@ class Option
         return wp_parsi_get_settings();
     }
 
+    public static function option_name($type): string
+    {
+        return self::$prefix . strtolower($type);
+    }
+
     public static function get($name, $default = null)
     {
         $all = self::all();
@@ -29,17 +34,15 @@ class Option
         return $default;
     }
 
-    public static function enable_gateways()
-    {
-        return self::get(self::$gateways, []);
-    }
-
     public function settings_tabs($tabs): array
     {
         $raw = [];
         foreach ($tabs as $key => $title) {
             if ($key == 'tools') {
-                $raw['parsigate'] = sprintf(__('%s ParsiGate', 'wp-parsidate'), '<span class="dashicons dashicons-admin-plugins"></span>');
+                $raw['parsigate'] = sprintf(
+                    __('%s ParsiGate', 'wp-parsidate'),
+                    '<span class="dashicons dashicons-bank"></span>'
+                );
             }
             $raw[$key] = $title;
         }
@@ -49,20 +52,41 @@ class Option
 
     public function settings($settings)
     {
-        $options = [
-            self::$gateways => [
-                'id' => self::$gateways,
-                'name' => __('Payment gateways', 'parsigate'),
+        $options = [];
+
+        // Gateways
+        foreach (Gateways::types() as $key => $label) {
+            $option_id = self::option_name($key);
+            $options[$option_id] = [
+                'id' => $option_id,
+                'name' => $label,
                 'type' => 'multicheck',
-                'options' => Gateways::choices(),
+                'options' => Gateways::choices($key),
                 'std' => array(),
-            ]
-        ];
+            ];
+        }
+
+        // Log
+        $options[self::$prefix . 'log'] = array(
+            'id' => self::$prefix . 'log',
+            'name' => __('ParsiGate Log', 'parsigate'),
+            'type' => 'select',
+            'options' => array(
+                'yes' => __('Yes', 'parsigate'),
+                'no' => __('No', 'parsigate'),
+            ),
+            'std' => 'no',
+        );
 
         $settings['parsigate'] = apply_filters('wpp_patsigate_settings', $options);
         return $settings;
     }
 
+    public static function enable_log(): bool
+    {
+        $get = self::get(self::$prefix . 'log');
+        return ($get == "yes");
+    }
 
 }
 

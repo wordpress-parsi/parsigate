@@ -102,16 +102,42 @@ class ParsiGate
     {
         // Main
         require_once self::$plugin_path . '/inc/Utility.php';
+        require_once self::$plugin_path . '/inc/Gateways.php';
         require_once self::$plugin_path . '/inc/Option.php';
         require_once self::$plugin_path . '/inc/Log.php';
-        require_once self::$plugin_path . '/inc/Gateways.php';
+        require_once self::$plugin_path . '/inc/Gateway.php';
 
         // Gateways
         require_once self::$plugin_path . '/inc/gateways/Base.php';
         require_once self::$plugin_path . '/inc/gateways/ZarinPal.php';
+        require_once self::$plugin_path . '/inc/gateways/AqayePardakht.php';
+        require_once self::$plugin_path . '/inc/gateways/AsanPardakht.php';
+        require_once self::$plugin_path . '/inc/gateways/Azkivam.php';
+        require_once self::$plugin_path . '/inc/gateways/DigiPay.php';
+        require_once self::$plugin_path . '/inc/gateways/EghtesadNovin.php';
+        require_once self::$plugin_path . '/inc/gateways/IranKish.php';
+        require_once self::$plugin_path . '/inc/gateways/Jibit.php';
+        require_once self::$plugin_path . '/inc/gateways/Mellat.php';
+        require_once self::$plugin_path . '/inc/gateways/Melli.php';
+        require_once self::$plugin_path . '/inc/gateways/Parsian.php';
+        require_once self::$plugin_path . '/inc/gateways/Pasargad.php';
+        require_once self::$plugin_path . '/inc/gateways/PayFa.php';
+        require_once self::$plugin_path . '/inc/gateways/PayPing.php';
+        require_once self::$plugin_path . '/inc/gateways/Polam.php';
+        require_once self::$plugin_path . '/inc/gateways/Saderat.php';
+        require_once self::$plugin_path . '/inc/gateways/Sep.php';
+        require_once self::$plugin_path . '/inc/gateways/Sepah.php';
+        require_once self::$plugin_path . '/inc/gateways/Shepa.php';
+        require_once self::$plugin_path . '/inc/gateways/SnappPay.php';
+        require_once self::$plugin_path . '/inc/gateways/Tara.php';
+        require_once self::$plugin_path . '/inc/gateways/Zibal.php';
+        require_once self::$plugin_path . '/inc/gateways/Test.php';
 
         // WooCommerce
         require_once self::$plugin_path . '/inc/woocommerce/Gateways.php';
+
+        // Admin
+        require_once self::$plugin_path . '/inc/admin/Log.php';
     }
 
     public function init_hooks()

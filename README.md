@@ -11,11 +11,11 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 ### Bank Gateways
 - Parsian
 - Pasargad
-- Saman
-- Mellat
-- Beh Pardakht
+- Saman (Sep)
+- Mellat (BehPardakht)
+- Melli (Sadad)
 - Asan Pardakht
-- Saderat
+- Saderat (Sepehr)
 - Eghtesad Novin
 - Iran Kish
 - Sepah
@@ -31,6 +31,10 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 - Zarinpal
 - PayPing
 - AghaPardakht
+- jibit
+- PayFa
+- Shepa
+- Polam
 
 ### Test Gateway
 - Test payment gateway for development and debugging
