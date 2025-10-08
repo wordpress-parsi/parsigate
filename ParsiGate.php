@@ -1,10 +1,10 @@
 <?php
 /**
  * Plugin Name: Parsi Gate
- * Description: A Plugin For starter WordPress
+ * Description: Persian Gateways for WordPress
  * Plugin URI:  https://site.com
  * Version:     1.0.0
- * Author:      plugin
+ * Author:      Parsidate Teams
  * Author URI:  https://site.com
  * License:     MIT
  * Text Domain: parsigate
@@ -35,6 +35,9 @@ class ParsiGate
 
     public function __construct()
     {
+        register_activation_hook(__FILE__, [$this, 'register_activation_hook']);
+        register_deactivation_hook(__FILE__, [$this, 'register_deactivation_hook']);
+        register_uninstall_hook(__FILE__, [__CLASS__, 'register_uninstall_hook']);
         add_action('plugins_loaded', [$this, 'plugins_loaded'], 20);
         add_action('wpp_init', [$this, 'wpp_init']);
     }
@@ -104,7 +107,6 @@ class ParsiGate
         require_once self::$plugin_path . '/inc/Utility.php';
         require_once self::$plugin_path . '/inc/Gateways.php';
         require_once self::$plugin_path . '/inc/Option.php';
-        require_once self::$plugin_path . '/inc/Log.php';
         require_once self::$plugin_path . '/inc/Gateway.php';
 
         // Gateways
@@ -131,26 +133,61 @@ class ParsiGate
         require_once self::$plugin_path . '/inc/gateways/SnappPay.php';
         require_once self::$plugin_path . '/inc/gateways/Tara.php';
         require_once self::$plugin_path . '/inc/gateways/Zibal.php';
+        require_once self::$plugin_path . '/inc/gateways/Torob.php';
         require_once self::$plugin_path . '/inc/gateways/Test.php';
 
         // WooCommerce
         require_once self::$plugin_path . '/inc/woocommerce/Gateways.php';
 
-        // Admin
-        require_once self::$plugin_path . '/inc/admin/Log.php';
+        // Custom Table
+        if (is_admin() and !class_exists('WP_List_Table')) {
+            require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
+        }
+        require_once dirname(__FILE__) . '/inc/custom-table/Message.php';
+        require_once dirname(__FILE__) . '/inc/custom-table/Base.php';
+        require_once dirname(__FILE__) . '/inc/custom-table/Page.php';
+        require_once dirname(__FILE__) . '/inc/custom-table/pg-log/Log.php';
+        if (is_admin()) {
+            require_once dirname(__FILE__) . '/inc/custom-table/pg-log/LogAdminPage.php';
+            require_once dirname(__FILE__) . '/inc/custom-table/pg-log/LogListTable.php';
+        }
     }
 
     public function init_hooks()
     {
-
         load_plugin_textdomain('parsigate', false, wp_normalize_path(self::$plugin_path . '/languages'));
-        register_activation_hook(__FILE__, [$this, 'register_activation_hook']);
-        register_deactivation_hook(__FILE__, [$this, 'register_deactivation_hook']);
-        register_uninstall_hook(__FILE__, [__CLASS__, 'register_uninstall_hook']);
     }
 
     public function register_activation_hook()
     {
+        global $wpdb;
+
+        // Load DB delta
+        if (!function_exists('dbDelta')) {
+            require(ABSPATH . 'wp-admin/includes/upgrade.php');
+        }
+
+        // Charset Collate
+        $collate = $wpdb->get_charset_collate();
+
+        // Create Log Table
+        $table_name = $wpdb->prefix . 'pg_log';
+        $sql = "CREATE TABLE IF NOT EXISTS $table_name (
+            `ID` BIGINT(48) NOT NULL AUTO_INCREMENT,
+            `gateway` VARCHAR(150) NOT NULL,
+            `url` TEXT NULL,
+            `type` BIGINT(48) NOT NULL DEFAULT '1',
+            `code` BIGINT(4) NOT NULL DEFAULT '200',
+            `header` TEXT NULL,
+            `body` TEXT NULL,
+            `response` TEXT NULL,
+            `meta` TEXT NULL,
+            `created_at` DATETIME NOT NULL,
+            PRIMARY KEY (`ID`),
+            INDEX gateway (`gateway`),
+            INDEX gateway_code (`gateway`, `code`)
+            ) ENGINE = InnoDB {$collate};";
+        dbDelta($sql);
     }
 
     public function register_deactivation_hook()

@@ -250,7 +250,7 @@ class Gateways
         return in_array($id, $option);
     }
 
-    public static function choices($type = null): array
+    public static function choices($type = null, $enable = null): array
     {
         $list = self::list();
         if (!is_null($type)) {
@@ -261,6 +261,10 @@ class Gateways
         $choices = [];
 
         foreach ($list as $id => $array) {
+            if (is_bool($enable) and $enable === true and self::enable($id) === false) {
+                continue;
+            }
+
             $choices[$id] = $array['title'];
         }
 
