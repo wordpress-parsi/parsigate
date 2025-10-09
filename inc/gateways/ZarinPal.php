@@ -11,7 +11,7 @@ class ZarinPal extends Base
     public function pay(array $args = []): array
     {
         // Check SandBox
-        $isSandBox = isset($args['SandBox']) && $args['SandBox'] === true;
+        $isSandBox = isset($args['sandbox']) && $args['sandbox'] === true;
 
         // Setup Data
         $body = [
@@ -77,7 +77,7 @@ class ZarinPal extends Base
     public function verify(array $args = []): array
     {
         // Check SandBox
-        $isSandBox = isset($args['SandBox']) && $args['SandBox'] === true;
+        $isSandBox = isset($args['sandbox']) && $args['sandbox'] === true;
 
         // Get Params
         $Authority = $args['Authority'];

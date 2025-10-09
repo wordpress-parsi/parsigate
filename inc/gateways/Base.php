@@ -23,7 +23,7 @@ abstract class Base
             ],
             'status_code' => $code,
             'data' => (array)$data,
-            'message' => (is_string($data ?? '')),
+            'message' => (is_string($data) ? $data : ''),
             'errors' => null,
             'datetime' => current_time('mysql')
         ];
@@ -42,7 +42,7 @@ abstract class Base
             'status_code' => $code,
             'data' => null,
             'errors' => $errors,
-            'message' => (is_string($errors ?? '')),
+            'message' => (is_string($errors) ? $errors : ''),
             'datetime' => current_time('mysql')
         ];
     }

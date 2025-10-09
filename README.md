@@ -60,7 +60,37 @@ function new_define_gateway_parsigate($list)
         'website' => 'gateway-site-url.com',
         'logo' => 'https://site.com/logo.png',
         'type' => 'bank',
-        'usage' => ['standalone', 'woocommerce']
+        'usage' => ['standalone', 'woocommerce'],
+        'settings' => [
+            'merchant_id' => [
+                'title' => __('Merchant ID', 'parsigate'),
+                'type' => 'text',
+                'default' => '',
+                'desc_tip' => false
+            ]
+        ],
+        'params' => [
+            'pay' => function ($amount, $order, $option, $callback_url) {
+
+                return [
+                    "merchant_id" => $option['merchant_id'],
+                    "amount" => $amount,
+                    "callback_url" => $callback_url,
+                    "description" => sprintf(__('Order ID: %d', 'parsigate'), $order->get_order_number()),
+                ];
+            },
+            'verify' => function ($amount, $order, $option) {
+
+                $authority = ($_GET['Authority'] ?? '');
+                $status = ($_GET['Status'] ?? '');
+                return [
+                    "merchant_id" => $option['merchant_id'],
+                    "amount" => $amount,
+                    'Authority' => $authority,
+                    'Status' => $status
+                ];
+            }
+        ]
     ];
     
     return $list;

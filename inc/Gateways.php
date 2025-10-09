@@ -127,7 +127,57 @@ class Gateways
                 'class' => Zarinpal::class,
                 'website' => 'zarinpal.com',
                 'type' => 'intermediary',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['standalone', 'woocommerce'],
+                'settings' => [
+                    'merchant_id' => [
+                        'title' => __('Merchant ID', 'parsigate'),
+                        'type' => 'text',
+                        'default' => '',
+                        'desc_tip' => false
+                    ],
+                    'sandbox' => [
+                        'title' => __('Sandbox', 'parsigate'),
+                        'type' => 'select',
+                        'class' => 'wc-enhanced-select',
+                        'description' => __('is Enable SandBox?', 'parsigate'),
+                        'default' => 'no',
+                        'desc_tip' => true,
+                        'options' => array(
+                            'no' => __('No', 'parsigate'),
+                            'yes' => __('Yes', 'parsigate')
+                        ),
+                    ]
+                ],
+                'params' => [
+                    'pay' => function ($amount, $order, $option, $callback_url) {
+
+                        $metadata = [];
+                        if (!empty($order->get_billing_phone())) {
+                            $metadata['mobile'] = $order->get_billing_phone();
+                        }
+
+                        return [
+                            "sandbox" => isset($option['sandbox']) and $option['sandbox'] == 'yes',
+                            "merchant_id" => $option['merchant_id'],
+                            "amount" => $amount,
+                            "callback_url" => $callback_url,
+                            "description" => sprintf(__('Order ID: %d', 'parsigate'), $order->get_order_number()),
+                            "metadata" => $metadata,
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option) {
+
+                        $authority = ($_GET['Authority'] ?? '');
+                        $status = ($_GET['Status'] ?? '');
+                        return [
+                            'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',
+                            "merchant_id" => $option['merchant_id'],
+                            "amount" => $amount,
+                            'Authority' => $authority,
+                            'Status' => $status
+                        ];
+                    }
+                ]
             ],
             'zibal' => [
                 'title' => __('Zibal', 'parsigate'),
