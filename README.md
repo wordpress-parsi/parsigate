@@ -40,7 +40,9 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 ### Test Gateway
 - Test payment gateway for development and debugging
 
-## How to use in your project
+## Developer Guide
+
+### How to use in your project
 
 ```php
 $gateway = new \ParsiGate\Gateway($driver = 'zarinpal');
@@ -48,17 +50,18 @@ $pay = $gateway->pay($params = []);
 $verify = $gateway->verify($params = []);
 ```
 
-## How to add custom gateway
+### How to add custom gateway
 
 ```php
+// First Append to Gateway List
 add_filter('parsigate_gateways_list', 'new_define_gateway_parsigate', 10, 1);
 function new_define_gateway_parsigate($list)
 {
     $list['my-gateway'] = [
         'title' => __('My Gateway Name', 'parsigate'),
         'class' => MyGateway::class,
-        'website' => 'gateway-site-url.com',
-        'logo' => 'https://site.com/logo.png',
+        'website' => 'gateway-site.com',
+        'logo' => 'https://gateway-site.com/logo.png',
         'type' => 'bank',
         'usage' => ['woocommerce', 'gravity'],
         'woocommerce' => [
@@ -94,6 +97,7 @@ function new_define_gateway_parsigate($list)
     return $list;
 }
 
+// Second Gateway Class for Process
 class MyGateway extends \ParsiGate\Gateways\Base
 {
 
