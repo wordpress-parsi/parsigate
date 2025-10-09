@@ -53,7 +53,21 @@ $verify = $gateway->verify($params = []);
 ### How to add custom gateway
 
 ```php
-// First Append to Gateway List
+// 1. Create Your Own Gateway Class for Process
+class MyGateway extends \ParsiGate\Gateways\Base
+{
+    public function pay(array $args = []): array
+    {
+        return $this->success();
+    }
+
+    public function verify(array $args = []): array
+    {
+        return $this->success();
+    }
+}
+
+// 2. Append to Gateway List
 add_filter('parsigate_gateways_list', 'new_define_gateway_parsigate', 10, 1);
 function new_define_gateway_parsigate($list)
 {
@@ -95,22 +109,6 @@ function new_define_gateway_parsigate($list)
     ];
     
     return $list;
-}
-
-// Second Gateway Class for Process
-class MyGateway extends \ParsiGate\Gateways\Base
-{
-
-    public function pay(array $args = []): array
-    {
-        return $this->success();
-    }
-
-    public function verify(array $args = []): array
-    {
-        return $this->success();
-    }
-
 }
 ```
 
