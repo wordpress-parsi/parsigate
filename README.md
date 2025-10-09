@@ -29,7 +29,7 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 
 ### Intermediary Gateways
 - Zibal
-- Zarinpal
+- Zarinpal ✅
 - PayPing
 - AghaPardakht
 - jibit
@@ -39,6 +39,48 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 
 ### Test Gateway
 - Test payment gateway for development and debugging
+
+## How to use in your project
+
+```php
+$gateway = new \ParsiGate\Gateway($driver = 'zarinpal');
+$pay = $gateway->pay($params = []);
+$verify = $gateway->verify($params = []);
+```
+
+## How to add custom gateway
+
+```php
+add_filter('parsigate_gateways_list', 'new_define_gateway_parsigate', 10, 1);
+function new_define_gateway_parsigate($list)
+{
+    $list['my-gateway'] = [
+        'title' => __('My Gateway Name', 'parsigate'),
+        'class' => MyGateway::class,
+        'website' => 'gateway-site-url.com',
+        'logo' => 'https://site.com/logo.png',
+        'type' => 'bank',
+        'usage' => ['standalone', 'woocommerce']
+    ];
+    
+    return $list;
+}
+
+class MyGateway extends \ParsiGate\Gateways\Base
+{
+
+    public function pay(array $args = []): array
+    {
+        return $this->success();
+    }
+
+    public function verify(array $args = []): array
+    {
+        return $this->success();
+    }
+
+}
+```
 
 ## Installation
 1. Install and activate the **ParsiDate** plugin.

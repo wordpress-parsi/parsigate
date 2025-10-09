@@ -8,9 +8,92 @@ class Gateway
 
     public array $args;
 
+    public array $gateway;
+
     public function __construct($driver, $args = [])
     {
-        $this->driver = $driver;
+        // Setup Variable
+        $this->driver = strtolower($driver);
         $this->args = $args;
+
+        // Check Log
+        if (!isset($this->args['log'])) {
+            $this->args['log'] = Option::enable_log();
+        }
+
+        // Setup Gateway
+        $this->gateway = Gateways::get($this->driver);
+    }
+
+    public function exist(): bool
+    {
+        if ($this->gateway === false) {
+            return false;
+        }
+
+        $class = $this->gateway['class'];
+        if (!class_exists($class)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function save_log($response)
+    {
+        if (!$this->args['log']) {
+            return false;
+        }
+
+        if (isset($response['request']['body']) and !empty($response['request']['body'])) {
+
+            $class = $this->gateway['class'];
+            $array = apply_filters('parsigate_gateways_types', [
+                'gateway' => $this->driver,
+                'url' => $response['request']['url'],
+                'type' => (property_exists($class, 'type') ? $class::$type : '1'),
+                'code' => $response['status_code'],
+                'header' => $response['request']['header'],
+                'body' => $response['request']['body'],
+                'response' => $response['request']['response'],
+                'meta' => [],
+                'created_at' => current_time('mysql')
+            ], $this->gateway, $response);
+            return \ParsiGate\CustomTable\Log::insert($array);
+        }
+
+        return false;
+    }
+
+    public function pay(array $args = []): array
+    {
+        // Check Exist
+        if (!$this->exist()) {
+            return [
+                'success' => false,
+                'message' => __('Gateway class not found', 'parsigate'),
+            ];
+        }
+
+        $class = new $this->gateway['class'];
+        $pay = $class->pay($args);
+        $this->save_log($pay);
+        return $pay;
+    }
+
+    public function verify(array $args = []): array
+    {
+        // Check Exist
+        if (!$this->exist()) {
+            return [
+                'success' => false,
+                'message' => __('Gateway class not found', 'parsigate'),
+            ];
+        }
+
+        $class = new $this->gateway['class'];
+        $verify = $class->verify($args);
+        $this->save_log($verify);
+        return $verify;
     }
 }
