@@ -55,70 +55,70 @@ class Gateways
                 'class' => Parsian::class,
                 'website' => 'pec.ir',
                 'type' => 'bank',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'pasargad' => [
                 'title' => __('Pasargad', 'parsigate'),
                 'class' => Pasargad::class,
                 'website' => 'pep.co.ir',
                 'type' => 'bank',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'saman' => [
                 'title' => __('Saman (Sep)', 'parsigate'),
                 'class' => Sep::class,
                 'website' => 'sep.ir',
                 'type' => 'bank',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'mellat' => [
                 'title' => __('Mellat (BehPardakht)', 'parsigate'),
                 'class' => Mellat::class,
                 'website' => 'behpardakht.com',
                 'type' => 'bank',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'melli' => [
                 'title' => __('Melli (Sadad)', 'parsigate'),
                 'class' => Melli::class,
                 'website' => 'sadadpsp.ir',
                 'type' => 'bank',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'asanpardakht' => [
                 'title' => __('Asan Pardakht', 'parsigate'),
                 'class' => AsanPardakht::class,
                 'website' => 'asanpardakht.ir',
                 'type' => 'bank',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'saderat' => [
                 'title' => __('Saderat (Sepehr)', 'parsigate'),
                 'class' => Saderat::class,
                 'website' => 'sepehrpay.com',
                 'type' => 'bank',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'eghtesadnovin' => [
                 'title' => __('Eghtesad Novin', 'parsigate'),
                 'class' => EghtesadNovin::class,
                 'website' => 'enbank.ir',
                 'type' => 'bank',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'irankish' => [
                 'title' => __('Iran Kish', 'parsigate'),
                 'class' => IranKish::class,
                 'website' => 'irankish.com',
                 'type' => 'bank',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'sepah' => [
                 'title' => __('Sepah', 'parsigate'),
                 'class' => Sepah::class,
                 'website' => 'banksepah.ir',
                 'type' => 'bank',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
 
             // Intermediary Gateway
@@ -127,28 +127,28 @@ class Gateways
                 'class' => Zarinpal::class,
                 'website' => 'zarinpal.com',
                 'type' => 'intermediary',
-                'usage' => ['standalone', 'woocommerce'],
-                'settings' => [
-                    'merchant_id' => [
-                        'title' => __('Merchant ID', 'parsigate'),
-                        'type' => 'text',
-                        'default' => '',
-                        'desc_tip' => false
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'settings' => [
+                        'merchant_id' => [
+                            'title' => __('Merchant ID', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'desc_tip' => false
+                        ],
+                        'sandbox' => [
+                            'title' => __('Sandbox', 'parsigate'),
+                            'type' => 'select',
+                            'class' => 'wc-enhanced-select',
+                            'description' => __('is Enable SandBox?', 'parsigate'),
+                            'default' => 'no',
+                            'desc_tip' => true,
+                            'options' => array(
+                                'no' => __('No', 'parsigate'),
+                                'yes' => __('Yes', 'parsigate')
+                            ),
+                        ]
                     ],
-                    'sandbox' => [
-                        'title' => __('Sandbox', 'parsigate'),
-                        'type' => 'select',
-                        'class' => 'wc-enhanced-select',
-                        'description' => __('is Enable SandBox?', 'parsigate'),
-                        'default' => 'no',
-                        'desc_tip' => true,
-                        'options' => array(
-                            'no' => __('No', 'parsigate'),
-                            'yes' => __('Yes', 'parsigate')
-                        ),
-                    ]
-                ],
-                'params' => [
                     'pay' => function ($amount, $order, $option, $callback_url) {
 
                         $metadata = [];
@@ -184,49 +184,49 @@ class Gateways
                 'class' => Zibal::class,
                 'website' => 'zibal.ir',
                 'type' => 'intermediary',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'payping' => [
                 'title' => __('PayPing', 'parsigate'),
                 'class' => PayPing::class,
                 'website' => 'payping.io',
                 'type' => 'intermediary',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'aqayepardakht' => [
                 'title' => __('AqayePardakht', 'parsigate'),
                 'class' => AqayePardakht::class,
                 'website' => 'aqayepardakht.ir',
                 'type' => 'intermediary',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'jibit' => [
                 'title' => __('Jibit', 'parsigate'),
                 'class' => Jibit::class,
                 'website' => 'jibit.ir',
                 'type' => 'intermediary',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'payfa' => [
                 'title' => __('PayFa', 'parsigate'),
                 'class' => PayFa::class,
                 'website' => 'payfa.com',
                 'type' => 'intermediary',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'shepa' => [
                 'title' => __('Shepa', 'parsigate'),
                 'class' => Shepa::class,
                 'website' => 'shepa.com',
                 'type' => 'intermediary',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'polam' => [
                 'title' => __('Polam', 'parsigate'),
                 'class' => Polam::class,
                 'website' => 'polam.io',
                 'type' => 'intermediary',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
 
             // Installment Gateway
@@ -235,35 +235,35 @@ class Gateways
                 'class' => SnappPay::class,
                 'website' => 'snapppay.ir',
                 'type' => 'installment',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'digipay' => [
                 'title' => __('DigiPay', 'parsigate'),
                 'class' => DigiPay::class,
                 'website' => 'mydigipay.com',
                 'type' => 'installment',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'azkivam' => [
                 'title' => __('Azkivam', 'parsigate'),
                 'class' => Azkivam::class,
                 'website' => 'azkivam.com',
                 'type' => 'installment',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'torob' => [
                 'title' => __('Torob', 'parsigate'),
                 'class' => Torob::class,
                 'website' => 'torobpay.com',
                 'type' => 'installment',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
             'tara' => [
                 'title' => __('Tara', 'parsigate'),
                 'class' => Tara::class,
                 'website' => 'tara360.ir',
                 'type' => 'installment',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ],
 
             // Test Gateway
@@ -272,7 +272,7 @@ class Gateways
                 'class' => Test::class,
                 'website' => 'wp-parsi.com',
                 'type' => 'test',
-                'usage' => ['standalone', 'woocommerce']
+                'usage' => ['woocommerce']
             ]
         ];
 

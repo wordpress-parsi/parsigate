@@ -100,8 +100,8 @@ class WC_Gateway extends \WC_Payment_Gateway
             ]
         ];
 
-        if (isset($this->gateway['settings']) and is_array($this->gateway['settings']) and !empty($this->gateway['settings'])) {
-            $fields = $fields + $this->gateway['settings'];
+        if (isset($this->gateway['woocommerce']['settings']) and is_array($this->gateway['woocommerce']['settings']) and !empty($this->gateway['woocommerce']['settings'])) {
+            $fields = $fields + $this->gateway['woocommerce']['settings'];
         }
 
         $fields = $fields + [
@@ -169,8 +169,8 @@ class WC_Gateway extends \WC_Payment_Gateway
         do_action('parsigate_gateway_before_process_payment', $order, $this->id);
 
         $params = [];
-        if (isset($this->gateway['params']['pay']) && is_callable($this->gateway['params']['pay'])) {
-            $params = $this->gateway['params']['pay']($amount, $order, $option, $this->get_callback_url($order));
+        if (isset($this->gateway['woocommerce']['pay']) && is_callable($this->gateway['woocommerce']['pay'])) {
+            $params = $this->gateway['woocommerce']['pay']($amount, $order, $option, $this->get_callback_url($order));
         }
 
         $class = new Gateway($this->driver);
@@ -274,8 +274,8 @@ class WC_Gateway extends \WC_Payment_Gateway
         do_action('parsigate_gateway_before_verify_payment', $order, $this->id);
 
         $params = [];
-        if (isset($this->gateway['params']['verify']) && is_callable($this->gateway['params']['verify'])) {
-            $params = $this->gateway['params']['verify']($amount, $order, $option);
+        if (isset($this->gateway['woocommerce']['verify']) && is_callable($this->gateway['woocommerce']['verify'])) {
+            $params = $this->gateway['woocommerce']['verify']($amount, $order, $option);
         }
 
         $class = new Gateway($this->driver);

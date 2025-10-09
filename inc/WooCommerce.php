@@ -17,8 +17,8 @@ class WooCommerce
     public function woocommerce_payment_gateways($methods)
     {
         $gateways = Gateways::list();
-        foreach ($gateways as $gateway_id => $gateway_option) {
-            if (!Gateways::enable($gateway_id)) {
+        foreach ($gateways as $gateway_id => $option) {
+            if (!Gateways::enable($gateway_id) || !in_array('woocommerce', $option['usage'])) {
                 continue;
             }
 
@@ -42,8 +42,8 @@ class WooCommerce
     public function register_block_gateways($payment_method_registry)
     {
         $gateways = Gateways::list();
-        foreach ($gateways as $gateway_id => $gateway_option) {
-            if (!Gateways::enable($gateway_id)) {
+        foreach ($gateways as $gateway_id => $option) {
+            if (!Gateways::enable($gateway_id) || !in_array('woocommerce', $option['usage'])) {
                 continue;
             }
 
