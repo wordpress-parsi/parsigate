@@ -31,9 +31,7 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 - Zibal ✅
 - Zarinpal ✅
 - PayPing ✅
-- AghaPardakht
-- jibit
-- PayFa
+- AghaPardakht ✅
 - Shepa
 - Polam
 

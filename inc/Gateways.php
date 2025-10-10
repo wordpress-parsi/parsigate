@@ -305,21 +305,55 @@ class Gateways
                 'class' => AqayePardakht::class,
                 'website' => 'aqayepardakht.ir',
                 'type' => 'intermediary',
-                'usage' => ['woocommerce']
-            ],
-            'jibit' => [
-                'title' => __('Jibit', 'parsigate'),
-                'class' => Jibit::class,
-                'website' => 'jibit.ir',
-                'type' => 'intermediary',
-                'usage' => ['woocommerce']
-            ],
-            'payfa' => [
-                'title' => __('PayFa', 'parsigate'),
-                'class' => PayFa::class,
-                'website' => 'payfa.com',
-                'type' => 'intermediary',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'settings' => [
+                        'pin' => [
+                            'title' => __('Pin', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'desc_tip' => false
+                        ],
+                        'sandbox' => [
+                            'title' => __('Sandbox', 'parsigate'),
+                            'type' => 'select',
+                            'class' => 'wc-enhanced-select',
+                            'description' => __('is Enable SandBox?', 'parsigate'),
+                            'default' => 'no',
+                            'desc_tip' => true,
+                            'options' => array(
+                                'no' => __('No', 'parsigate'),
+                                'yes' => __('Yes', 'parsigate')
+                            ),
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url) {
+
+                        return [
+                            "sandbox" => isset($option['sandbox']) and $option['sandbox'] == 'yes',
+                            'pin' => $option['pin'],
+                            'amount' => $amount,
+                            'callback' => $callback_url,
+                            'invoice_id' => $order->get_id(),
+                            'mobile' => trim($order->get_billing_phone()),
+                            'email' => $order->get_billing_email(),
+                            'description' => WooCommerce::get_order_description($order, 'aqayepardakht')
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option) {
+
+                        $status = ($_POST['status'] ?? '');
+                        $transid = ($_POST['transid'] ?? '');
+
+                        return [
+                            'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',
+                            'pin' => $option['pin'],
+                            'status' => $status,
+                            'amount' => $amount,
+                            'transid' => $transid,
+                        ];
+                    }
+                ]
             ],
             'shepa' => [
                 'title' => __('Shepa', 'parsigate'),
