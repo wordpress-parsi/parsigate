@@ -104,21 +104,227 @@ class WC_Gateway extends \WC_Payment_Gateway
             $fields = $fields + $this->gateway['woocommerce']['settings'];
         }
 
+        if (isset($this->gateway['woocommerce']['sandbox']) and $this->gateway['woocommerce']['sandbox'] === true) {
+            $fields['sandbox'] = [
+                'title' => __('Sandbox', 'parsigate'),
+                'type' => 'select',
+                'class' => 'wc-enhanced-select',
+                'description' => __('is Enable SandBox?', 'parsigate'),
+                'default' => 'no',
+                'desc_tip' => true,
+                'options' => array(
+                    'no' => __('No', 'parsigate'),
+                    'yes' => __('Yes', 'parsigate')
+                ),
+            ];
+        }
+
         $fields = $fields + [
                 'failed_massage' => [
                     'title' => __('Payment failed message', 'wp-parsidate'),
                     'type' => 'textarea',
                     'description' => __('Enter the text of the message you want to display to the user after an unsuccessful payment.', 'parsigate'),
                     'default' => __('Your payment has failed. Please try again or contact us in case of problems.', 'parsigate')
+                ],
+                'roles' => [
+                    'title' => __('Display for User Roles', 'parsigate'),
+                    'type' => 'multiselect',
+                    'class' => 'wc-enhanced-select',
+                    'description' => __('Gateway will only be displayed for selected user roles.', 'parsigate'),
+                    'default' => '',
+                    'options' => $this->get_user_roles(),
+                ],
+                'min_cart_price' => [
+                    'title' => __('Minimum Cart Amount', 'parsigate'),
+                    'type' => 'number',
+                    'description' => sprintf(__('Minimum cart amount to display the gateway. Current currency: %s', 'parsigate'), get_woocommerce_currency_symbol()),
+                    'default' => '',
+                    'placeholder' => __('Always display', 'parsigate'),
+                    'min' => 0,
+                    'class' => 'pg-ltr-input'
+                ],
+                'categories' => [
+                    'title' => __('Allowed Products Categories', 'parsigate'),
+                    'type' => 'multiselect',
+                    'class' => 'wc-enhanced-select',
+                    'description' => __('Gateway will only be displayed if cart contains products from selected categories.', 'parsigate'),
+                    'default' => '',
+                    'options' => $this->get_product_categories(),
+                ],
+                'product_ids' => [
+                    'title' => __('Product IDs', 'parsigate'),
+                    'type' => 'text',
+                    'description' => __('Enter product IDs separated by commas. Gateway will be displayed only if ALL products in cart are from this list.', 'parsigate'),
+                    'default' => '',
+                    'placeholder' => __('e.g., 123, 456, 789', 'parsigate'),
+                    'class' => 'pg-ltr-input'
                 ]
             ];
 
         $this->form_fields = apply_filters('parsigate_gateway_config', $fields, $this->id);
     }
 
+    private function get_user_roles()
+    {
+        $roles = [];
+        if (function_exists('wp_roles')) {
+            $wp_roles = wp_roles();
+            $roles = $wp_roles->get_names();
+        }
+
+        return $roles;
+    }
+
+    private function get_product_categories()
+    {
+        $categories = array();
+
+        $terms = get_terms(array(
+            'taxonomy' => 'product_cat',
+            'hide_empty' => false,
+        ));
+
+        if (!is_wp_error($terms)) {
+            foreach ($terms as $term) {
+                $categories[$term->term_id] = $term->name;
+            }
+        }
+
+        return $categories;
+    }
+
     public function is_available()
     {
-        return parent::is_available();
+        if (!parent::is_available()) {
+            return false;
+        }
+
+        return apply_filters('parsigate_is_available_gateway', (
+            $this->check_user_role() &&
+            $this->check_min_cart_price() &&
+            $this->check_cart_categories() &&
+            $this->check_cart_products()
+        ), $this->id);
+    }
+
+    private function check_user_role()
+    {
+        $pre = apply_filters('parsigate_pre_check_user_role', null, $this->id);
+        if (!is_null($pre)) {
+            return $pre;
+        }
+
+        $allowed_roles = $this->get_option('roles', array());
+        if (empty($allowed_roles)) {
+            return true;
+        }
+
+        if (!is_user_logged_in()) {
+            return in_array('guest', $allowed_roles);
+        }
+
+        $user = wp_get_current_user();
+        $user_roles = (array)$user->roles;
+
+        return !empty(array_intersect($user_roles, $allowed_roles));
+    }
+
+    private function check_min_cart_price()
+    {
+        $pre = apply_filters('parsigate_pre_check_min_cart_price', null, $this->id);
+        if (!is_null($pre)) {
+            return $pre;
+        }
+
+        $min_price = $this->get_option('min_cart_price', 0);
+        if (empty($min_price) || (float)$min_price <= 0) {
+            return true;
+        }
+
+        if (!WC()->cart || WC()->cart->is_empty()) {
+            return false;
+        }
+
+        $cart_total = WC()->cart->get_subtotal();
+        if (apply_filters('parsigate_min_cart_amount_total', false) === true) {
+            $cart_total = WC()->cart->get_total('edit');
+        }
+        $cart_total_float = (float)preg_replace('/[^0-9\.]/', '', $cart_total);
+        return ($cart_total_float >= (float)$min_price);
+    }
+
+    private function check_cart_categories()
+    {
+        $pre = apply_filters('parsigate_pre_check_cart_categories', null, $this->id);
+        if (!is_null($pre)) {
+            return $pre;
+        }
+
+        $allowed_categories = $this->get_option('categories', array());
+        if (empty($allowed_categories)) {
+            return true;
+        }
+
+        if (!WC()->cart || WC()->cart->is_empty()) {
+            return false;
+        }
+
+        foreach (WC()->cart->get_cart() as $cart_item) {
+
+            $product_id = $cart_item['product_id'];
+            $product_categories = wp_get_post_terms($product_id, 'product_cat', array('fields' => 'ids'));
+            if (empty(array_intersect($product_categories, $allowed_categories))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function check_cart_products()
+    {
+        $pre = apply_filters('parsigate_pre_check_cart_products', null, $this->id);
+        if (!is_null($pre)) {
+            return $pre;
+        }
+
+        $allowed_product_ids = $this->get_option('product_ids', '');
+        if (empty($allowed_product_ids)) {
+            return true;
+        }
+
+        if (!WC()->cart || WC()->cart->is_empty()) {
+            return false;
+        }
+
+        $allowed_ids = array_map('intval', array_filter(explode(',', $allowed_product_ids)));
+        foreach (WC()->cart->get_cart() as $cart_item) {
+            $product_ids_to_check = [];
+
+            $product_ids_to_check[] = $cart_item['product_id'];
+            if ($cart_item['variation_id'] > 0) {
+
+                $product_ids_to_check[] = $cart_item['variation_id'];
+                $variation_product = wc_get_product($cart_item['variation_id']);
+                if ($variation_product && $variation_product->get_parent_id() > 0) {
+                    $product_ids_to_check[] = $variation_product->get_parent_id();
+                }
+            }
+
+            $product_is_allowed = false;
+            foreach ($product_ids_to_check as $product_id) {
+                if (in_array($product_id, $allowed_ids)) {
+                    $product_is_allowed = true;
+                    break;
+                }
+            }
+
+            if (!$product_is_allowed) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function get_amount($order)

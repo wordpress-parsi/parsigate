@@ -8,14 +8,11 @@ use ParsiGate\gateways\Azkivam;
 use ParsiGate\gateways\DigiPay;
 use ParsiGate\gateways\EghtesadNovin;
 use ParsiGate\gateways\IranKish;
-use ParsiGate\gateways\Jibit;
 use ParsiGate\gateways\Mellat;
 use ParsiGate\gateways\Melli;
 use ParsiGate\gateways\Parsian;
 use ParsiGate\gateways\Pasargad;
-use ParsiGate\gateways\PayFa;
 use ParsiGate\gateways\PayPing;
-use ParsiGate\gateways\Polam;
 use ParsiGate\gateways\Saderat;
 use ParsiGate\gateways\Sep;
 use ParsiGate\gateways\Sepah;
@@ -129,24 +126,14 @@ class Gateways
                 'type' => 'intermediary',
                 'usage' => ['woocommerce'],
                 'woocommerce' => [
+                    'sandbox' => true,
                     'settings' => [
                         'merchant_id' => [
                             'title' => __('Merchant ID', 'parsigate'),
                             'type' => 'text',
                             'default' => '',
-                            'desc_tip' => false
-                        ],
-                        'sandbox' => [
-                            'title' => __('Sandbox', 'parsigate'),
-                            'type' => 'select',
-                            'class' => 'wc-enhanced-select',
-                            'description' => __('is Enable SandBox?', 'parsigate'),
-                            'default' => 'no',
-                            'desc_tip' => true,
-                            'options' => array(
-                                'no' => __('No', 'parsigate'),
-                                'yes' => __('Yes', 'parsigate')
-                            ),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
                         ]
                     ],
                     'pay' => function ($amount, $order, $option, $callback_url) {
@@ -186,24 +173,14 @@ class Gateways
                 'type' => 'intermediary',
                 'usage' => ['woocommerce'],
                 'woocommerce' => [
+                    'sandbox' => true,
                     'settings' => [
                         'merchant_id' => [
                             'title' => __('Merchant ID', 'parsigate'),
                             'type' => 'text',
                             'default' => '',
-                            'desc_tip' => false
-                        ],
-                        'sandbox' => [
-                            'title' => __('Sandbox', 'parsigate'),
-                            'type' => 'select',
-                            'class' => 'wc-enhanced-select',
-                            'description' => __('is Enable SandBox?', 'parsigate'),
-                            'default' => 'no',
-                            'desc_tip' => true,
-                            'options' => array(
-                                'no' => __('No', 'parsigate'),
-                                'yes' => __('Yes', 'parsigate')
-                            ),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
                         ]
                     ],
                     'pay' => function ($amount, $order, $option, $callback_url) {
@@ -245,7 +222,8 @@ class Gateways
                             'title' => __('Token', 'parsigate'),
                             'type' => 'text',
                             'default' => '',
-                            'desc_tip' => false
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
                         ]
                     ],
                     'pay' => function ($amount, $order, $option, $callback_url) {
@@ -307,24 +285,14 @@ class Gateways
                 'type' => 'intermediary',
                 'usage' => ['woocommerce'],
                 'woocommerce' => [
+                    'sandbox' => true,
                     'settings' => [
                         'pin' => [
                             'title' => __('Pin', 'parsigate'),
                             'type' => 'text',
                             'default' => '',
-                            'desc_tip' => false
-                        ],
-                        'sandbox' => [
-                            'title' => __('Sandbox', 'parsigate'),
-                            'type' => 'select',
-                            'class' => 'wc-enhanced-select',
-                            'description' => __('is Enable SandBox?', 'parsigate'),
-                            'default' => 'no',
-                            'desc_tip' => true,
-                            'options' => array(
-                                'no' => __('No', 'parsigate'),
-                                'yes' => __('Yes', 'parsigate')
-                            ),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
                         ]
                     ],
                     'pay' => function ($amount, $order, $option, $callback_url) {
@@ -360,14 +328,44 @@ class Gateways
                 'class' => Shepa::class,
                 'website' => 'shepa.com',
                 'type' => 'intermediary',
-                'usage' => ['woocommerce']
-            ],
-            'polam' => [
-                'title' => __('Polam', 'parsigate'),
-                'class' => Polam::class,
-                'website' => 'polam.io',
-                'type' => 'intermediary',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'sandbox' => true,
+                    'settings' => [
+                        'token' => [
+                            'title' => __('API Token', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url) {
+
+                        return [
+                            "sandbox" => isset($option['sandbox']) and $option['sandbox'] == 'yes',
+                            'api' => $option['token'],
+                            'amount' => $amount,
+                            'callback' => $callback_url,
+                            'mobile' => trim($order->get_billing_phone()),
+                            'email' => $order->get_billing_email(),
+                            'description' => WooCommerce::get_order_description($order, 'shepa')
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option) {
+
+                        $status = ($_GET['status'] ?? '');
+                        $token = ($_GET["token"] ?? '');
+
+                        return [
+                            'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',
+                            'api' => $option['token'],
+                            'amount' => $amount,
+                            'token' => $token,
+                            'status' => $status
+                        ];
+                    }
+                ]
             ],
 
             // Installment Gateway

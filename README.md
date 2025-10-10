@@ -32,8 +32,7 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 - Zarinpal ✅
 - PayPing ✅
 - AghaPardakht ✅
-- Shepa
-- Polam
+- Shepa ✅
 
 ### Test Gateway
 - Test payment gateway for development and debugging ✅

@@ -20,6 +20,9 @@ class WooCommerce
 
         // Define Test Gateway Page
         add_action('init', [$this, 'test_gateway_page']);
+
+        // Ltr Input Class
+        add_action('admin_head', [$this, 'admin_head']);
     }
 
     public function woocommerce_payment_gateways($methods)
@@ -137,6 +140,20 @@ class WooCommerce
             trim($name),
             ucfirst($domain)
         ), $order, $gateway);
+    }
+
+    public function admin_head()
+    {
+        if (isset($_GET['page']) and $_GET['page'] === 'wc-settings' and isset($_GET['tab']) and $_GET['tab'] === 'checkout') {
+            ?>
+            <style>
+                .pg-ltr-input {
+                    direction: ltr !important;
+                    text-align: left !important;
+                }
+            </style>
+            <?php
+        }
     }
 }
 

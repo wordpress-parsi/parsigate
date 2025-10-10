@@ -123,7 +123,6 @@ class ParsiGate
         require_once self::$plugin_path . '/inc/gateways/Parsian.php';
         require_once self::$plugin_path . '/inc/gateways/Pasargad.php';
         require_once self::$plugin_path . '/inc/gateways/PayPing.php';
-        require_once self::$plugin_path . '/inc/gateways/Polam.php';
         require_once self::$plugin_path . '/inc/gateways/Saderat.php';
         require_once self::$plugin_path . '/inc/gateways/Sep.php';
         require_once self::$plugin_path . '/inc/gateways/Sepah.php';
@@ -201,3 +200,15 @@ class ParsiGate
 }
 
 $GLOBALS['ParsiGate'] = ParsiGate::instance();
+
+
+add_action('init', function () {
+    if (isset($_GET['test_gateway'])) {
+        $gateway = new \ParsiGate\Gateway($driver = 'zarinpal');
+        $pay = $gateway->pay($params = []);
+        $verify = $gateway->verify($params = []);
+        echo '<pre>';
+        var_dump($verify);
+        exit;
+    }
+});
