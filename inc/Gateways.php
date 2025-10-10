@@ -161,7 +161,7 @@ class Gateways
                             "merchant_id" => $option['merchant_id'],
                             "amount" => $amount,
                             "callback_url" => $callback_url,
-                            "description" => sprintf(__('Order ID: %d', 'parsigate'), $order->get_order_number()),
+                            "description" => WooCommerce::get_order_description($order, 'zarinpal'),
                             "metadata" => $metadata,
                         ];
                     },
@@ -191,7 +191,67 @@ class Gateways
                 'class' => PayPing::class,
                 'website' => 'payping.io',
                 'type' => 'intermediary',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'settings' => [
+                        'token' => [
+                            'title' => __('Token', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'desc_tip' => false
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url) {
+
+                        $payerName = $order->get_billing_company();
+                        if (!empty($order->get_billing_first_name()) || !empty($order->get_billing_last_name())) {
+                            $payerName = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
+                        }
+
+                        $email = $order->get_billing_email();
+                        $mobile = eng_number($order->get_billing_phone());
+
+                        $payerIdentity = '';
+                        if (is_email($email)) {
+                            $payerIdentity = $email;
+                        } elseif (!empty($mobile)) {
+                            $payerIdentity = $mobile;
+                        }
+
+                        return [
+                            'token' => $option['token'],
+                            'payerName' => $payerName,
+                            'Amount' => $amount,
+                            'payerIdentity' => $payerIdentity,
+                            'returnUrl' => $callback_url,
+                            'Description' => WooCommerce::get_order_description($order, 'payping'),
+                            'clientRefId' => (string)$order->get_id()
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option) {
+
+                        if (!isset($_POST['status']) || !isset($_POST['data'])) {
+                            return ['success' => false];
+                        }
+
+                        if ($_POST['status'] != '1') {
+                            return ['success' => false];
+                        }
+
+                        $sanitize = str_ireplace("\\", "", trim($_POST['data']));
+                        $data = json_decode($sanitize, true);
+                        if (!is_array($data) || empty($data) || !isset($data['paymentRefId']) || !isset($data['paymentCode'])) {
+                            return ['success' => false];
+                        }
+
+                        return [
+                            'token' => $option['token'],
+                            'PaymentRefId' => trim((string)$data['paymentRefId']),
+                            "paymentCode" => trim((string)$data['paymentCode']),
+                            "amount" => $amount
+                        ];
+                    }
+                ]
             ],
             'aqayepardakht' => [
                 'title' => __('AqayePardakht', 'parsigate'),

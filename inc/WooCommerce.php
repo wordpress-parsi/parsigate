@@ -120,6 +120,24 @@ class WooCommerce
             }
         }
     }
+
+    public static function get_order_description($order, $gateway = null)
+    {
+        $name = $order->get_billing_company();
+        if (!empty($order->get_billing_first_name()) || !empty($order->get_billing_last_name())) {
+            $name = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
+        }
+
+        $site_url = get_option('siteurl');
+        $domain = parse_url($site_url, PHP_URL_HOST);
+
+        return apply_filters('parsigate_order_description_api', sprintf(
+            'Order ID: %d | By: %s | Site: %s',
+            $order->get_order_number(),
+            trim($name),
+            ucfirst($domain)
+        ), $order, $gateway);
+    }
 }
 
 new WooCommerce();
