@@ -184,7 +184,54 @@ class Gateways
                 'class' => Zibal::class,
                 'website' => 'zibal.ir',
                 'type' => 'intermediary',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'settings' => [
+                        'merchant_id' => [
+                            'title' => __('Merchant ID', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'desc_tip' => false
+                        ],
+                        'sandbox' => [
+                            'title' => __('Sandbox', 'parsigate'),
+                            'type' => 'select',
+                            'class' => 'wc-enhanced-select',
+                            'description' => __('is Enable SandBox?', 'parsigate'),
+                            'default' => 'no',
+                            'desc_tip' => true,
+                            'options' => array(
+                                'no' => __('No', 'parsigate'),
+                                'yes' => __('Yes', 'parsigate')
+                            ),
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url) {
+
+                        return [
+                            "sandbox" => isset($option['sandbox']) and $option['sandbox'] == 'yes',
+                            'merchant' => $option['merchant_id'],
+                            'amount' => $amount,
+                            'callbackUrl' => $callback_url,
+                            'orderId' => $order->get_id(),
+                            'mobile' => trim($order->get_billing_phone()),
+                            'email' => $order->get_billing_email(),
+                            'description' => WooCommerce::get_order_description($order, 'zibal')
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option) {
+
+                        $success = ($_GET['success'] ?? '');
+                        $trackId = ($_GET['trackId'] ?? '');
+
+                        return [
+                            'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',
+                            "merchant" => $option['merchant_id'],
+                            'trackId' => $trackId,
+                            'success' => $success,
+                        ];
+                    }
+                ]
             ],
             'payping' => [
                 'title' => __('PayPing', 'parsigate'),
