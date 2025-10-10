@@ -7,11 +7,19 @@ class WooCommerce
 
     private static array $gateways_data = [];
 
+    public static string $test_gateway_query = 'wc-parsigate-test-gateway';
+
     public function __construct()
     {
+        // Define Classic Gateway
         add_filter('woocommerce_payment_gateways', [$this, 'woocommerce_payment_gateways']);
+
+        // Define Block Gateway
         add_action('woocommerce_blocks_loaded', array($this, 'woocommerce_blocks_loaded'));
         add_action('wp_enqueue_scripts', [$this, 'enqueue_block_scripts']);
+
+        // Define Test Gateway Page
+        add_action('init', [$this, 'test_gateway_page']);
     }
 
     public function woocommerce_payment_gateways($methods)
@@ -84,6 +92,33 @@ class WooCommerce
     public static function get_gateway_option($id)
     {
         return get_option('woocommerce_' . $id . '_settings', []);
+    }
+
+    public function test_gateway_page()
+    {
+        if (isset($_GET[self::$test_gateway_query]) and is_numeric($_GET[self::$test_gateway_query]) and !empty($_GET['callback_url'])) {
+
+            $callback_url = urldecode_deep($_GET['callback_url']);
+            $order_id = absint($_GET[self::$test_gateway_query]);
+
+            $order = wc_get_order($order_id);
+            if (!$order) {
+                wp_die(__('Order ID is Invalid.', 'parsigate'));
+            }
+
+            if ($order->get_status() != 'pending') {
+                wp_die(__('Order Status is not pending payment.', 'parsigate'));
+            }
+
+            $template = apply_filters('parsigate_test_gateway_template', \ParsiGate::$plugin_path . '/inc/templates/test-gateway.php');
+            if (file_exists($template)) {
+                ob_start();
+                include $template;
+                $output = ob_get_contents();
+                ob_end_clean();
+                wp_die($output, __('Test Gateway', 'parsigate'));
+            }
+        }
     }
 }
 

@@ -272,7 +272,22 @@ class Gateways
                 'class' => Test::class,
                 'website' => 'wp-parsi.com',
                 'type' => 'test',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'pay' => function ($amount, $order, $option, $callback_url) {
+
+                        return [
+                            "order_id" => $order->get_id(),
+                            "callback_url" => $callback_url,
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option) {
+
+                        return [
+                            'status' => ($_GET['status'] ?? 'NOK')
+                        ];
+                    }
+                ]
             ]
         ];
 
