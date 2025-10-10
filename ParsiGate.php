@@ -200,15 +200,3 @@ class ParsiGate
 }
 
 $GLOBALS['ParsiGate'] = ParsiGate::instance();
-
-
-add_action('init', function () {
-    if (isset($_GET['test_gateway'])) {
-        $gateway = new \ParsiGate\Gateway($driver = 'zarinpal');
-        $pay = $gateway->pay($params = []);
-        $verify = $gateway->verify($params = []);
-        echo '<pre>';
-        var_dump($verify);
-        exit;
-    }
-});
