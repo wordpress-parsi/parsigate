@@ -52,7 +52,41 @@ class Gateways
                 'class' => Parsian::class,
                 'website' => 'pec.ir',
                 'type' => 'bank',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'requirement' => (Utility::is_soap_enabled() === false ? __("Note: To activate the Gateway, the SoapClient module must be enabled in your host's PHP settings.", "parsigate") : ''),
+                'woocommerce' => [
+                    'sandbox' => false,
+                    'settings' => [
+                        'merchant_id' => [
+                            'title' => __('Merchant ID', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url) {
+
+                        return [
+                            'LoginAccount' => $option['merchant_id'],
+                            'Amount' => $amount,
+                            'OrderId' => $order->get_id() . mt_rand(1, 10000),
+                            'CallBackUrl' => $callback_url,
+                            'AdditionalData' => WooCommerce::get_order_description($order, 'parsian')
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option) {
+
+                        $token = ($_REQUEST['Token'] ?? '');
+                        $status = ($_REQUEST['status'] ?? '');
+                        $OrderId = ($_REQUEST['OrderId'] ?? '');
+
+                        return [
+                            'LoginAccount' => $option['merchant_id'],
+                            'Token' => $token
+                        ];
+                    }
+                ]
             ],
             'pasargad' => [
                 'title' => __('Pasargad', 'parsigate'),

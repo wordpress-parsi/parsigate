@@ -9,7 +9,7 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 
 ## Supported Gateways
 ### Bank Gateways
-- Parsian
+- Parsian ✅
 - Pasargad
 - Saman (Sep)
 - Mellat (BehPardakht)

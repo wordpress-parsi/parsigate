@@ -76,6 +76,7 @@ class Option
                 'no' => __('No', 'parsigate'),
             ),
             'std' => 'no',
+            'desc' => (Option::enable_log() ? '<a href="' . add_query_arg(['page' => 'pg_log'], admin_url('tools.php')) . '" target="_blank">(' . __("Show Logs", "parsigate") . ')</a>' : '')
         );
 
         $settings['parsigate'] = apply_filters('wpp_patsigate_settings', $options);
