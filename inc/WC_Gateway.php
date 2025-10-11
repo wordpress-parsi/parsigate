@@ -84,7 +84,7 @@ class WC_Gateway extends \WC_Payment_Gateway
                 'type' => 'checkbox',
                 'label' => sprintf(__('Activate or deactivate %s gateway', 'parsigate'), $this->method_title),
                 'default' => 'no',
-                'description' => (isset($this->gateway['requirement']) ? '<span style="color: red;">' . $this->gateway['requirement'] . '</span>' : ''),
+                'description' => ((isset($this->gateway['requirement']) and !empty($this->gateway['requirement'])) ? '<span style="color: red;">' . $this->gateway['requirement'] . '</span>' : ''),
             ],
             'title' => [
                 'title' => __('Gateway title', 'parsigate'),

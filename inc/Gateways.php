@@ -80,7 +80,58 @@ class Gateways
                 'class' => Melli::class,
                 'website' => 'sadadpsp.ir',
                 'type' => 'bank',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'requirement' => (Utility::is_enable_open_ssl() === false ? __("Note: To activate the Gateway, the OpenSSL module must be enabled in your host's PHP settings.", "parsigate") : ''),
+                'woocommerce' => [
+                    'sandbox' => false,
+                    'settings' => [
+                        'terminal_id' => [
+                            'title' => __('Terminal No.', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'merchant_id' => [
+                            'title' => __('Merchant ID', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'key' => [
+                            'title' => __('Gateway Key', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url) {
+
+                        return [
+                            'TerminalId' => $option['terminal_id'],
+                            'MerchantId' => $option['merchant_id'],
+                            'Key' => $option['key'],
+                            'Amount' => $amount,
+                            'ReturnUrl' => $callback_url,
+                            'LocalDateTime' => date("m/d/Y g:i:s a"),
+                            'OrderId' => $order->get_id()
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option) {
+
+                        $OrderId = ($_POST["OrderId"] ?? '');
+                        $Token = ($_POST["token"] ?? '');
+                        $ResCode = ($_POST["ResCode"] ?? '');
+
+                        return [
+                            'ResCode' => $ResCode,
+                            'Token' => $Token,
+                            'Key' => $option['key'],
+                        ];
+                    }
+                ]
             ],
             'asanpardakht' => [
                 'title' => __('Asan Pardakht', 'parsigate'),
