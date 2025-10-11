@@ -100,7 +100,52 @@ class Gateways
                 'class' => Sep::class,
                 'website' => 'sep.ir',
                 'type' => 'bank',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'sandbox' => false,
+                    'settings' => [
+                        'terminal_id' => [
+                            'title' => __('Terminal No.', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url) {
+
+                        $name = $order->get_billing_company();
+                        if (!empty($order->get_billing_first_name()) || !empty($order->get_billing_last_name())) {
+                            $name = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
+                        }
+
+                        return [
+                            "action" => "token",
+                            "TerminalId" => $option['terminal_id'],
+                            "Amount" => $amount,
+                            "ResNum" => $order->get_id(),
+                            "RedirectUrl" => $callback_url,
+                            "CellNumber" => $order->get_billing_phone(),
+                            "ResNum1" => mb_substr($name, 0, 50),
+                            "ResNum2" => mb_substr($order->get_billing_email(), 0, 50),
+                            "ResNum3" => (is_user_logged_in() ? mb_substr(wp_get_current_user()->user_login, 0, 50) : ''),
+                            "ResNum4" => ''
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option) {
+
+                        $State = ($_POST['State'] ?? '');
+                        $ResNum = ($_POST['ResNum'] ?? '');
+                        $RefNum = ($_POST['RefNum'] ?? '');
+
+                        return [
+                            'State' => $State,
+                            'ResNum' => $ResNum,
+                            'RefNum' => $RefNum,
+                            'TerminalNumber' => $option['terminal_id'],
+                        ];
+                    }
+                ]
             ],
             'mellat' => [
                 'title' => __('Mellat (BehPardakht)', 'parsigate'),

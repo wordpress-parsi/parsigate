@@ -72,8 +72,22 @@ class WC_Gateway extends \WC_Payment_Gateway
 
     public function get_icon()
     {
-        $icon = $this->icon ? '<img src="' . esc_url($this->icon) . '" alt="' . esc_attr($this->get_title()) . '" />' : '';
-        return apply_filters('woocommerce_gateway_icon', $icon, $this->id);
+        $attributes = apply_filters('parsigate_gateway_icon_attributes', [
+            'src' => esc_url($this->icon),
+            'alt' => $this->get_title()
+        ], $this->id);
+
+        $html = '';
+        if (!empty($attributes['src'])) {
+
+            $html = '<img';
+            foreach ($attributes as $key => $value) {
+                $html .= ' ' . esc_attr($key) . '="' . esc_attr($value) . '"';
+            }
+            $html .= '>';
+        }
+
+        return apply_filters('woocommerce_gateway_icon', $html, $this->id);
     }
 
     public function init_form_fields()
