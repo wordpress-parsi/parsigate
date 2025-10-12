@@ -152,7 +152,71 @@ class Gateways
                 'class' => Mellat::class,
                 'website' => 'behpardakht.com',
                 'type' => 'bank',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'requirement' => (Utility::is_soap_enabled() === false ? __("Note: To activate the Gateway, the SoapClient module must be enabled in your host's PHP settings.", "parsigate") : ''),
+                'woocommerce' => [
+                    'sandbox' => false,
+                    'settings' => [
+                        'terminal' => [
+                            'title' => __('Terminal No.', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'username' => [
+                            'title' => __('Username', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'password' => [
+                            'title' => __('Password', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url) {
+
+                        return [
+                            'terminalId' => $option['terminal'],
+                            'userName' => $option['username'],
+                            'userPassword' => $option['password'],
+                            'orderId' => $order->get_id(),
+                            'amount' => $amount,
+                            'localDate' => date('Ymd'),
+                            'localTime' => date('His'),
+                            'additionalData' => WooCommerce::get_order_description($order, 'mellat'),
+                            'callBackUrl' => $callback_url,
+                            'payerId' => $order->get_customer_id()
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option) {
+
+                        $resCode = $_POST['ResCode'] ?? '';
+                        $saleOrderId = $_POST['SaleOrderId'] ?? '';
+                        $saleReferenceId = $_POST['SaleReferenceId'] ?? '';
+                        $CardHolderInfo = $_POST['CardHolderInfo'] ?? '';
+                        $CardHolderPan = $_POST['CardHolderPan'] ?? '';
+                        $FinalAmount = $_POST['FinalAmount'] ?? '';
+
+                        return [
+                            'ResCode' => $resCode,
+                            'terminalId' => $option['terminal'],
+                            'userName' => $option['username'],
+                            'userPassword' => $option['password'],
+                            'orderId' => $saleOrderId,
+                            'saleOrderId' => $saleOrderId,
+                            'saleReferenceId' => $saleReferenceId,
+                            'CardHolderInfo' => $CardHolderInfo,
+                            'CardHolderPan' => $CardHolderPan,
+                            'FinalAmount' => $FinalAmount
+                        ];
+                    }
+                ]
             ],
             'melli' => [
                 'title' => __('Melli (Sadad)', 'parsigate'),
