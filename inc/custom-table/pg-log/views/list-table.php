@@ -54,7 +54,7 @@
     }
 
     .pg-log-json-pre-area {
-        position: absolute;
+        position: fixed;
         background: #e3e3e3bf;
         width: 100%;
         height: 100%;
