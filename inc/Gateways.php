@@ -61,6 +61,7 @@ class Gateways
                             'title' => __('Merchant ID', 'parsigate'),
                             'type' => 'text',
                             'default' => '',
+                            'description' => __('Please enter the gateway merchant id.', 'parsigate'),
                             'desc_tip' => false,
                             'class' => 'pg-ltr-input'
                         ]
@@ -108,6 +109,7 @@ class Gateways
                             'title' => __('Terminal No.', 'parsigate'),
                             'type' => 'text',
                             'default' => '',
+                            'description' => __("Please enter the gateway terminal number.", "parsigate"),
                             'desc_tip' => false,
                             'class' => 'pg-ltr-input'
                         ]
@@ -161,6 +163,7 @@ class Gateways
                             'title' => __('Terminal No.', 'parsigate'),
                             'type' => 'text',
                             'default' => '',
+                            'description' => __("Please enter the gateway terminal number.", "parsigate"),
                             'desc_tip' => false,
                             'class' => 'pg-ltr-input'
                         ],
@@ -232,6 +235,7 @@ class Gateways
                             'title' => __('Terminal No.', 'parsigate'),
                             'type' => 'text',
                             'default' => '',
+                            'description' => __("Please enter the gateway terminal number.", "parsigate"),
                             'desc_tip' => false,
                             'class' => 'pg-ltr-input'
                         ],
@@ -239,6 +243,7 @@ class Gateways
                             'title' => __('Merchant ID', 'parsigate'),
                             'type' => 'text',
                             'default' => '',
+                            'description' => __('Please enter the gateway merchant id.', 'parsigate'),
                             'desc_tip' => false,
                             'class' => 'pg-ltr-input'
                         ],
@@ -288,7 +293,46 @@ class Gateways
                 'class' => Saderat::class,
                 'website' => 'sepehrpay.com',
                 'type' => 'bank',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'sandbox' => false,
+                    'settings' => [
+                        'terminal_id' => [
+                            'title' => __('Terminal No.', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'desc_tip' => false,
+                            'description' => __("Please enter the gateway terminal number.", "parsigate"),
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url) {
+
+                        return [
+                            'Amount' => $amount,
+                            'callbackURL' => $callback_url,
+                            'InvoiceID' => $order->get_id(),
+                            'TerminalID' => $option['terminal_id'],
+                            'Payload' => $order->get_billing_phone()
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option) {
+
+                        $invoiceNumber = (isset($_POST['invoiceid'])) ? $_POST['invoiceid'] : "";
+                        $digitalreceipt = (isset($_POST['digitalreceipt'])) ? $_POST['digitalreceipt'] : "";
+                        $respcode = (isset($_POST['respcode'])) ? $_POST['respcode'] : "";
+                        $rrn = (isset($_POST['rrn'])) ? $_POST['rrn'] : "";
+
+                        return [
+                            'respcode' => $respcode,
+                            'digitalreceipt' => $digitalreceipt,
+                            'Tid' => $option['terminal_id'],
+                            'amount' => $amount,
+                            'rrn' => $rrn,
+                            'invoiceNumber' => $invoiceNumber
+                        ];
+                    }
+                ]
             ],
             'eghtesadnovin' => [
                 'title' => __('Eghtesad Novin', 'parsigate'),
@@ -326,6 +370,7 @@ class Gateways
                             'title' => __('Merchant ID', 'parsigate'),
                             'type' => 'text',
                             'default' => '',
+                            'description' => __('Please enter the gateway merchant id.', 'parsigate'),
                             'desc_tip' => false,
                             'class' => 'pg-ltr-input'
                         ]
@@ -373,6 +418,7 @@ class Gateways
                             'title' => __('Merchant ID', 'parsigate'),
                             'type' => 'text',
                             'default' => '',
+                            'description' => __('Please enter the gateway merchant id.', 'parsigate'),
                             'desc_tip' => false,
                             'class' => 'pg-ltr-input'
                         ]

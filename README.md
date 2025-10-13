@@ -15,7 +15,7 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 - Mellat (BehPardakht) ✅
 - Melli (Sadad) ✅
 - Asan Pardakht
-- Saderat (Sepehr)
+- Saderat (Sepehr) ✅
 - Eghtesad Novin
 - Iran Kish
 - Sepah

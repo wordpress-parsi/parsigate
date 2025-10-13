@@ -11,7 +11,7 @@ abstract class Base
 
     abstract public function verify(array $args = []): array;
 
-    protected function success($data, array $request, int $code): array
+    protected function success($data, array $request, $code): array
     {
         return [
             'success' => true,
@@ -21,7 +21,7 @@ abstract class Base
                 'response' => ($request['response'] ?? ''),
                 'header' => ($request['header'] ?? ''),
             ],
-            'status_code' => $code,
+            'status_code' => (int) $code,
             'data' => (array)$data,
             'message' => (is_string($data) ? $data : ''),
             'errors' => null,
@@ -29,7 +29,7 @@ abstract class Base
         ];
     }
 
-    protected function error($errors = [], array $request = [], int $code = 0): array
+    protected function error($errors = [], array $request = [], $code = 0): array
     {
         return [
             'success' => false,
@@ -39,7 +39,7 @@ abstract class Base
                 'response' => ($request['response'] ?? ''),
                 'header' => ($request['header'] ?? ''),
             ],
-            'status_code' => $code,
+            'status_code' => (int) $code,
             'data' => null,
             'errors' => $errors,
             'message' => (is_string($errors) ? $errors : ''),
