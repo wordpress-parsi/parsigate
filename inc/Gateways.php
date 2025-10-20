@@ -66,7 +66,7 @@ class Gateways
                             'class' => 'pg-ltr-input'
                         ]
                     ],
-                    'pay' => function ($amount, $order, $option, $callback_url) {
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
 
                         return [
                             'LoginAccount' => $option['merchant_id'],
@@ -76,7 +76,7 @@ class Gateways
                             'AdditionalData' => WooCommerce::get_order_description($order, 'parsian')
                         ];
                     },
-                    'verify' => function ($amount, $order, $option) {
+                    'verify' => function ($amount, $order, $option, $class) {
 
                         $token = ($_REQUEST['Token'] ?? '');
                         $status = ($_REQUEST['status'] ?? '');
@@ -114,7 +114,7 @@ class Gateways
                             'class' => 'pg-ltr-input'
                         ]
                     ],
-                    'pay' => function ($amount, $order, $option, $callback_url) {
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
 
                         $name = $order->get_billing_company();
                         if (!empty($order->get_billing_first_name()) || !empty($order->get_billing_last_name())) {
@@ -134,7 +134,7 @@ class Gateways
                             "ResNum4" => ''
                         ];
                     },
-                    'verify' => function ($amount, $order, $option) {
+                    'verify' => function ($amount, $order, $option, $class) {
 
                         $State = ($_POST['State'] ?? '');
                         $ResNum = ($_POST['ResNum'] ?? '');
@@ -182,7 +182,7 @@ class Gateways
                             'class' => 'pg-ltr-input'
                         ]
                     ],
-                    'pay' => function ($amount, $order, $option, $callback_url) {
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
 
                         return [
                             'terminalId' => $option['terminal'],
@@ -197,7 +197,7 @@ class Gateways
                             'payerId' => $order->get_customer_id()
                         ];
                     },
-                    'verify' => function ($amount, $order, $option) {
+                    'verify' => function ($amount, $order, $option, $class) {
 
                         $resCode = $_POST['ResCode'] ?? '';
                         $saleOrderId = $_POST['SaleOrderId'] ?? '';
@@ -255,7 +255,7 @@ class Gateways
                             'class' => 'pg-ltr-input'
                         ]
                     ],
-                    'pay' => function ($amount, $order, $option, $callback_url) {
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
 
                         return [
                             'TerminalId' => $option['terminal_id'],
@@ -267,7 +267,7 @@ class Gateways
                             'OrderId' => $order->get_id()
                         ];
                     },
-                    'verify' => function ($amount, $order, $option) {
+                    'verify' => function ($amount, $order, $option, $class) {
 
                         $OrderId = ($_POST["OrderId"] ?? '');
                         $Token = ($_POST["token"] ?? '');
@@ -306,7 +306,7 @@ class Gateways
                             'class' => 'pg-ltr-input'
                         ]
                     ],
-                    'pay' => function ($amount, $order, $option, $callback_url) {
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
 
                         return [
                             'Amount' => $amount,
@@ -316,7 +316,7 @@ class Gateways
                             'Payload' => $order->get_billing_phone()
                         ];
                     },
-                    'verify' => function ($amount, $order, $option) {
+                    'verify' => function ($amount, $order, $option, $class) {
 
                         $invoiceNumber = (isset($_POST['invoiceid'])) ? $_POST['invoiceid'] : "";
                         $digitalreceipt = (isset($_POST['digitalreceipt'])) ? $_POST['digitalreceipt'] : "";
@@ -375,7 +375,7 @@ class Gateways
                             'class' => 'pg-ltr-input'
                         ]
                     ],
-                    'pay' => function ($amount, $order, $option, $callback_url) {
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
 
                         $metadata = [];
                         if (!empty($order->get_billing_phone())) {
@@ -391,7 +391,7 @@ class Gateways
                             "metadata" => $metadata,
                         ];
                     },
-                    'verify' => function ($amount, $order, $option) {
+                    'verify' => function ($amount, $order, $option, $class) {
 
                         $authority = ($_GET['Authority'] ?? '');
                         $status = ($_GET['Status'] ?? '');
@@ -423,7 +423,7 @@ class Gateways
                             'class' => 'pg-ltr-input'
                         ]
                     ],
-                    'pay' => function ($amount, $order, $option, $callback_url) {
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
 
                         return [
                             "sandbox" => isset($option['sandbox']) and $option['sandbox'] == 'yes',
@@ -436,7 +436,7 @@ class Gateways
                             'description' => WooCommerce::get_order_description($order, 'zibal')
                         ];
                     },
-                    'verify' => function ($amount, $order, $option) {
+                    'verify' => function ($amount, $order, $option, $class) {
 
                         $success = ($_GET['success'] ?? '');
                         $trackId = ($_GET['trackId'] ?? '');
@@ -466,7 +466,7 @@ class Gateways
                             'class' => 'pg-ltr-input'
                         ]
                     ],
-                    'pay' => function ($amount, $order, $option, $callback_url) {
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
 
                         $payerName = $order->get_billing_company();
                         if (!empty($order->get_billing_first_name()) || !empty($order->get_billing_last_name())) {
@@ -493,7 +493,7 @@ class Gateways
                             'clientRefId' => (string)$order->get_id()
                         ];
                     },
-                    'verify' => function ($amount, $order, $option) {
+                    'verify' => function ($amount, $order, $option, $class) {
 
                         if (!isset($_POST['status']) || !isset($_POST['data'])) {
                             return ['success' => false];
@@ -535,7 +535,7 @@ class Gateways
                             'class' => 'pg-ltr-input'
                         ]
                     ],
-                    'pay' => function ($amount, $order, $option, $callback_url) {
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
 
                         return [
                             "sandbox" => isset($option['sandbox']) and $option['sandbox'] == 'yes',
@@ -548,7 +548,7 @@ class Gateways
                             'description' => WooCommerce::get_order_description($order, 'aqayepardakht')
                         ];
                     },
-                    'verify' => function ($amount, $order, $option) {
+                    'verify' => function ($amount, $order, $option, $class) {
 
                         $status = ($_POST['status'] ?? '');
                         $transid = ($_POST['transid'] ?? '');
@@ -580,7 +580,7 @@ class Gateways
                             'class' => 'pg-ltr-input'
                         ]
                     ],
-                    'pay' => function ($amount, $order, $option, $callback_url) {
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
 
                         return [
                             "sandbox" => isset($option['sandbox']) and $option['sandbox'] == 'yes',
@@ -592,7 +592,7 @@ class Gateways
                             'description' => WooCommerce::get_order_description($order, 'shepa')
                         ];
                     },
-                    'verify' => function ($amount, $order, $option) {
+                    'verify' => function ($amount, $order, $option, $class) {
 
                         $status = ($_GET['status'] ?? '');
                         $token = ($_GET["token"] ?? '');
@@ -621,7 +621,95 @@ class Gateways
                 'class' => DigiPay::class,
                 'website' => 'mydigipay.com',
                 'type' => 'installment',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'sandbox' => false,
+                    'settings' => [
+                        'client_id' => [
+                            'title' => __('Client ID', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway client id.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'client_secret' => [
+                            'title' => __('Client Secret', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway client secret.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'username' => [
+                            'title' => __('Username', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway username.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'password' => [
+                            'title' => __('Password', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway password.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
+
+                        $token = $class->call('token', [
+                            'username' => $option['username'],
+                            'password' => $option['password'],
+                            'client_id' => $option['client_id'],
+                            'client_secret' => $option['client_secret']
+                        ]);
+                        if ($token['success'] === false) {
+                            return new \WP_Error('invalid_token', $token['message']);
+                        }
+
+                        $access_token = $token['data']['access_token'];
+
+                        return [
+                            'token' => $access_token,
+                            'amount' => $amount,
+                            'cellNumber' => trim($order->get_billing_phone()),
+                            'providerId' => $order->get_id(),
+                            'callbackUrl' => $callback_url
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option, $class) {
+
+                        $success = ($_GET['success'] ?? '');
+                        $trackId = ($_GET['trackId'] ?? '');
+
+                        return [
+                            'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',
+                            "merchant" => $option['merchant_id'],
+                            'trackId' => $trackId,
+                            'success' => $success,
+                        ];
+                    },
+                    'completed' => function ($order, $transaction_id, $verify) {
+
+                        $meta_data = [];
+
+                        foreach (['rrn', 'pspCode', 'pspName', 'fpCode', 'fpName'] as $Key) {
+                            if (isset($verify['data'][$Key])) {
+                                $meta_data[$Key] = $verify['data'][$Key];
+                            }
+                        }
+
+                        if (!empty($meta_data)) {
+                            foreach ($meta_data as $key => $value) {
+                                $order->update_meta_data($key, $value);
+                            }
+                            $order->save();
+                        }
+                    }
+                ]
             ],
             'azkivam' => [
                 'title' => __('Azkivam', 'parsigate'),
@@ -653,14 +741,14 @@ class Gateways
                 'type' => 'test',
                 'usage' => ['woocommerce'],
                 'woocommerce' => [
-                    'pay' => function ($amount, $order, $option, $callback_url) {
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
 
                         return [
                             "order_id" => $order->get_id(),
                             "callback_url" => $callback_url,
                         ];
                     },
-                    'verify' => function ($amount, $order, $option) {
+                    'verify' => function ($amount, $order, $option, $class) {
 
                         return [
                             'status' => ($_GET['status'] ?? 'NOK')

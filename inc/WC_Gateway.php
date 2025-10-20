@@ -388,12 +388,23 @@ class WC_Gateway extends \WC_Payment_Gateway
 
         do_action('parsigate_gateway_before_process_payment', $order, $this->id);
 
+        $class = new Gateway($this->driver);
+
         $params = [];
         if (isset($this->gateway['woocommerce']['pay']) && is_callable($this->gateway['woocommerce']['pay'])) {
-            $params = $this->gateway['woocommerce']['pay']($amount, $order, $option, $this->get_callback_url($order));
+            $params = $this->gateway['woocommerce']['pay']($amount, $order, $option, $this->get_callback_url($order), $class);
         }
 
-        $class = new Gateway($this->driver);
+        if ($params instanceof \WP_Error) {
+
+            wc_add_notice($params->get_error_message(), 'error');
+            return [
+                'result' => 'failure',
+                'messages' => $params->get_error_message(),
+                'reload' => false
+            ];
+        }
+
         $pay = $class->pay(apply_filters('parsigate_gateway_process_payment_params', $params, $order, $this->id));
 
         do_action('parsigate_gateway_after_process_payment', $pay, $order, $this->id, wp_is_json_request());
@@ -493,12 +504,13 @@ class WC_Gateway extends \WC_Payment_Gateway
 
         do_action('parsigate_gateway_before_verify_payment', $order, $this->id);
 
+        $class = new Gateway($this->driver);
+
         $params = [];
         if (isset($this->gateway['woocommerce']['verify']) && is_callable($this->gateway['woocommerce']['verify'])) {
-            $params = $this->gateway['woocommerce']['verify']($amount, $order, $option);
+            $params = $this->gateway['woocommerce']['verify']($amount, $order, $option, $class);
         }
 
-        $class = new Gateway($this->driver);
         $verify = $class->verify(apply_filters('parsigate_gateway_verify_payment_params', $params, $order, $this->id));
 
         do_action('parsigate_gateway_after_verify_payment', $verify, $order, $this->id, wp_is_json_request());
@@ -527,6 +539,11 @@ class WC_Gateway extends \WC_Payment_Gateway
 
         // Remove cart.
         WC()->cart->empty_cart();
+
+        // Completed handler.
+        if (isset($this->gateway['woocommerce']['completed']) && is_callable($this->gateway['woocommerce']['completed'])) {
+            $this->gateway['woocommerce']['completed']($order, $transaction_id, $verify);
+        }
 
         // Action
         do_action('parsigate_gateway_completed_payment', $order, $transaction_id, $this->id, $verify);

@@ -23,7 +23,7 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 ### Installment Gateways
 - SnappPay
 - Tara
-- DigiPay
+- DigiPay ✅
 - Azki Vam
 - Torob
 
@@ -64,7 +64,7 @@ class MyGateway extends \ParsiGate\Gateways\Base
     }
 }
 
-// 2. Append to Gateway List
+// 2. Append to Gateway List with `parsigate_gateways_list` Hook
 add_filter('parsigate_gateways_list', 'new_define_gateway_parsigate', 10, 1);
 function new_define_gateway_parsigate($list)
 {
@@ -84,7 +84,7 @@ function new_define_gateway_parsigate($list)
                     'desc_tip' => false
                 ]
             ],
-            'pay' => function ($amount, $order, $option, $callback_url) {
+            'pay' => function ($amount, $order, $option, $callback_url, $class) {
                 return [
                     "merchant_id" => $option['merchant_id'],
                     "amount" => $amount,
@@ -92,7 +92,7 @@ function new_define_gateway_parsigate($list)
                     "description" => sprintf(__('Order ID: %d', 'parsigate'), $order->get_order_number()),
                 ];
             },
-            'verify' => function ($amount, $order, $option) {
+            'verify' => function ($amount, $order, $option, $class) {
                 $authority = ($_GET['Authority'] ?? '');
                 $status = ($_GET['Status'] ?? '');
                 return [

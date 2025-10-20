@@ -67,24 +67,18 @@ class Gateway
 
     public function pay(array $args = []): array
     {
-        // Check Exist
-        if (!$this->exist()) {
-            return [
-                'success' => false,
-                'message' => __('Gateway class not found', 'parsigate'),
-            ];
-        }
-
-        $class = new $this->gateway['class'];
-        $pay = $class->pay($args);
-        $this->save_log($pay);
-        return $pay;
+        return $this->call('pay', $args);
     }
 
     public function verify(array $args = []): array
     {
-        // Check Exist
+        return $this->call('verify', $args);
+    }
+
+    public function call($method, $args = [], $log = true)
+    {
         if (!$this->exist()) {
+
             return [
                 'success' => false,
                 'message' => __('Gateway class not found', 'parsigate'),
@@ -92,8 +86,11 @@ class Gateway
         }
 
         $class = new $this->gateway['class'];
-        $verify = $class->verify($args);
-        $this->save_log($verify);
-        return $verify;
+        $run = $class->{$method}($args);
+        if ($log) {
+            $this->save_log($run);
+        }
+
+        return $run;
     }
 }
