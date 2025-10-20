@@ -108,6 +108,7 @@ class ParsiGate
         require_once self::$plugin_path . '/inc/Gateways.php';
         require_once self::$plugin_path . '/inc/Option.php';
         require_once self::$plugin_path . '/inc/Gateway.php';
+        require_once self::$plugin_path . '/inc/Tokens.php';
 
         // Gateways
         require_once self::$plugin_path . '/inc/gateways/Base.php';
@@ -195,6 +196,7 @@ class ParsiGate
 
     public static function register_uninstall_hook()
     {
+        delete_option('pg_gateway_tokens');
     }
 
 }

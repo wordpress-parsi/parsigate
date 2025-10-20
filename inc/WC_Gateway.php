@@ -511,6 +511,10 @@ class WC_Gateway extends \WC_Payment_Gateway
             $params = $this->gateway['woocommerce']['verify']($amount, $order, $option, $class);
         }
 
+        if ($params instanceof \WP_Error) {
+            $this->set_failed_payment($order, ['message' => $params->get_error_message()]);
+        }
+
         $verify = $class->verify(apply_filters('parsigate_gateway_verify_payment_params', $params, $order, $this->id));
 
         do_action('parsigate_gateway_after_verify_payment', $verify, $order, $this->id, wp_is_json_request());

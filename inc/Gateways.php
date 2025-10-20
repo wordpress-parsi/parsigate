@@ -660,18 +660,28 @@ class Gateways
                     ],
                     'pay' => function ($amount, $order, $option, $callback_url, $class) {
 
-                        $token = $class->call('token', [
-                            'username' => $option['username'],
-                            'password' => $option['password'],
-                            'client_id' => $option['client_id'],
-                            'client_secret' => $option['client_secret']
-                        ]);
-                        if ($token['success'] === false) {
-                            return new \WP_Error('invalid_token', $token['message']);
+                        // Get Token
+                        $tokens = new Tokens('digipay');
+                        if (!$tokens->is_valid()) {
+
+                            $token = $class->call('token', [
+                                'username' => $option['username'],
+                                'password' => $option['password'],
+                                'client_id' => $option['client_id'],
+                                'client_secret' => $option['client_secret']
+                            ]);
+                            if ($token['success'] === false) {
+                                return new \WP_Error('invalid_token', $token['message']);
+                            }
+
+                            $access_token = $token['data']['access_token'];
+                            $tokens->store($access_token, (int)$token['data']['expires_in']);
+                        } else {
+
+                            $access_token = $tokens->get_value();
                         }
 
-                        $access_token = $token['data']['access_token'];
-
+                        // Return
                         return [
                             'token' => $access_token,
                             'amount' => $amount,
@@ -682,14 +692,36 @@ class Gateways
                     },
                     'verify' => function ($amount, $order, $option, $class) {
 
-                        $success = ($_GET['success'] ?? '');
-                        $trackId = ($_GET['trackId'] ?? '');
+                        // Get Request
+                        $type = ($_REQUEST['type'] ?? '');
+                        $trackingCode = ($_REQUEST['trackingCode'] ?? '');
 
+                        // Get Token
+                        $tokens = new Tokens('digipay');
+                        if (!$tokens->is_valid()) {
+
+                            $token = $class->call('token', [
+                                'username' => $option['username'],
+                                'password' => $option['password'],
+                                'client_id' => $option['client_id'],
+                                'client_secret' => $option['client_secret']
+                            ]);
+                            if ($token['success'] === false) {
+                                return new \WP_Error('invalid_token', $token['message']);
+                            }
+
+                            $access_token = $token['data']['access_token'];
+                            $tokens->store($access_token, (int)$token['data']['expires_in']);
+                        } else {
+
+                            $access_token = $tokens->get_value();
+                        }
+
+                        // Return
                         return [
-                            'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',
-                            "merchant" => $option['merchant_id'],
-                            'trackId' => $trackId,
-                            'success' => $success,
+                            'token' => $access_token,
+                            'trackingCode' => $trackingCode,
+                            'type' => $type
                         ];
                     },
                     'completed' => function ($order, $transaction_id, $verify) {
