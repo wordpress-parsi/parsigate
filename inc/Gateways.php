@@ -748,7 +748,91 @@ class Gateways
                 'class' => Azkivam::class,
                 'website' => 'azkivam.com',
                 'type' => 'installment',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'requirement' => (Utility::is_enable_open_ssl() === false ? __("Note: To activate the Gateway, the OpenSSL module must be enabled in your host's PHP settings.", "parsigate") : ''),
+                'woocommerce' => [
+                    'sandbox' => false,
+                    'settings' => [
+                        'terminal_id' => [
+                            'title' => __('Terminal No.', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __("Please enter the gateway terminal number.", "parsigate"),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'api_key' => [
+                            'title' => __('API Key', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway api key.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'api_url' => [
+                            'title' => __('API Url', 'parsigate'),
+                            'type' => 'text',
+                            'default' => 'https://api.azkiloan.com',
+                            'description' => __('Please enter the gateway api url.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
+
+                        // Get Mobile Number
+                        $mobile = $order->get_billing_phone();
+
+                        // Items
+                        $items = [];
+                        for ($index = 0; $index < count($order->get_items()); $index++) {
+                            $key = array_keys($order->get_items())[$index];
+                            $value = $order->get_items()[$key];
+
+                            $items[] = array(
+                                'name' => $value->get_name(),
+                                'url' => get_permalink($value->get_product_id()),
+                                'count' => $value->get_quantity(),
+                                'amount' => $value->get_total() / $value->get_quantity()
+                            );
+                        }
+
+                        if (0 < WC()->cart->get_shipping_total()) {
+                            $items[] = array(
+                                'name' => 'هزینه‌ی ارسال',
+                                'url' => home_url(),
+                                'count' => 1,
+                                'amount' => intval(WC()->cart->get_shipping_total())
+                            );
+                        }
+
+                        // Return
+                        return [
+                            'api_url' => $option['api_url'],
+                            'api_key' => $option['api_key'],
+                            'MerchantId' => $option['terminal_id'],
+                            'amount' => $amount,
+                            'redirect_uri' => $callback_url,
+                            'fallback_uri' => $callback_url,
+                            'provider_id' => $order->get_id() . mt_rand(100000000, 999999999),
+                            'mobile_number' => (!empty($mobile)) ? (preg_match('/^09[0-9]{9}/i', $mobile) ? $mobile : '') : '',
+                            'items' => $items
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option, $class) {
+
+                        $status = ($_GET['status'] ?? '');
+                        $ticketId = ($_GET['ticketId'] ?? '');
+
+                        return [
+                            'api_url' => $option['api_url'],
+                            'api_key' => $option['api_key'],
+                            'MerchantId' => $option['terminal_id'],
+                            'status' => $status,
+                            'ticket_id' => $ticketId,
+                        ];
+                    }
+                ]
             ],
             'torob' => [
                 'title' => __('Torob', 'parsigate'),
