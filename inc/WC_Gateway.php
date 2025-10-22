@@ -110,7 +110,7 @@ class WC_Gateway extends \WC_Payment_Gateway
                 'title' => __('Gateway description', 'parsigate'),
                 'type' => 'textarea',
                 'description' => __('The description that will be displayed during the purchase process for the gateway', 'parsigate'),
-                'default' => sprintf(__("Secure payment by all Shetab's cards through %s", 'parsigate'), $this->method_title)
+                'default' => ((isset($this->gateway['type']) and $this->gateway['type'] == "installment") ? sprintf(__("Credit and installment payments through %s", 'parsigate'), $this->method_title) : sprintf(__("Secure payment by all Shetab's cards through %s", 'parsigate'), $this->method_title))
             ]
         ];
 
@@ -343,29 +343,9 @@ class WC_Gateway extends \WC_Payment_Gateway
 
     public function get_amount($order)
     {
-        $currency = $order->get_currency();
         $order_total = $order->get_total();
         $amount = intval($order_total);
-        $currency = strtolower($currency);
-
-        if (in_array($currency, array(
-            'irt',
-            'toman',
-            'iran toman',
-            'iranian toman',
-            'iran-toman',
-            'iran_toman',
-            'تومان',
-            'تومان ایران'
-        ))) {
-            $amount = $amount * 10;
-        } else if ('irht' === $currency) {
-            $amount = $amount * 1000 * 10;
-        } else if ('irhr' === $currency) {
-            $amount = $amount * 1000;
-        }
-
-        return $amount;
+        return apply_filters('parsigate_get_amount', WooCommerce::price($amount, $order, $this->id), $amount, $order, $this->id);
     }
 
     public function get_callback_url($order)

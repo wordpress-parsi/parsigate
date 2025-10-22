@@ -25,4 +25,44 @@ class Utility
         return $default;
     }
 
+    public static function ip()
+    {
+        // pre
+        $pre = apply_filters('parsigate_pre_get_user_ip', null);
+        if (!is_null($pre)) {
+            return $pre;
+        }
+
+        // Cloudflare
+        if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+            return trim($_SERVER['HTTP_CF_CONNECTING_IP']);
+        }
+
+        $headers = [
+            'HTTP_X_FORWARDED_FOR',
+            'HTTP_X_REAL_IP',
+            'HTTP_X_FORWARDED',
+            'HTTP_FORWARDED_FOR',
+            'HTTP_FORWARDED',
+            'HTTP_CLIENT_IP'
+        ];
+
+        foreach ($headers as $header) {
+            if (!empty($_SERVER[$header])) {
+                $ip = $_SERVER[$header];
+
+                if (strpos($ip, ',') !== false) {
+                    $ips = explode(',', $ip);
+                    $ip = trim($ips[0]);
+                }
+
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                }
+            }
+        }
+
+        return $_SERVER['REMOTE_ADDR'] ?? '';
+    }
+
 }

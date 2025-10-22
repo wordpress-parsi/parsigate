@@ -22,10 +22,9 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 
 ### Installment Gateways
 - SnappPay
-- Tara
+- Tara ✅
 - DigiPay ✅
 - Azki Vam ✅
-- Torob
 
 ### Intermediary Gateways
 - Zibal ✅

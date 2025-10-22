@@ -131,7 +131,6 @@ class ParsiGate
         require_once self::$plugin_path . '/inc/gateways/SnappPay.php';
         require_once self::$plugin_path . '/inc/gateways/Tara.php';
         require_once self::$plugin_path . '/inc/gateways/Zibal.php';
-        require_once self::$plugin_path . '/inc/gateways/Torob.php';
         require_once self::$plugin_path . '/inc/gateways/Test.php';
 
         // WooCommerce

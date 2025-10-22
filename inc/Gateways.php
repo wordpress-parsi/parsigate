@@ -20,7 +20,6 @@ use ParsiGate\gateways\Shepa;
 use ParsiGate\gateways\SnappPay;
 use ParsiGate\gateways\Tara;
 use ParsiGate\gateways\Test;
-use ParsiGate\gateways\Torob;
 use ParsiGate\Gateways\ZarinPal;
 use ParsiGate\gateways\Zibal;
 
@@ -834,19 +833,166 @@ class Gateways
                     }
                 ]
             ],
-            'torob' => [
-                'title' => __('Torob', 'parsigate'),
-                'class' => Torob::class,
-                'website' => 'torobpay.com',
-                'type' => 'installment',
-                'usage' => ['woocommerce']
-            ],
             'tara' => [
                 'title' => __('Tara', 'parsigate'),
                 'class' => Tara::class,
                 'website' => 'tara360.ir',
                 'type' => 'installment',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'sandbox' => false,
+                    'settings' => [
+                        'merchant_id' => [
+                            'title' => __('Merchant ID', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway merchant id.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'username' => [
+                            'title' => __('Username', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway username.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'password' => [
+                            'title' => __('Password', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway password.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
+
+                        // Mobile
+                        $mobile = $order->get_billing_phone();
+                        if (empty($mobile)) {
+                            return new \WP_Error('invalid_token', __('mobile is required !', 'parsigate'));
+                        }
+
+                        // Get Token
+                        $tokens = new Tokens('tara');
+                        if (!$tokens->is_valid()) {
+
+                            $token = $class->call('token', [
+                                'username' => $option['username'],
+                                'password' => $option['password']
+                            ]);
+                            if ($token['success'] === false) {
+                                return new \WP_Error('invalid_token', $token['message']);
+                            }
+
+                            $access_token = $token['data']['access_token'];
+                            $tokens->store($access_token, MINUTE_IN_SECONDS * 30);
+                        } else {
+
+                            $access_token = $tokens->get_value();
+                        }
+
+                        // Invoices Items
+                        $invoice_items = [];
+                        $cart = WC()->cart->get_cart();
+                        if ($cart && count($cart) > 0) {
+                            foreach ($cart as $item) {
+                                $product = new \stdClass();
+                                $product->name = $item['data']->get_title();
+                                $product->code = $item['product_id'];
+                                $product->count = $item['quantity'];
+                                $product->unit = 5;
+                                $product->fee = WooCommerce::price(intval($item['data']->get_price()), $order);
+                                $product->data = '#' . $order->get_id();
+                                $invoice_items[] = $product;
+                            }
+                        }
+                        if (count($invoice_items) === 0) {
+                            $product = new \stdClass();
+                            $product->name = __('Buy online from: ', 'parsigate') . get_bloginfo();
+                            $product->code = 1;
+                            $product->count = 1;
+                            $product->unit = 5;
+                            $product->fee = $amount;
+                            $product->group = "26";
+                            $product->groupTitle = __('Other', 'parsigate');
+                            $product->data = '#' . $order->get_id();
+                            $invoice_items[] = $product;
+                        }
+
+                        $vat_amount = WooCommerce::price((float)$order->get_total_tax(), $order);
+                        $ship_total = (float)$order->get_shipping_total();
+                        $ship_method = $order->get_shipping_method();
+                        if ($ship_total > 0) {
+                            $shipping_item = new \stdClass();
+                            $shipping_item->name = __('Shipping Cost', 'parsigate') . (!empty($ship_method) ? ' (' . $ship_method . ')' : '');
+                            $shipping_item->code = 999001;
+                            $shipping_item->count = 1;
+                            $shipping_item->unit = 5;
+                            $shipping_item->fee = WooCommerce::price((int)$ship_total, $order);
+                            $shipping_item->group = "40";
+                            $shipping_item->groupTitle = __('Shipping', 'parsigate');
+                            $shipping_item->data = '#' . $order->get_id();;
+                            $invoice_items[] = $shipping_item;
+                        }
+
+                        // Return
+                        return [
+                            'access_token' => $access_token,
+                            'username' => $option['username'],
+                            'additionalData' => WooCommerce::get_order_description($order, 'tara'),
+                            'mobile' => $mobile,
+                            'callBackUrl' => $callback_url,
+                            'amount' => $amount,
+                            'vat' => $vat_amount,
+                            'serviceAmountList' => [
+                                [
+                                    'serviceId' => $option['merchant_id'],
+                                    'amount' => $amount,
+                                ]
+                            ],
+                            'taraInvoiceItemList' => $invoice_items,
+                            'ip' => Utility::ip()
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option, $class) {
+
+                        // Get Request
+                        $token = ($_POST['token'] ?? '');
+                        $result = ($_POST['result'] ?? '');
+                        $channelRefNumber = ($_POST['channelRefNumber'] ?? '');
+
+                        // Get Token
+                        $tokens = new Tokens('tara');
+                        if (!$tokens->is_valid()) {
+
+                            $token = $class->call('token', [
+                                'username' => $option['username'],
+                                'password' => $option['password']
+                            ]);
+                            if ($token['success'] === false) {
+                                return new \WP_Error('invalid_token', $token['message']);
+                            }
+
+                            $access_token = $token['data']['access_token'];
+                            $tokens->store($access_token, MINUTE_IN_SECONDS * 30);
+                        } else {
+
+                            $access_token = $tokens->get_value();
+                        }
+
+                        // Return
+                        return [
+                            'access_token' => $access_token,
+                            'token' => $token,
+                            'result' => $result,
+                            'channelRefNumber' => $channelRefNumber,
+                            'ip' => Utility::ip()
+                        ];
+                    }
+                ]
             ],
 
             // Test Gateway

@@ -155,6 +155,33 @@ class WooCommerce
             <?php
         }
     }
+
+    public static function price($amount, $order, $gateway = null)
+    {
+        $raw = $amount;
+        $currency = strtolower($order->get_currency());
+
+        $irt_currencies = [
+            'irt',
+            'toman',
+            'iran toman',
+            'iranian toman',
+            'iran-toman',
+            'iran_toman',
+            'تومان',
+            'تومان ایران'
+        ];
+
+        if (in_array($currency, $irt_currencies)) {
+            $amount = $amount * 10;
+        } else if ('irht' === $currency) {
+            $amount = $amount * 1000 * 10;
+        } else if ('irhr' === $currency) {
+            $amount = $amount * 1000;
+        }
+
+        return apply_filters('parsigate_get_order_price', $amount, $order, $raw, $gateway);
+    }
 }
 
 new WooCommerce();
