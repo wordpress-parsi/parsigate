@@ -21,7 +21,7 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 - Sepah
 
 ### Installment Gateways
-- SnappPay
+- SnappPay ✅
 - Tara ✅
 - DigiPay ✅
 - Azki Vam ✅

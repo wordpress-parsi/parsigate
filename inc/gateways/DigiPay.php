@@ -25,7 +25,7 @@ class DigiPay extends Base
 
         // Setup Request args
         $request = [
-            'body' => json_encode($body),
+            'body' => $body,
             'timeout' => 30,
             'redirection' => '5',
             'httpsversion' => '1.0',

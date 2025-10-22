@@ -608,12 +608,147 @@ class Gateways
             ],
 
             // Installment Gateway
-            'snappay' => [
+            'snapppay' => [
                 'title' => __('SnappPay', 'parsigate'),
                 'class' => SnappPay::class,
                 'website' => 'snapppay.ir',
                 'type' => 'installment',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'sandbox' => false,
+                    'settings' => [
+                        'client_id' => [
+                            'title' => __('Client ID', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway client id.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'client_secret' => [
+                            'title' => __('Client Secret', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway client secret.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'username' => [
+                            'title' => __('Username', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway username.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'password' => [
+                            'title' => __('Password', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway password.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
+
+                        // Mobile
+                        $mobile = $order->get_billing_phone();
+                        if (empty($mobile)) {
+                            return new \WP_Error('invalid_token', __('mobile is required !', 'parsigate'));
+                        }
+
+                        // Get Token
+                        $tokens = new Tokens('snapppay');
+                        if (!$tokens->is_valid()) {
+
+                            $token = $class->call('token', [
+                                'client_id' => $option['client_id'],
+                                'client_secret' => $option['client_secret'],
+                                'username' => $option['username'],
+                                'password' => $option['password']
+                            ]);
+                            if ($token['success'] === false) {
+                                return new \WP_Error('invalid_token', $token['message']);
+                            }
+
+                            $access_token = $token['data']['access_token'];
+                            $tokens->store($access_token, MINUTE_IN_SECONDS * 30);
+                        } else {
+
+                            $access_token = $tokens->get_value();
+                        }
+
+                        // Get Cart List
+                        $cart_list = [
+                            'cartId' => $order->get_id(),
+                            'totalAmount' => WooCommerce::price($amount, $order, 'snapppay'),
+                        ];
+                        $items = [];
+                        foreach ($order->get_items() as $item_id => $item) {
+                            $product = $item->get_product();
+                            $item_params = [
+                                "name" => $item->get_name(),
+                                "count" => $item->get_quantity(),
+                                "amount" => WooCommerce::price($product->get_price('edit'), $order, 'snapppay'),
+                                "id" => $product->get_id()
+                            ];
+                            $items[] = $item_params;
+                        }
+                        $cart_list['cartItems'] = $items;
+                        $order_data = $order->get_data();
+                        $cart_list['taxAmount'] = false === empty($order_data['total_tax']) ? WooCommerce::price($order_data['total_tax'], $order, 'snapppay') : 0;
+                        $cart_list['shippingAmount'] = false === empty($order_data['shipping_total']) ? WooCommerce::price($order_data['shipping_total'], $order, 'snapppay') : 0;
+                        $cart_list['isShipmentIncluded'] = (int)$cart_list['shippingAmount'] > 0;
+                        $cart_list['isTaxIncluded'] = (int)$cart_list['taxAmount'] > 0;
+
+                        // Return
+                        return [
+                            'access_token' => $access_token,
+                            'username' => $option['username'],
+                            'amount' => $amount,
+                            'mobile' => $mobile,
+                            'paymentMethodTypeDto' => 'INSTALLMENT',
+                            'transactionId' => time() . '-' . $order->get_id(),
+                            'returnURL' => $callback_url,
+                            'cartList' => $cart_list,
+                            'discountAmount' => ((int)$order_data['discount_total'] > 0 ? WooCommerce::price($order_data['discount_total'], $order, 'snapppay') : 0)
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option, $class) {
+
+                        // Get Request
+                        $state = ($_POST['state'] ?? '');
+
+                        // Get Token
+                        $tokens = new Tokens('snapppay');
+                        if (!$tokens->is_valid()) {
+
+                            $token = $class->call('token', [
+                                'client_id' => $option['client_id'],
+                                'client_secret' => $option['client_secret'],
+                                'username' => $option['username'],
+                                'password' => $option['password']
+                            ]);
+                            if ($token['success'] === false) {
+                                return new \WP_Error('invalid_token', $token['message']);
+                            }
+
+                            $access_token = $token['data']['access_token'];
+                            $tokens->store($access_token, MINUTE_IN_SECONDS * 30);
+                        } else {
+
+                            $access_token = $tokens->get_value();
+                        }
+
+                        // Return
+                        return [
+                            'access_token' => $access_token,
+                            'state' => $state,
+                            'paymentToken' => $order->get_meta('authority', true, '')
+                        ];
+                    }
+                ]
             ],
             'digipay' => [
                 'title' => __('DigiPay', 'parsigate'),
@@ -792,16 +927,16 @@ class Gateways
                                 'name' => $value->get_name(),
                                 'url' => get_permalink($value->get_product_id()),
                                 'count' => $value->get_quantity(),
-                                'amount' => $value->get_total() / $value->get_quantity()
+                                'amount' => WooCommerce::price($value->get_total(), $order, 'azkivam') / $value->get_quantity()
                             );
                         }
 
                         if (0 < WC()->cart->get_shipping_total()) {
                             $items[] = array(
-                                'name' => 'هزینه‌ی ارسال',
+                                'name' => __('Shipping Cost', 'parsigate'),
                                 'url' => home_url(),
                                 'count' => 1,
-                                'amount' => intval(WC()->cart->get_shipping_total())
+                                'amount' => WooCommerce::price(intval(WC()->cart->get_shipping_total()), $order, 'azkivam')
                             );
                         }
 

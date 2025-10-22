@@ -410,6 +410,12 @@ class WC_Gateway extends \WC_Payment_Gateway
             ];
         }
 
+        if (isset($pay['data']['authority']) and !empty($pay['data']['authority']) and apply_filters('parsigate_save_authority', true, $this->id) === true) {
+
+            $order->update_meta_data('authority', $pay['data']['authority']);
+            $order->save();
+        }
+
         $redirect = $pay['data']['redirect'];
 
         if (isset($pay['data']['redirect']) and is_array($pay['data']['redirect']) and isset($pay['data']['redirect']['with_post'])) {
