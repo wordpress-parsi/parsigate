@@ -370,6 +370,20 @@ class WC_Gateway extends \WC_Payment_Gateway
 
         $class = new Gateway($this->driver);
 
+        if (isset($this->gateway['auth']) && is_callable($this->gateway['auth'])) {
+
+            $auth = $this->gateway['auth']($option, $class, ['order' => $order, 'amount' => $amount]);
+            if ($auth instanceof \WP_Error) {
+
+                wc_add_notice($auth->get_error_message(), 'error');
+                return [
+                    'result' => 'failure',
+                    'messages' => $auth->get_error_message(),
+                    'reload' => false
+                ];
+            }
+        }
+
         $params = [];
         if (isset($this->gateway['woocommerce']['pay']) && is_callable($this->gateway['woocommerce']['pay'])) {
             $params = $this->gateway['woocommerce']['pay']($amount, $order, $option, $this->get_callback_url($order), $class);
@@ -491,6 +505,14 @@ class WC_Gateway extends \WC_Payment_Gateway
         do_action('parsigate_gateway_before_verify_payment', $order, $this->id);
 
         $class = new Gateway($this->driver);
+
+        if (isset($this->gateway['auth']) && is_callable($this->gateway['auth'])) {
+
+            $auth = $this->gateway['auth']($option, $class, ['order' => $order, 'amount' => $amount]);
+            if ($auth instanceof \WP_Error) {
+                $this->set_failed_payment($order, ['message' => $auth->get_error_message()]);
+            }
+        }
 
         $params = [];
         if (isset($this->gateway['woocommerce']['verify']) && is_callable($this->gateway['woocommerce']['verify'])) {

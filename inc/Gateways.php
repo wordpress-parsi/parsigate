@@ -683,6 +683,29 @@ class Gateways
                 'website' => 'snapppay.ir',
                 'type' => 'installment',
                 'usage' => ['woocommerce'],
+                'auth' => function ($option, $class, $args) {
+
+                    $tokens = new Tokens('snapppay');
+                    if (!$tokens->is_valid()) {
+
+                        $token = $class->call('token', [
+                            'client_id' => $option['client_id'],
+                            'client_secret' => $option['client_secret'],
+                            'username' => $option['username'],
+                            'password' => $option['password']
+                        ]);
+                        if ($token['success'] === false) {
+                            return new \WP_Error('invalid_token', $token['message']);
+                        }
+
+                        $access_token = $token['data']['access_token'];
+                        $tokens->store($access_token, MINUTE_IN_SECONDS * 30);
+                    } else {
+                        $access_token = $tokens->get_value();
+                    }
+
+                    return $access_token;
+                },
                 'woocommerce' => [
                     'sandbox' => false,
                     'settings' => [
@@ -729,24 +752,6 @@ class Gateways
 
                         // Get Token
                         $tokens = new Tokens('snapppay');
-                        if (!$tokens->is_valid()) {
-
-                            $token = $class->call('token', [
-                                'client_id' => $option['client_id'],
-                                'client_secret' => $option['client_secret'],
-                                'username' => $option['username'],
-                                'password' => $option['password']
-                            ]);
-                            if ($token['success'] === false) {
-                                return new \WP_Error('invalid_token', $token['message']);
-                            }
-
-                            $access_token = $token['data']['access_token'];
-                            $tokens->store($access_token, MINUTE_IN_SECONDS * 30);
-                        } else {
-
-                            $access_token = $tokens->get_value();
-                        }
 
                         // Get Cart List
                         $cart_list = [
@@ -773,7 +778,7 @@ class Gateways
 
                         // Return
                         return [
-                            'access_token' => $access_token,
+                            'access_token' => $tokens->get_value(),
                             'username' => $option['username'],
                             'amount' => $amount,
                             'mobile' => $mobile,
@@ -791,28 +796,10 @@ class Gateways
 
                         // Get Token
                         $tokens = new Tokens('snapppay');
-                        if (!$tokens->is_valid()) {
-
-                            $token = $class->call('token', [
-                                'client_id' => $option['client_id'],
-                                'client_secret' => $option['client_secret'],
-                                'username' => $option['username'],
-                                'password' => $option['password']
-                            ]);
-                            if ($token['success'] === false) {
-                                return new \WP_Error('invalid_token', $token['message']);
-                            }
-
-                            $access_token = $token['data']['access_token'];
-                            $tokens->store($access_token, MINUTE_IN_SECONDS * 30);
-                        } else {
-
-                            $access_token = $tokens->get_value();
-                        }
 
                         // Return
                         return [
-                            'access_token' => $access_token,
+                            'access_token' => $tokens->get_value(),
                             'state' => $state,
                             'paymentToken' => $order->get_meta('authority', true, '')
                         ];
@@ -825,6 +812,30 @@ class Gateways
                 'website' => 'mydigipay.com',
                 'type' => 'installment',
                 'usage' => ['woocommerce'],
+                'auth' => function ($option, $class, $args) {
+
+                    $tokens = new Tokens('digipay');
+                    if (!$tokens->is_valid()) {
+
+                        $token = $class->call('token', [
+                            'username' => $option['username'],
+                            'password' => $option['password'],
+                            'client_id' => $option['client_id'],
+                            'client_secret' => $option['client_secret']
+                        ]);
+                        if ($token['success'] === false) {
+                            return new \WP_Error('invalid_token', $token['message']);
+                        }
+
+                        $access_token = $token['data']['access_token'];
+                        $tokens->store($access_token, (int)$token['data']['expires_in']);
+                    } else {
+
+                        $access_token = $tokens->get_value();
+                    }
+
+                    return $access_token;
+                },
                 'woocommerce' => [
                     'sandbox' => false,
                     'settings' => [
@@ -863,30 +874,9 @@ class Gateways
                     ],
                     'pay' => function ($amount, $order, $option, $callback_url, $class) {
 
-                        // Get Token
                         $tokens = new Tokens('digipay');
-                        if (!$tokens->is_valid()) {
-
-                            $token = $class->call('token', [
-                                'username' => $option['username'],
-                                'password' => $option['password'],
-                                'client_id' => $option['client_id'],
-                                'client_secret' => $option['client_secret']
-                            ]);
-                            if ($token['success'] === false) {
-                                return new \WP_Error('invalid_token', $token['message']);
-                            }
-
-                            $access_token = $token['data']['access_token'];
-                            $tokens->store($access_token, (int)$token['data']['expires_in']);
-                        } else {
-
-                            $access_token = $tokens->get_value();
-                        }
-
-                        // Return
                         return [
-                            'token' => $access_token,
+                            'token' => $tokens->get_value(),
                             'amount' => $amount,
                             'cellNumber' => trim($order->get_billing_phone()),
                             'providerId' => $order->get_id(),
@@ -901,28 +891,10 @@ class Gateways
 
                         // Get Token
                         $tokens = new Tokens('digipay');
-                        if (!$tokens->is_valid()) {
-
-                            $token = $class->call('token', [
-                                'username' => $option['username'],
-                                'password' => $option['password'],
-                                'client_id' => $option['client_id'],
-                                'client_secret' => $option['client_secret']
-                            ]);
-                            if ($token['success'] === false) {
-                                return new \WP_Error('invalid_token', $token['message']);
-                            }
-
-                            $access_token = $token['data']['access_token'];
-                            $tokens->store($access_token, (int)$token['data']['expires_in']);
-                        } else {
-
-                            $access_token = $tokens->get_value();
-                        }
 
                         // Return
                         return [
-                            'token' => $access_token,
+                            'token' => $tokens->get_value(),
                             'trackingCode' => $trackingCode,
                             'type' => $type
                         ];
@@ -1043,6 +1015,28 @@ class Gateways
                 'website' => 'tara360.ir',
                 'type' => 'installment',
                 'usage' => ['woocommerce'],
+                'auth' => function ($option, $class, $args) {
+
+                    $tokens = new Tokens('tara');
+                    if (!$tokens->is_valid()) {
+
+                        $token = $class->call('token', [
+                            'username' => $option['username'],
+                            'password' => $option['password']
+                        ]);
+                        if ($token['success'] === false) {
+                            return new \WP_Error('invalid_token', $token['message']);
+                        }
+
+                        $access_token = $token['data']['access_token'];
+                        $tokens->store($access_token, MINUTE_IN_SECONDS * 30);
+                    } else {
+
+                        $access_token = $tokens->get_value();
+                    }
+
+                    return $access_token;
+                },
                 'woocommerce' => [
                     'sandbox' => false,
                     'settings' => [
@@ -1081,22 +1075,6 @@ class Gateways
 
                         // Get Token
                         $tokens = new Tokens('tara');
-                        if (!$tokens->is_valid()) {
-
-                            $token = $class->call('token', [
-                                'username' => $option['username'],
-                                'password' => $option['password']
-                            ]);
-                            if ($token['success'] === false) {
-                                return new \WP_Error('invalid_token', $token['message']);
-                            }
-
-                            $access_token = $token['data']['access_token'];
-                            $tokens->store($access_token, MINUTE_IN_SECONDS * 30);
-                        } else {
-
-                            $access_token = $tokens->get_value();
-                        }
 
                         // Invoices Items
                         $invoice_items = [];
@@ -1144,7 +1122,7 @@ class Gateways
 
                         // Return
                         return [
-                            'access_token' => $access_token,
+                            'access_token' => $tokens->get_value(),
                             'username' => $option['username'],
                             'additionalData' => WooCommerce::get_order_description($order, 'tara'),
                             'mobile' => $mobile,
@@ -1170,26 +1148,10 @@ class Gateways
 
                         // Get Token
                         $tokens = new Tokens('tara');
-                        if (!$tokens->is_valid()) {
-
-                            $token = $class->call('token', [
-                                'username' => $option['username'],
-                                'password' => $option['password']
-                            ]);
-                            if ($token['success'] === false) {
-                                return new \WP_Error('invalid_token', $token['message']);
-                            }
-
-                            $access_token = $token['data']['access_token'];
-                            $tokens->store($access_token, MINUTE_IN_SECONDS * 30);
-                        } else {
-
-                            $access_token = $tokens->get_value();
-                        }
 
                         // Return
                         return [
-                            'access_token' => $access_token,
+                            'access_token' => $tokens->get_value(),
                             'token' => $token,
                             'result' => $result,
                             'channelRefNumber' => $channelRefNumber,
