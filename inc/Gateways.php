@@ -345,7 +345,76 @@ class Gateways
                 'class' => IranKish::class,
                 'website' => 'irankish.com',
                 'type' => 'bank',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'requirement' => (Utility::is_enable_open_ssl() === false ? __("Note: To activate the Gateway, the OpenSSL module must be enabled in your host's PHP settings.", "parsigate") : ''),
+                'woocommerce' => [
+                    'sandbox' => false,
+                    'settings' => [
+                        'terminal_id' => [
+                            'title' => __('Terminal No.', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __("Please enter the gateway terminal number.", "parsigate"),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'password' => [
+                            'title' => __('Password', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway password.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'acceptorId' => [
+                            'title' => __('Acceptor Id', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway acceptor Id.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'pub_key' => [
+                            'title' => __('Public Key', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway public key.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
+
+                        return [
+                            "pub_key" => $option['pub_key'],
+                            "password" => $option['password'],
+                            "acceptorId" => $option['acceptorId'],
+                            "amount" => $amount,
+                            "billInfo" => null,
+                            "requestId" => uniqid(),
+                            "paymentId" => (string)$order->get_id(),
+                            "requestTimestamp" => time(),
+                            "revertUri" => $callback_url,
+                            "terminalId" => $option['terminal_id'],
+                            "transactionType" => "Purchase"
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option, $class) {
+
+                        $responseCode = ($_POST['responseCode'] ?? '');
+                        $retrievalReferenceNumber = ($_POST['retrievalReferenceNumber'] ?? '');
+                        $systemTraceAuditNumber = ($_POST['systemTraceAuditNumber'] ?? '');
+                        $tokenIdentity = ($_POST['token'] ?? '');
+
+                        return [
+                            'terminalId' => $option['terminal_id'],
+                            'responseCode' => $responseCode,
+                            'retrievalReferenceNumber' => $retrievalReferenceNumber,
+                            'systemTraceAuditNumber' => $systemTraceAuditNumber,
+                            'tokenIdentity' => $tokenIdentity
+                        ];
+                    }
+                ]
             ],
             'sepah' => [
                 'title' => __('Sepah', 'parsigate'),

@@ -17,7 +17,7 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 - Asan Pardakht
 - Saderat (Sepehr) ✅
 - Eghtesad Novin
-- Iran Kish
+- Iran Kish ✅
 - Sepah
 
 ### Installment Gateways
