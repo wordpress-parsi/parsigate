@@ -350,13 +350,12 @@ class WC_Gateway extends \WC_Payment_Gateway
 
     public function get_callback_url($order)
     {
-        return add_query_arg(
-            array(
-                'wc-api' => $this->id,
-                'order_id' => $order->get_id()
-            ),
-            get_site_url(null, '/')
-        );
+        $args = apply_filters('parsigate_get_callback_query', [
+            'wc-api' => $this->id,
+            'order_id' => $order->get_id()
+        ], $order, $this->id);
+
+        return add_query_arg($args, get_site_url(null, '/'));
     }
 
     public function process_payment($order_id)
@@ -366,9 +365,13 @@ class WC_Gateway extends \WC_Payment_Gateway
         $order = wc_get_order($order_id);
         $amount = $this->get_amount($order);
 
-        do_action('parsigate_gateway_before_process_payment', $order, $this->id);
-
         $class = new Gateway($this->driver);
+
+        do_action('parsigate_gateway_before_process_payment', $order, $this->id, $class);
+
+        if (isset($this->gateway['woocommerce']['before']) && is_callable($this->gateway['woocommerce']['before'])) {
+            $this->gateway['woocommerce']['before']($amount, $order, $option, $class);
+        }
 
         if (isset($this->gateway['auth']) && is_callable($this->gateway['auth'])) {
 
@@ -401,7 +404,7 @@ class WC_Gateway extends \WC_Payment_Gateway
 
         $pay = $class->pay(apply_filters('parsigate_gateway_process_payment_params', $params, $order, $this->id));
 
-        do_action('parsigate_gateway_after_process_payment', $pay, $order, $this->id, wp_is_json_request());
+        do_action('parsigate_gateway_after_process_payment', $pay, $order, $this->id, $class, wp_is_json_request());
 
         if ($pay['success'] === false) {
 
@@ -545,9 +548,12 @@ class WC_Gateway extends \WC_Payment_Gateway
         $order->payment_complete($transaction_id);
 
         // Add Order Note
-        $order->add_order_note(
-            sprintf(__("Payment Success, Transaction ID: %s", 'parsigate'), $transaction_id)
-        );
+        if (apply_filters('parsigate_gateway_save_order_note', true, $this->id, $order) === true) {
+
+            $order->add_order_note(
+                apply_filters('parsigate_gateway_completed_order_note', sprintf(__("Payment Success, Transaction ID: %s", 'parsigate'), $transaction_id), $order, $transaction_id, $this->id)
+            );
+        }
 
         // Remove cart.
         WC()->cart->empty_cart();

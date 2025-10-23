@@ -285,7 +285,65 @@ class Gateways
                 'class' => AsanPardakht::class,
                 'website' => 'asanpardakht.ir',
                 'type' => 'bank',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'sandbox' => false,
+                    'settings' => [
+                        'merchant_id' => [
+                            'title' => __('Merchant ID', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway merchant id.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'username' => [
+                            'title' => __('Username', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway username.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'password' => [
+                            'title' => __('Password', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway password.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'before' => function ($amount, $order, $option, $class) {
+
+                        $order->update_meta_data('localInvoiceId', time() . $order->get_id());
+                        $order->save();
+                    },
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
+
+                        return [
+                            'username' => $option['username'],
+                            'password' => $option['password'],
+                            'serviceTypeId' => 1,
+                            'merchantConfigurationId' => $option['merchant_id'],
+                            'localInvoiceId' => $order->get_meta('localInvoiceId', true, ''),
+                            'amountInRials' => $amount,
+                            'localDate' => (new \DateTime('Asia/Tehran'))->format('Ymd His'),
+                            'callbackURL' => $callback_url,
+                            'paymentId' => $order->get_id(),
+                            'additionalData' => '',
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option, $class) {
+
+                        return [
+                            'username' => $option['username'],
+                            'password' => $option['password'],
+                            'merchantConfigurationId' => $option['merchant_id'],
+                            'localInvoiceId' => $order->get_meta('localInvoiceId', true, ''),
+                        ];
+                    }
+                ]
             ],
             'saderat' => [
                 'title' => __('Saderat (Sepehr)', 'parsigate'),
