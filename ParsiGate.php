@@ -2,10 +2,10 @@
 /**
  * Plugin Name: Parsi Gate
  * Description: Persian Gateways for WordPress
- * Plugin URI:  https://site.com
+ * Plugin URI:  https://wp-parsi.com
  * Version:     1.0.0
  * Author:      Parsidate Teams
- * Author URI:  https://site.com
+ * Author URI:  https://wp-parsi.com
  * License:     MIT
  * Text Domain: parsigate
  * Domain Path: /languages
@@ -39,6 +39,7 @@ class ParsiGate
         register_deactivation_hook(__FILE__, [$this, 'register_deactivation_hook']);
         register_uninstall_hook(__FILE__, [__CLASS__, 'register_uninstall_hook']);
         add_action('plugins_loaded', [$this, 'plugins_loaded'], 20);
+        add_action('init', [$this, 'i18n']);
         add_action('wpp_init', [$this, 'wpp_init']);
     }
 
@@ -85,7 +86,6 @@ class ParsiGate
     {
         $this->define_constants();
         $this->includes();
-        $this->init_hooks();
         do_action('parsigate_loaded');
     }
 
@@ -150,7 +150,7 @@ class ParsiGate
         }
     }
 
-    public function init_hooks()
+    public function i18n()
     {
         load_plugin_textdomain('parsigate', false, wp_normalize_path(self::$plugin_path . '/languages'));
     }

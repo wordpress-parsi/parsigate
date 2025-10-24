@@ -40,7 +40,7 @@ class Option
         foreach ($tabs as $key => $title) {
             if ($key == 'tools') {
                 $raw['parsigate'] = sprintf(
-                    __('%s ParsiGate', 'wp-parsidate'),
+                    __('%s ParsiGate', 'parsigate'),
                     '<span class="dashicons dashicons-bank"></span>'
                 );
             }

@@ -153,7 +153,7 @@ class WC_Gateway extends \WC_Payment_Gateway
                     'type' => 'number',
                     'description' => sprintf(__('Minimum cart amount to display the gateway. Current currency: %s', 'parsigate'), get_woocommerce_currency_symbol()),
                     'default' => '',
-                    'placeholder' => __('Always display', 'parsigate'),
+                    'placeholder' => 'xxx',
                     'min' => 0,
                     'class' => 'pg-ltr-input'
                 ],
