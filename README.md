@@ -9,32 +9,30 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 
 ## Supported Gateways
 ### Bank Gateways
-- Parsian ✅
+- Parsian
 - Pasargad
-- Saman (Sep) ✅
-- Mellat (BehPardakht) ✅
-- Melli (Sadad) ✅
-- Asan Pardakht ✅
-- Saderat (Sepehr) ✅
-- Eghtesad Novin
-- Iran Kish ✅
-- Sepah
+- Saman (Sep)
+- Mellat (BehPardakht)
+- Melli (Sadad)
+- Asan Pardakht
+- Saderat (Sepehr)
+- Iran Kish
 
 ### Installment Gateways
-- SnappPay ✅
-- Tara ✅
-- DigiPay ✅
-- Azki Vam ✅
+- SnappPay
+- Tara
+- DigiPay
+- Azki Vam
 
 ### Intermediary Gateways
-- Zibal ✅
-- Zarinpal ✅
-- PayPing ✅
-- AghaPardakht ✅
-- Shepa ✅
+- Zibal
+- Zarinpal
+- PayPing
+- AghaPardakht
+- Shepa
 
 ### Test Gateway
-- Test payment gateway for development and debugging ✅
+- Test payment gateway for development and debugging
 
 ## Developer Guide
 
@@ -44,6 +42,12 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 $gateway = new \ParsiGate\Gateway($driver = 'zarinpal');
 $pay = $gateway->pay($params = []);
 $verify = $gateway->verify($params = []);
+```
+
+#### Get List of drivers
+
+```php
+$gateways = \ParsiGate\Gateways::list();
 ```
 
 ### How to add custom gateway
@@ -73,8 +77,9 @@ function new_define_gateway_parsigate($list)
         'website' => 'gateway-site.com',
         'logo' => 'https://gateway-site.com/logo.png',
         'type' => 'bank',
-        'usage' => ['woocommerce', 'gravity'],
+        'usage' => ['woocommerce'],
         'woocommerce' => [
+            'sandbox' => false,
             'settings' => [
                 'merchant_id' => [
                     'title' => __('Merchant ID', 'parsigate'),

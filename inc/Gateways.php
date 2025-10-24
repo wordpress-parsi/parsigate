@@ -6,7 +6,6 @@ use ParsiGate\gateways\AqayePardakht;
 use ParsiGate\gateways\AsanPardakht;
 use ParsiGate\gateways\Azkivam;
 use ParsiGate\gateways\DigiPay;
-use ParsiGate\gateways\EghtesadNovin;
 use ParsiGate\gateways\IranKish;
 use ParsiGate\gateways\Mellat;
 use ParsiGate\gateways\Melli;
@@ -15,7 +14,6 @@ use ParsiGate\gateways\Pasargad;
 use ParsiGate\gateways\PayPing;
 use ParsiGate\gateways\Saderat;
 use ParsiGate\gateways\Sep;
-use ParsiGate\gateways\Sepah;
 use ParsiGate\gateways\Shepa;
 use ParsiGate\gateways\SnappPay;
 use ParsiGate\gateways\Tara;
@@ -93,7 +91,93 @@ class Gateways
                 'class' => Pasargad::class,
                 'website' => 'pep.co.ir',
                 'type' => 'bank',
-                'usage' => ['woocommerce']
+                'usage' => ['woocommerce'],
+                'auth' => function ($option, $class, $args) {
+
+                    $tokens = new Tokens('pasargad');
+                    if (!$tokens->is_valid()) {
+
+                        $token = $class->call('token', [
+                            'username' => $option['username'],
+                            'password' => $option['password']
+                        ]);
+                        if ($token['success'] === false) {
+                            return new \WP_Error('invalid_token', $token['message']);
+                        }
+
+                        $access_token = $token['data']['access_token'];
+                        $tokens->store($access_token, MINUTE_IN_SECONDS * 10);
+                    } else {
+                        $access_token = $tokens->get_value();
+                    }
+
+                    return $access_token;
+                },
+                'woocommerce' => [
+                    'sandbox' => false,
+                    'settings' => [
+                        'terminal_id' => [
+                            'title' => __('Terminal No.', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __("Please enter the gateway terminal number.", "parsigate"),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'username' => [
+                            'title' => __('Username', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'password' => [
+                            'title' => __('Password', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway password.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
+
+                        $tokens = new Tokens('pasargad');
+
+                        $iranTime = new \DateTime('now', new \DateTimeZone('Asia/Tehran'));
+                        $invoiceDate = $iranTime->format("Y/m/d H:i:s");
+
+                        return [
+                            "access_token" => $tokens->get_value(),
+                            "amount" => $amount,
+                            "invoice" => time() . $order->get_id(),
+                            "invoiceDate" => $invoiceDate,
+                            "serviceCode" => 8,
+                            "serviceType" => 'PURCHASE',
+                            "callbackApi" => $callback_url,
+                            "payerMail" => '',
+                            "mobileNumber" => $order->get_billing_phone(),
+                            "terminalNumber" => $option['terminal_id']
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option, $class) {
+
+                        $invoiceId = ($_REQUEST['invoiceId'] ?? '');
+                        $status = ($_REQUEST['status'] ?? '');
+                        $referenceNumber = ($_REQUEST['referenceNumber'] ?? '');
+                        $trackId = ($_REQUEST['trackId'] ?? '');
+
+                        $tokens = new Tokens('pasargad');
+
+                        return [
+                            'access_token' => $tokens->get_value(),
+                            'invoiceId' => $invoiceId,
+                            'status' => $status,
+                            'referenceNumber' => $referenceNumber,
+                            'trackId' => $trackId
+                        ];
+                    }
+                ]
             ],
             'saman' => [
                 'title' => __('Saman (Sep)', 'parsigate'),
@@ -391,13 +475,6 @@ class Gateways
                     }
                 ]
             ],
-            'eghtesadnovin' => [
-                'title' => __('Eghtesad Novin', 'parsigate'),
-                'class' => EghtesadNovin::class,
-                'website' => 'enbank.ir',
-                'type' => 'bank',
-                'usage' => ['woocommerce']
-            ],
             'irankish' => [
                 'title' => __('Iran Kish', 'parsigate'),
                 'class' => IranKish::class,
@@ -473,13 +550,6 @@ class Gateways
                         ];
                     }
                 ]
-            ],
-            'sepah' => [
-                'title' => __('Sepah', 'parsigate'),
-                'class' => Sepah::class,
-                'website' => 'banksepah.ir',
-                'type' => 'bank',
-                'usage' => ['woocommerce']
             ],
 
             // Intermediary Gateway

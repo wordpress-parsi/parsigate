@@ -117,7 +117,6 @@ class ParsiGate
         require_once self::$plugin_path . '/inc/gateways/AsanPardakht.php';
         require_once self::$plugin_path . '/inc/gateways/Azkivam.php';
         require_once self::$plugin_path . '/inc/gateways/DigiPay.php';
-        require_once self::$plugin_path . '/inc/gateways/EghtesadNovin.php';
         require_once self::$plugin_path . '/inc/gateways/IranKish.php';
         require_once self::$plugin_path . '/inc/gateways/Mellat.php';
         require_once self::$plugin_path . '/inc/gateways/Melli.php';
@@ -126,7 +125,6 @@ class ParsiGate
         require_once self::$plugin_path . '/inc/gateways/PayPing.php';
         require_once self::$plugin_path . '/inc/gateways/Saderat.php';
         require_once self::$plugin_path . '/inc/gateways/Sep.php';
-        require_once self::$plugin_path . '/inc/gateways/Sepah.php';
         require_once self::$plugin_path . '/inc/gateways/Shepa.php';
         require_once self::$plugin_path . '/inc/gateways/SnappPay.php';
         require_once self::$plugin_path . '/inc/gateways/Tara.php';
