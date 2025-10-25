@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Parsi Gate\n"
-"POT-Creation-Date: 2025-10-24 12:25+0330\n"
-"PO-Revision-Date: 2025-10-24 12:25+0330\n"
+"POT-Creation-Date: 2025-10-25 08:50+0330\n"
+"PO-Revision-Date: 2025-10-25 08:51+0330\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fa_IR\n"
@@ -419,6 +419,11 @@ msgstr "شناسه سفارش نامعتبر می باشد."
 #: inc/WooCommerce.php:113
 msgid "Order Status is not pending payment."
 msgstr "وضعیت سفارش در انتظار پرداخت نمی باشد."
+
+#: inc/WooCommerce.php:138
+#, php-format
+msgid "Order ID: %d | By: %s | Site: %s"
+msgstr "سفارش: %d | خریدار: %s | سایت: %s"
 
 #: inc/custom-table/pg-log/LogAdminPage.php:169
 #: inc/custom-table/pg-log/LogListTable.php:210

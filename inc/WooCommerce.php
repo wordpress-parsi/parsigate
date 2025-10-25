@@ -135,7 +135,7 @@ class WooCommerce
         $domain = parse_url($site_url, PHP_URL_HOST);
 
         return apply_filters('parsigate_order_description_api', sprintf(
-            'Order ID: %d | By: %s | Site: %s',
+            __('Order ID: %d | By: %s | Site: %s', 'parsigate'),
             $order->get_order_number(),
             trim($name),
             ucfirst($domain)
