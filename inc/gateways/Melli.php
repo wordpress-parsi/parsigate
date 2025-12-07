@@ -22,7 +22,7 @@ class Melli extends Base
             'Amount' => $Amount,
             'SignData' => $SignData,
             'ReturnUrl' => $args['ReturnUrl'],
-            'LocalDateTime' => ($args['LocalDateTime'] ?? date("m/d/Y g:i:s a")),
+            'LocalDateTime' => ($args['LocalDateTime'] ?? gmdate("m/d/Y g:i:s a")),
             'OrderId' => $OrderId
         ];
 

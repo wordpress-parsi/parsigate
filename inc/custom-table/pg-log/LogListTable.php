@@ -115,11 +115,7 @@ class LogListTable extends \WP_List_Table
         $sql .= " LIMIT $per_page";
         $sql .= ' OFFSET ' . ($page_number - 1) * $per_page;
 
-        // Save Query
-        if (defined('WP_DEBUG') and WP_DEBUG === true) {
-            error_log($sql);
-        }
-
+        // Return
         return array_map([static::model(), 'prepare'], $wpdb->get_results($sql, ARRAY_A));
     }
 

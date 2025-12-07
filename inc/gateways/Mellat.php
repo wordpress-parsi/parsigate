@@ -20,8 +20,8 @@ class Mellat extends Base
             'userPassword' => $args['userPassword'],
             'orderId' => $args['orderId'],
             'amount' => $args['amount'],
-            'localDate' => ($args['localDate'] ?? date('Ymd')),
-            'localTime' => ($args['localTime'] ?? date('His')),
+            'localDate' => ($args['localDate'] ?? gmdate('Ymd')),
+            'localTime' => ($args['localTime'] ?? gmdate('His')),
             'additionalData' => $args['additionalData'],
             'callBackUrl' => $args['callBackUrl'],
             'payerId' => $args['payerId']

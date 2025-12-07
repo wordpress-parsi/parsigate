@@ -68,7 +68,7 @@ class Gateways
                         return [
                             'LoginAccount' => $option['merchant_id'],
                             'Amount' => $amount,
-                            'OrderId' => $order->get_id() . mt_rand(1, 10000),
+                            'OrderId' => $order->get_id() . wp_rand(1, 10000),
                             'CallBackUrl' => $callback_url,
                             'AdditionalData' => WooCommerce::get_order_description($order, 'parsian')
                         ];
@@ -273,8 +273,8 @@ class Gateways
                             'userPassword' => $option['password'],
                             'orderId' => $order->get_id(),
                             'amount' => $amount,
-                            'localDate' => date('Ymd'),
-                            'localTime' => date('His'),
+                            'localDate' => gmdate('Ymd'),
+                            'localTime' => gmdate('His'),
                             'additionalData' => WooCommerce::get_order_description($order, 'mellat'),
                             'callBackUrl' => $callback_url,
                             'payerId' => $order->get_customer_id()
@@ -346,7 +346,7 @@ class Gateways
                             'Key' => $option['key'],
                             'Amount' => $amount,
                             'ReturnUrl' => $callback_url,
-                            'LocalDateTime' => date("m/d/Y g:i:s a"),
+                            'LocalDateTime' => gmdate("m/d/Y g:i:s a"),
                             'OrderId' => $order->get_id()
                         ];
                     },
@@ -1117,7 +1117,7 @@ class Gateways
                             'amount' => $amount,
                             'redirect_uri' => $callback_url,
                             'fallback_uri' => $callback_url,
-                            'provider_id' => $order->get_id() . mt_rand(100000000, 999999999),
+                            'provider_id' => $order->get_id() . wp_rand(100000000, 999999999),
                             'mobile_number' => (!empty($mobile)) ? (preg_match('/^09[0-9]{9}/i', $mobile) ? $mobile : '') : '',
                             'items' => $items
                         ];

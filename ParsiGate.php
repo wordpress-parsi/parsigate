@@ -188,12 +188,13 @@ class ParsiGate
 
     public static function register_uninstall_hook()
     {
+        global $wpdb;
+
         // Delete gateway tokens option
         delete_option('pg_gateway_tokens');
 
         // Delete gateway log table
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'pg_log';
+        $table_name = esc_sql($wpdb->prefix . 'pg_log');
         $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %s", $table_name));
     }
 
