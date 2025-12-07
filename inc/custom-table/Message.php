@@ -89,8 +89,9 @@ class Message
            <div style="' . $style_extra . ' inline">' . $text . '</div>
         </div>
         ';
+
         if ($echo) {
-            echo esc_html($text);
+            echo wp_kses_post($text);
         } else {
             return $text;
         }

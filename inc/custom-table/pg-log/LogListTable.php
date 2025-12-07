@@ -473,6 +473,7 @@ class LogListTable extends \WP_List_Table
             } else {
 
                 $deleteItem = (isset($_REQUEST['ID']) ? self::delete_action(absint($_REQUEST['ID'])) : '');
+                $_REQUEST['ID'] = '';
                 Message::admin_notice_handler(
                     'success',
                     __("Items deleted.", "parsigate"),
@@ -492,6 +493,7 @@ class LogListTable extends \WP_List_Table
             if (is_array($item_ids) and count($item_ids) > 0) {
                 $logs = [];
                 foreach ($item_ids as $id) {
+                    // Delete Items
                     $deleteItem = self::delete_action($id);
 
                     /* translators: %d: Number of items to delete */
