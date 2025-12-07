@@ -461,8 +461,11 @@ class WC_Gateway extends \WC_Payment_Gateway
 
     public function handle_gateway_response()
     {
-        $action = $_GET['action'] ?? '';
-        $order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : 0;
+        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+        $action = (isset($_GET['action']) ? sanitize_text_field(wp_unslash($_GET['action'])) : '');
+        $order_id = (isset($_GET['order_id']) ? sanitize_text_field(intval($_GET['order_id'])) : 0);
+        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+
         $order = wc_get_order($order_id);
 
         switch ($action) {
@@ -478,7 +481,8 @@ class WC_Gateway extends \WC_Payment_Gateway
 
     public function redirect_to_gateway($order)
     {
-        $redirect_url = isset($_GET['url']) ? esc_url_raw(urldecode_deep($_GET['url'])) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+        $redirect_url = isset($_GET['url']) ? esc_url_raw(urldecode_deep(sanitize_text_field(wp_unslash($_GET['url'])))) : '';
         ?>
         <html lang="fa-IR">
         <head>
@@ -487,6 +491,7 @@ class WC_Gateway extends \WC_Payment_Gateway
         <body onload="document.forms['redirect'].submit()">
         <form name="redirect" method="post" action="<?php echo esc_html($redirect_url); ?>">
             <?php
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
             foreach ($_GET as $key => $value) {
                 if (in_array($key, ['wc-api', 'action', 'order_id', 'url'])) {
                     continue;

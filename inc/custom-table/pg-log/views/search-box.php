@@ -1,12 +1,12 @@
 <?php
-// Check Load Persian DatePicker If Exist
+// phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 $parsigate_has_persian_datepicker = false;
 $parsigate_search_fields = apply_filters('parsigate_admin_post_type_search_box_fields', array());
 
 // Get Search Input ID
 global $post_type, $pagenow;
 if (in_array($pagenow, ["admin.php", "edit.php", "tools.php"]) and !empty($_GET['page'])) {
-    $parsigate_search_input_id = trim($_GET['page']) . '-search-input';
+    $parsigate_search_input_id = sanitize_text_field(wp_unslash($_GET['page'])) . '-search-input';
 } elseif (!empty($post_type)) {
     $parsigate_search_input_id = 'post-search-input';
 } else {
@@ -18,7 +18,7 @@ if (in_array($pagenow, ["admin.php", "edit.php", "tools.php"]) and !empty($_GET[
         // Add Field To Search Box [@see https://developer.wordpress.org/reference/classes/wp_list_table/search_box/]
         $("input#<?php echo esc_html($parsigate_search_input_id); ?>").attr('autocomplete', 'off');
         $(`<select name="search-type" data-current-value="<?php if (isset($_REQUEST['s']) and !empty($_REQUEST['s'])) {
-            echo esc_html(trim($_REQUEST['s']));
+            echo esc_html(sanitize_text_field(wp_unslash($_REQUEST['s'])));
         } ?>">
         <?php
         $parsigate_search_fields = apply_filters('parsigate_admin_post_type_search_box_fields', array());
@@ -44,7 +44,7 @@ if (in_array($pagenow, ["admin.php", "edit.php", "tools.php"]) and !empty($_GET[
         }
         ?>
             <option <?php if(!empty($parsigate_choices)) { ?> data-selected='<?php echo esc_html( $parsigate_choices ); ?>' <?php } ?> data-type="<?php echo esc_html( $type ); ?>" value="<?php  echo esc_html( $parsigate_name ); ?>" <?php if (isset($_REQUEST['search-type'])) {
-            selected($_REQUEST['search-type'], $parsigate_name);
+            selected( sanitize_text_field(wp_unslash($_REQUEST['search-type'])) , $parsigate_name);
         } ?>><?php echo esc_html($title); ?></option>
             <?php
         }

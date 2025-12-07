@@ -47,8 +47,10 @@ class LogListTable extends \WP_List_Table
     public function sanitize_query_link(): void
     {
         foreach (array_merge(static::$query_filter, static::$query_search) as $key) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
             if (isset($_REQUEST[$key])) {
-                $_GET[$key] = $_REQUEST[$key];
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+                $_GET[$key] = sanitize_text_field(wp_unslash($_REQUEST[$key]));
             }
         }
     }
@@ -57,8 +59,10 @@ class LogListTable extends \WP_List_Table
     {
         // Setup Default Params
         foreach (array_merge(static::$query_filter, static::$query_search) as $key) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
             if (isset($_REQUEST[$key])) {
-                $args[$key] = $_REQUEST[$key];
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+                $args[$key] = sanitize_text_field(wp_unslash($_REQUEST[$key]));
             }
         }
 
@@ -104,18 +108,22 @@ class LogListTable extends \WP_List_Table
         }
 
         // Check Order By
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         if (!empty($_REQUEST['orderby'])) {
-            $sql .= ' ORDER BY ' . esc_sql($_REQUEST['orderby']);
+
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $sql .= ' ORDER BY ' . esc_sql(sanitize_text_field(wp_unslash($_REQUEST['orderby'])));
         } else {
             $sql .= ' ORDER BY `' . (static::model())::primary_key() . '`';
         }
 
         // Check Order
-        $sql .= !empty($_REQUEST['order']) ? ' ' . esc_sql($_REQUEST['order']) : ' DESC';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $sql .= !empty($_REQUEST['order']) ? ' ' . esc_sql(sanitize_text_field(wp_unslash($_REQUEST['order']))) : ' DESC';
         $sql .= " LIMIT $per_page";
         $sql .= ' OFFSET ' . ($page_number - 1) * $per_page;
 
-        // Return
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
         return array_map([static::model(), 'prepare'], $wpdb->get_results($sql, ARRAY_A));
     }
 
@@ -140,6 +148,7 @@ class LogListTable extends \WP_List_Table
             return $cached;
         }
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
         $result = $wpdb->get_var($sql);
         wp_cache_set($cache_key, $result, 'db_var', 3600);
 
@@ -148,23 +157,26 @@ class LogListTable extends \WP_List_Table
 
     public static function conditional_sql(): array
     {
-        // Where conditional
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended
         $where = [];
 
         // Check Search
-        if (!empty($_REQUEST['search-type']) and !empty($_REQUEST['s'])) {
+        if (isset($_REQUEST['search-type']) and !empty($_REQUEST['search-type']) and isset($_REQUEST['s']) and !empty($_REQUEST['s'])) {
 
             // Set Request URL
-            $_SERVER['REQUEST_URI'] = add_query_arg([
-                'search-type' => $_REQUEST['search-type'],
-                's' => $_REQUEST['s'],
-            ], $_SERVER['REQUEST_URI']);
+            if (isset($_SERVER['REQUEST_URI'])) {
+
+                $_SERVER['REQUEST_URI'] = add_query_arg([
+                    'search-type' => sanitize_text_field(wp_unslash($_REQUEST['search-type'])),
+                    's' => sanitize_text_field(wp_unslash($_REQUEST['s'])),
+                ], sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])));
+            }
 
             // Get search Input
-            $search = sanitize_text_field($_REQUEST['s']);
+            $search = sanitize_text_field(wp_unslash($_REQUEST['s']));
 
             // Setup Case Switch
-            switch (strtolower(trim($_REQUEST['search-type']))) {
+            switch (strtolower(sanitize_text_field(wp_unslash($_REQUEST['search-type'])))) {
 
                 case "ID":
                     $explodeIds = array_filter(array_map('trim', explode(",", $search)));
@@ -172,7 +184,7 @@ class LogListTable extends \WP_List_Table
                     break;
 
                 default:
-                    $where[] = "`" . trim($_REQUEST['search-type']) . "` = '{$search}'";
+                    $where[] = "`" . sanitize_text_field(wp_unslash($_REQUEST['search-type'])) . "` = '{$search}'";
                     break;
             }
         }
@@ -180,12 +192,12 @@ class LogListTable extends \WP_List_Table
         // Setup Filter Query
         foreach (self::$query_filter as $key) {
             if (isset($_REQUEST[$key]) and $_REQUEST[$key] != '') {
-                $search = sanitize_text_field($_REQUEST[$key]);
+                $search = sanitize_text_field(wp_unslash($_REQUEST[$key]));
                 $where[] = "`$key` = '{$search}'";
             }
         }
 
-        // Return
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
         return $where;
     }
 
@@ -421,6 +433,7 @@ class LogListTable extends \WP_List_Table
 
     public function search_box($text, $input_id): void
     {
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended
         if (empty($_REQUEST['s']) && !$this->has_items()) {
             return;
         }
@@ -428,22 +441,23 @@ class LogListTable extends \WP_List_Table
         $input_id = (empty($input_id) ? (static::pageClass())::page_slug() : $input_id) . '-search-input';
 
         if (!empty($_REQUEST['orderby'])) {
-            echo '<input type="hidden" name="orderby" value="' . esc_attr($_REQUEST['orderby']) . '" />';
+            echo '<input type="hidden" name="orderby" value="' . esc_attr(sanitize_text_field(wp_unslash($_REQUEST['orderby']))) . '" />';
         }
         if (!empty($_REQUEST['order'])) {
-            echo '<input type="hidden" name="order" value="' . esc_attr($_REQUEST['order']) . '" />';
+            echo '<input type="hidden" name="order" value="' . esc_attr(sanitize_text_field(wp_unslash($_REQUEST['order']))) . '" />';
         }
         ?>
 
         <p class="search-box">
-            <label class="screen-reader-text" for="<?php echo esc_attr($input_id); ?>"><?php echo esc_html($text); ?>:</label>
+            <label class="screen-reader-text" for="<?php echo esc_attr($input_id); ?>"><?php echo esc_html($text); ?>
+                :</label>
             <input type="search" placeholder="جستجو ..." id="<?php echo esc_attr($input_id); ?>" name="s"
                    value="<?php _admin_search_query(); ?>" autocomplete="off"/>
             <?php submit_button($text, 'button', false, false, array('id' => 'search-submit')); ?>
         </p>
 
         <?php
-
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
     }
 
     public function process_bulk_action(): void
@@ -452,13 +466,13 @@ class LogListTable extends \WP_List_Table
         // Row Action `Delete`
         if ('delete' === $this->current_action()) {
 
-            $nonce = esc_attr($_REQUEST['_wpnonce']);
+            $nonce = (isset($_REQUEST['_wpnonce']) ? sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])) : '');
             if (!wp_verify_nonce($nonce, 'delete_action_nonce')) {
 
                 wp_die(esc_html__("You are not Permission for this action.", "parsigate"));
             } else {
 
-                $deleteItem = self::delete_action(absint($_REQUEST['ID']));
+                $deleteItem = (isset($_REQUEST['ID']) ? self::delete_action(absint($_REQUEST['ID'])) : '');
                 Message::admin_notice_handler(
                     'success',
                     __("Items deleted.", "parsigate"),
@@ -472,9 +486,9 @@ class LogListTable extends \WP_List_Table
         }
 
         // Bulk Action `Delete`
-        if ((isset($_POST['action']) && $_POST['action'] == 'bulk-delete')) {
+        if (isset($_POST['action']) && $_POST['action'] == 'bulk-delete') {
 
-            $item_ids = esc_sql($_POST['bulk-ID']);
+            $item_ids = (isset($_POST['bulk-ID']) ? sanitize_text_field(wp_unslash($_POST['bulk-ID'])) : '');
             if (is_array($item_ids) and count($item_ids) > 0) {
                 $logs = [];
                 foreach ($item_ids as $id) {

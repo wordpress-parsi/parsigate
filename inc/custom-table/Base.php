@@ -60,6 +60,7 @@ class Base
             $args[$key] = json_encode($args[$key], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         $wpdb->insert(
             static::table(),
             $args
@@ -97,7 +98,7 @@ class Base
             $table_name = static::table();
             $primary_key = static::primary_key();
 
-            // Get Row
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM `" . esc_sql($table_name) . "` WHERE `" . esc_sql($primary_key) . "` = %d", $id), ARRAY_A);
             if (is_null($row)) {
                 return false;
@@ -168,6 +169,7 @@ class Base
                 $changed[$updated_at['name']] = $updated_at['value'];
             }
 
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $wpdb->update(
                 static::table(),
                 apply_filters('parsigate_update_data_' . static::table(), $changed, $item, $id),
@@ -203,6 +205,7 @@ class Base
 
         do_action('parsigate_before_delete_' . static::table(), $value, $column);
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->delete(
             static::table(),
             array(
@@ -312,7 +315,7 @@ class Base
             return $cache;
         }
 
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
         $results = $wpdb->get_results($sql, ARRAY_A);
 
         // Set Cache

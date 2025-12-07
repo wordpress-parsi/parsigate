@@ -78,8 +78,8 @@ class LogAdminPage extends Page
             add_thickbox();
 
             // Add Json Browse
-            wp_enqueue_style('pg-json-browse', \ParsiGate::$plugin_url . '/assets/json-browse/jquery.json-browse.css', array(), \ParsiGate::$plugin_version, 'all');
-            wp_enqueue_script('pg-json-browse', \ParsiGate::$plugin_url . '/assets/json-browse/jquery.json-browse.js', array('jquery'), \ParsiGate::$plugin_version, false);
+            wp_enqueue_style('parsigate-json-browser', \ParsiGate::$plugin_url . '/assets/json-browse/json-browse.css', array(), \ParsiGate::$plugin_version, 'all');
+            wp_enqueue_script('parsigate-json-browser', \ParsiGate::$plugin_url . '/assets/json-browse/json-browse.js', array('jquery'), \ParsiGate::$plugin_version, false);
         }
     }
 
@@ -98,6 +98,8 @@ class LogAdminPage extends Page
     public static function is_page(): bool
     {
         global $pagenow;
+
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
         return ($pagenow == "tools.php" and isset($_GET['page']) and $_GET['page'] == static::page_slug());
     }
 
@@ -110,6 +112,7 @@ class LogAdminPage extends Page
 
     public function screen_option(): void
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
         if (static::is_page() and empty($_GET['screen'])) {
 
             // Set Screen Option
@@ -144,7 +147,7 @@ class LogAdminPage extends Page
     public function page(): void
     {
 
-        // Admin List Table
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
         if (!isset($_GET['screen'])) {
 
             $table = $this->admin_list_table;
@@ -156,6 +159,7 @@ class LogAdminPage extends Page
 
     public function search_box_template(): void
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
         if (static::is_page() and empty($_GET['screen'])) {
             include \ParsiGate::$plugin_path . '/inc/custom-table/' . str_ireplace("_", "-", (static::model())::slug()) . '/views/search-box.php';
         }
@@ -163,6 +167,7 @@ class LogAdminPage extends Page
 
     public function search_box_field($list)
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
         if (static::is_page() and empty($_GET['screen'])) {
 
             $list = [

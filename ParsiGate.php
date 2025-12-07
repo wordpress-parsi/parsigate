@@ -35,11 +35,21 @@ class ParsiGate
 
     public function __construct()
     {
+        // Setup Default constant
+        $this->define_constants();
+
+        // Activation Hook
         register_activation_hook(__FILE__, [$this, 'register_activation_hook']);
         register_deactivation_hook(__FILE__, [$this, 'register_deactivation_hook']);
         register_uninstall_hook(__FILE__, [__CLASS__, 'register_uninstall_hook']);
+
+        // Plugin Loaded
         add_action('plugins_loaded', [$this, 'plugins_loaded'], 20);
+
+        // i18n
         add_action('init', [$this, 'i18n']);
+
+        // Wrap After ParsiDate
         add_action('wpp_init', [$this, 'wpp_init']);
     }
 
@@ -79,7 +89,6 @@ class ParsiGate
 
     public function wpp_init()
     {
-        $this->define_constants();
         $this->includes();
         do_action('parsigate_loaded');
     }
@@ -195,6 +204,8 @@ class ParsiGate
 
         // Delete gateway log table
         $table_name = esc_sql($wpdb->prefix . 'pg_log');
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
         $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %s", $table_name));
     }
 

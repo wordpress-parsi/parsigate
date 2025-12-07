@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Parsi Gate\n"
-"POT-Creation-Date: 2025-10-25 08:50+0330\n"
-"PO-Revision-Date: 2025-10-25 08:51+0330\n"
+"POT-Creation-Date: 2025-12-07 19:00+0330\n"
+"PO-Revision-Date: 2025-12-07 19:01+0330\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fa_IR\n"
@@ -34,7 +34,7 @@ msgid "install it directly"
 msgstr "دانلود بطور مستقیم"
 
 #. translators: 1: Plugin name in strong tag, 2: Download link, 3: Install link
-#: ParsiGate.php:77
+#: ParsiGate.php:76
 #, php-format
 msgid ""
 "For proper functionality of your plugin, the %1$s plugin is required. Please "
@@ -57,7 +57,7 @@ msgstr "درگاه واسط"
 msgid "Installment Gateway"
 msgstr "درگاه اعتباری"
 
-#: inc/Gateways.php:36 inc/Gateways.php:1294 inc/WooCommerce.php:122
+#: inc/Gateways.php:36 inc/Gateways.php:1322 inc/WooCommerce.php:124
 #: inc/templates/test-gateway.php:60
 msgid "Test Gateway"
 msgstr "درگاه تست"
@@ -66,229 +66,230 @@ msgstr "درگاه تست"
 msgid "Parsian"
 msgstr "پارسیان"
 
-#: inc/Gateways.php:53 inc/Gateways.php:241
+#: inc/Gateways.php:53 inc/Gateways.php:244
 msgid ""
 "Note: To activate the Gateway, the SoapClient module must be enabled in your "
 "host's PHP settings."
 msgstr ""
 "توجه: جهت فعال سازی این درگاه نیاز به ماژول SoapClient در PHP هاست خود دارید."
 
-#: inc/Gateways.php:58 inc/Gateways.php:326 inc/Gateways.php:377
-#: inc/Gateways.php:566 inc/Gateways.php:614 inc/Gateways.php:1172
+#: inc/Gateways.php:58 inc/Gateways.php:331 inc/Gateways.php:384
+#: inc/Gateways.php:577 inc/Gateways.php:628 inc/Gateways.php:1199
 msgid "Merchant ID"
 msgstr "کد درگاه"
 
-#: inc/Gateways.php:61 inc/Gateways.php:329 inc/Gateways.php:380
-#: inc/Gateways.php:569 inc/Gateways.php:617 inc/Gateways.php:1175
+#: inc/Gateways.php:61 inc/Gateways.php:334 inc/Gateways.php:387
+#: inc/Gateways.php:580 inc/Gateways.php:631 inc/Gateways.php:1202
 msgid "Please enter the gateway merchant id."
 msgstr "لطفا کد مرچنت درگاه خود را وارد نمایید."
 
-#: inc/Gateways.php:90
+#: inc/Gateways.php:89
 msgid "Pasargad"
 msgstr "پاسارگاد"
 
-#: inc/Gateways.php:120 inc/Gateways.php:192 inc/Gateways.php:246
-#: inc/Gateways.php:318 inc/Gateways.php:442 inc/Gateways.php:489
-#: inc/Gateways.php:1060
+#: inc/Gateways.php:119 inc/Gateways.php:193 inc/Gateways.php:249
+#: inc/Gateways.php:323 inc/Gateways.php:449 inc/Gateways.php:498
+#: inc/Gateways.php:1085
 msgid "Terminal No."
 msgstr "شماره ترمینال."
 
-#: inc/Gateways.php:123 inc/Gateways.php:195 inc/Gateways.php:249
-#: inc/Gateways.php:321 inc/Gateways.php:446 inc/Gateways.php:492
-#: inc/Gateways.php:1063
+#: inc/Gateways.php:122 inc/Gateways.php:196 inc/Gateways.php:252
+#: inc/Gateways.php:326 inc/Gateways.php:453 inc/Gateways.php:501
+#: inc/Gateways.php:1088
 msgid "Please enter the gateway terminal number."
 msgstr "لطفا شناسه ترمینال درگاه خود را وارد نمایید."
 
-#: inc/Gateways.php:128 inc/Gateways.php:254 inc/Gateways.php:385
-#: inc/Gateways.php:857 inc/Gateways.php:987 inc/Gateways.php:1180
+#: inc/Gateways.php:127 inc/Gateways.php:257 inc/Gateways.php:392
+#: inc/Gateways.php:881 inc/Gateways.php:1011 inc/Gateways.php:1207
 msgid "Username"
 msgstr "نام کاربری"
 
-#: inc/Gateways.php:135 inc/Gateways.php:261 inc/Gateways.php:393
-#: inc/Gateways.php:497 inc/Gateways.php:865 inc/Gateways.php:995
-#: inc/Gateways.php:1188
+#: inc/Gateways.php:134 inc/Gateways.php:264 inc/Gateways.php:400
+#: inc/Gateways.php:506 inc/Gateways.php:889 inc/Gateways.php:1019
+#: inc/Gateways.php:1215
 msgid "Password"
 msgstr "رمز عبور"
 
-#: inc/Gateways.php:138 inc/Gateways.php:396 inc/Gateways.php:500
-#: inc/Gateways.php:868 inc/Gateways.php:998 inc/Gateways.php:1191
+#: inc/Gateways.php:137 inc/Gateways.php:403 inc/Gateways.php:509
+#: inc/Gateways.php:892 inc/Gateways.php:1022 inc/Gateways.php:1218
 msgid "Please enter the gateway password."
 msgstr "لطفا رمز عبور درگاه خود را وارد کنید."
 
-#: inc/Gateways.php:183
+#: inc/Gateways.php:184
 msgid "Saman (Sep)"
 msgstr "سامان (سپ)"
 
-#: inc/Gateways.php:236
+#: inc/Gateways.php:239
 msgid "Mellat (BehPardakht)"
 msgstr "ملت (به پرداخت)"
 
-#: inc/Gateways.php:308
+#: inc/Gateways.php:313
 msgid "Melli (Sadad)"
 msgstr "ملی (سداد)"
 
-#: inc/Gateways.php:313 inc/Gateways.php:484 inc/Gateways.php:1055
+#: inc/Gateways.php:318 inc/Gateways.php:493 inc/Gateways.php:1080
 msgid ""
 "Note: To activate the Gateway, the OpenSSL module must be enabled in your "
 "host's PHP settings."
 msgstr ""
 "توجه: جهت فعال سازی این درگاه نیاز به ماژول OpenSSL در PHP هاست خود دارید."
 
-#: inc/Gateways.php:334
+#: inc/Gateways.php:339
 msgid "Gateway Key"
 msgstr "کلید درگاه"
 
-#: inc/Gateways.php:368
+#: inc/Gateways.php:375
 msgid "Asan Pardakht"
 msgstr "آسان پرداخت"
 
-#: inc/Gateways.php:388 inc/Gateways.php:860 inc/Gateways.php:990
-#: inc/Gateways.php:1183
+#: inc/Gateways.php:395 inc/Gateways.php:884 inc/Gateways.php:1014
+#: inc/Gateways.php:1210
 msgid "Please enter the gateway username."
 msgstr "لطفا نام کاربری درگاه خود را وارد کنید."
 
-#: inc/Gateways.php:433
+#: inc/Gateways.php:440
 msgid "Saderat (Sepehr)"
 msgstr "صادرات (سپهر)"
 
-#: inc/Gateways.php:479
+#: inc/Gateways.php:488
 msgid "Iran Kish"
 msgstr "ایران کیش"
 
-#: inc/Gateways.php:505
+#: inc/Gateways.php:514
 msgid "Acceptor Id"
 msgstr "کلید پذیرنده"
 
-#: inc/Gateways.php:508
+#: inc/Gateways.php:517
 msgid "Please enter the gateway acceptor Id."
 msgstr "لطفا کلید پذیرنده درگاه را وارد کنید."
 
-#: inc/Gateways.php:513
+#: inc/Gateways.php:522
 msgid "Public Key"
 msgstr "کلید عمومی"
 
-#: inc/Gateways.php:516
+#: inc/Gateways.php:525
 msgid "Please enter the gateway public key."
 msgstr "لطفا کلید عمومی درگاه خود را وارد کنید."
 
-#: inc/Gateways.php:557
+#: inc/Gateways.php:568
 msgid "ZarinPal"
 msgstr "زرین پال"
 
-#: inc/Gateways.php:605
+#: inc/Gateways.php:619
 msgid "Zibal"
 msgstr "زیبال"
 
-#: inc/Gateways.php:650
+#: inc/Gateways.php:666
 msgid "PayPing"
 msgstr "پی پینگ"
 
-#: inc/Gateways.php:658
+#: inc/Gateways.php:674
 msgid "Token"
 msgstr "توکن"
 
-#: inc/Gateways.php:718
+#: inc/Gateways.php:738
 msgid "AqayePardakht"
 msgstr "آقای پرداخت"
 
-#: inc/Gateways.php:727
+#: inc/Gateways.php:747
 msgid "Pin"
 msgstr "پین"
 
-#: inc/Gateways.php:763
+#: inc/Gateways.php:785
 msgid "Shepa"
 msgstr "شپا"
 
-#: inc/Gateways.php:772
+#: inc/Gateways.php:794
 msgid "API Token"
 msgstr "توکن وب سرویس"
 
-#: inc/Gateways.php:809
+#: inc/Gateways.php:833
 msgid "SnappPay"
 msgstr "اسنپ پی"
 
-#: inc/Gateways.php:841 inc/Gateways.php:971
+#: inc/Gateways.php:865 inc/Gateways.php:995
 msgid "Client ID"
 msgstr "شناسه کلاینت"
 
-#: inc/Gateways.php:844 inc/Gateways.php:974
+#: inc/Gateways.php:868 inc/Gateways.php:998
 msgid "Please enter the gateway client id."
 msgstr "لطفا شناسه کلایت درگاه خود را وارد کنید."
 
-#: inc/Gateways.php:849 inc/Gateways.php:979
+#: inc/Gateways.php:873 inc/Gateways.php:1003
 msgid "Client Secret"
 msgstr "کلید خصوصی کلاینت"
 
-#: inc/Gateways.php:852 inc/Gateways.php:982
+#: inc/Gateways.php:876 inc/Gateways.php:1006
 msgid "Please enter the gateway client secret."
 msgstr "لطفا کلید خصوصی کلاینت خود را وارد کنید."
 
-#: inc/Gateways.php:878 inc/Gateways.php:1201
+#: inc/Gateways.php:902 inc/Gateways.php:1228
 msgid "mobile is required !"
 msgstr "موبایل الزامی هست !"
 
-#: inc/Gateways.php:938
+#: inc/Gateways.php:962
 msgid "DigiPay"
 msgstr "دیجی پی"
 
-#: inc/Gateways.php:1050
+#: inc/Gateways.php:1075
 msgid "Azkivam"
 msgstr "از کی وام"
 
-#: inc/Gateways.php:1068
+#: inc/Gateways.php:1093
 msgid "API Key"
 msgstr "کلید وب سرویس"
 
-#: inc/Gateways.php:1071
+#: inc/Gateways.php:1096
 msgid "Please enter the gateway api key."
 msgstr "لطفا کلید وب سرویس درگاه را وارد کنید."
 
-#: inc/Gateways.php:1076
+#: inc/Gateways.php:1101
 msgid "API Url"
 msgstr "آدرس وب سرویس"
 
-#: inc/Gateways.php:1079
+#: inc/Gateways.php:1104
 msgid "Please enter the gateway api url."
 msgstr "لطفا آدرس وب سرویس درگاه را وارد کنید."
 
-#: inc/Gateways.php:1105 inc/Gateways.php:1240
+#: inc/Gateways.php:1130 inc/Gateways.php:1267
 msgid "Shipping Cost"
 msgstr "هزینه حمل و نقل"
 
-#: inc/Gateways.php:1141
+#: inc/Gateways.php:1168
 msgid "Tara"
 msgstr "تارا"
 
-#: inc/Gateways.php:1224
+#: inc/Gateways.php:1251
 msgid "Buy online from: "
 msgstr "خرید آنلاین از: "
 
-#: inc/Gateways.php:1230
+#: inc/Gateways.php:1257
 msgid "Other"
 msgstr "دیگر"
 
-#: inc/Gateways.php:1246
+#: inc/Gateways.php:1273
 msgid "Shipping"
 msgstr "هزینه حمل و نقل"
 
+#. translators: %s: Dashicon HTML for ParsiGate logo
 #: inc/Option.php:43
 #, php-format
 msgid "%s ParsiGate"
 msgstr "%s پارسی گیت"
 
-#: inc/Option.php:72 inc/custom-table/pg-log/Log.php:24
+#: inc/Option.php:70 inc/custom-table/pg-log/Log.php:24
 msgid "ParsiGate Log"
 msgstr "لاگ پارسی گیت"
 
-#: inc/Option.php:75 inc/WC_Gateway.php:131
+#: inc/Option.php:73 inc/WC_Gateway.php:137
 msgid "Yes"
 msgstr "آری"
 
-#: inc/Option.php:76 inc/WC_Gateway.php:130
+#: inc/Option.php:74 inc/WC_Gateway.php:136
 msgid "No"
 msgstr "خیر"
 
-#: inc/Option.php:79
+#: inc/Option.php:77
 msgid "Show Logs"
 msgstr "نمایش لاگ"
 
@@ -300,52 +301,55 @@ msgstr "درگاه پرداخت (بوسیله پارسی گیت)"
 msgid "Enabled/Disabled"
 msgstr "فعال / غیر فعال"
 
-#: inc/WC_Gateway.php:99
+#. translators: %s: Gateway method title
+#: inc/WC_Gateway.php:100
 #, php-format
 msgid "Activate or deactivate %s gateway"
 msgstr "فعال سازی یا غیر فعال سازی %s درگاه"
 
-#: inc/WC_Gateway.php:104
+#: inc/WC_Gateway.php:105
 msgid "Gateway title"
 msgstr "عنوان نمایشی درگاه"
 
-#: inc/WC_Gateway.php:106
+#: inc/WC_Gateway.php:107
 msgid "This name is displayed to the customer during the purchase process"
 msgstr "لطفا عنوان نمایشی برای این درگاه در صفحه پرداخت ووکامرس وارد نمایید"
 
-#: inc/WC_Gateway.php:110
+#: inc/WC_Gateway.php:111
 msgid "Gateway description"
 msgstr "توضیحات نمایشی درگاه"
 
-#: inc/WC_Gateway.php:112
+#: inc/WC_Gateway.php:113
 msgid ""
 "The description that will be displayed during the purchase process for the "
 "gateway"
 msgstr "لطفا توضیحات نمایشی برای این درگاه در صفحه پرداخت ووکامرس وارد نمایید"
 
-#: inc/WC_Gateway.php:113
+#. translators: %s: Gateway name for credit/installment payments
+#: inc/WC_Gateway.php:116
 #, php-format
 msgid "Credit and installment payments through %s"
 msgstr "پرداخت اقساط و اعتباری منطبق بر %s"
 
-#: inc/WC_Gateway.php:113
+#. translators: %s: Payment gateway name for Shetab card payments
+#: inc/WC_Gateway.php:118
 #, php-format
 msgid "Secure payment by all Shetab's cards through %s"
 msgstr "پرداخت توسط تمامی کرات های عضو شتاب بانکی بوسیله %s"
 
-#: inc/WC_Gateway.php:123
+#: inc/WC_Gateway.php:129
 msgid "Sandbox"
 msgstr "حالت تست"
 
-#: inc/WC_Gateway.php:126
+#: inc/WC_Gateway.php:132
 msgid "is Enable SandBox?"
 msgstr "آیا حالت تست فعال باشد؟"
 
-#: inc/WC_Gateway.php:138
+#: inc/WC_Gateway.php:144
 msgid "Payment failed message"
 msgstr "پیام در زمان پرداخت ناموفق"
 
-#: inc/WC_Gateway.php:140
+#: inc/WC_Gateway.php:146
 msgid ""
 "Enter the text of the message you want to display to the user after an "
 "unsuccessful payment."
@@ -353,37 +357,38 @@ msgstr ""
 "لطفا متنی را که مشتریان بعد از پرداخت ناموفق در صفحه بازگشت از درگاه مشاهده "
 "می کنند را وارد نمایید."
 
-#: inc/WC_Gateway.php:141
+#: inc/WC_Gateway.php:147
 msgid ""
 "Your payment has failed. Please try again or contact us in case of problems."
 msgstr ""
 "پرداخت شما ناموفق بوده است ، لطفا مجدد تلاش کنید یا موضوع را به پشتیبان سایت "
 "در میان بگذارید."
 
-#: inc/WC_Gateway.php:144
+#: inc/WC_Gateway.php:150
 msgid "Display for User Roles"
 msgstr "نمایش برای نقش های کاربری"
 
-#: inc/WC_Gateway.php:147
+#: inc/WC_Gateway.php:153
 msgid "Gateway will only be displayed for selected user roles."
 msgstr "این درگاه تنها برای نقش هایی که انتخاب می کنید نمایش داده شود."
 
-#: inc/WC_Gateway.php:152
+#: inc/WC_Gateway.php:158
 msgid "Minimum Cart Amount"
 msgstr "حداقل مبلغ سبد خرید"
 
-#: inc/WC_Gateway.php:154
+#. translators: %s: Current currency symbol (e.g. $, €, ﷼)
+#: inc/WC_Gateway.php:161
 #, php-format
 msgid "Minimum cart amount to display the gateway. Current currency: %s"
 msgstr ""
 "این درگاه تنها برای سبد های خریدی با حداقل مبلغ خرید ذکر شده نمایش داده "
 "خواهد شد. واحد پولی شما: %s"
 
-#: inc/WC_Gateway.php:161
+#: inc/WC_Gateway.php:168
 msgid "Allowed Products Categories"
 msgstr "دسته بندی محصولات ووکامرس"
 
-#: inc/WC_Gateway.php:164
+#: inc/WC_Gateway.php:171
 msgid ""
 "Gateway will only be displayed if cart contains products from selected "
 "categories."
@@ -391,11 +396,11 @@ msgstr ""
 "این درگاه پرداخت تنها برای سبد های خریدی که شامل محصولاتی در این دسته بندی "
 "ها باشد نمایش داده خواهد شد."
 
-#: inc/WC_Gateway.php:169
+#: inc/WC_Gateway.php:176
 msgid "Product IDs"
 msgstr "شناسه محصولات ووکامرس"
 
-#: inc/WC_Gateway.php:171
+#: inc/WC_Gateway.php:178
 msgid ""
 "Enter product IDs separated by commas. Gateway will be displayed only if ALL "
 "products in cart are from this list."
@@ -403,114 +408,117 @@ msgstr ""
 "این درگاه پرداخت تنها برای سبد های خریدی که شامل این لیست از شناسه محصولات "
 "باشد نمایش داده خواهد شد."
 
-#: inc/WC_Gateway.php:173
+#: inc/WC_Gateway.php:180
 msgid "e.g., 123, 456, 789"
 msgstr "به عنوان مثال: 123,265,4595"
 
-#: inc/WC_Gateway.php:554
+#. translators: %s: Transaction ID number
+#: inc/WC_Gateway.php:567
 #, php-format
 msgid "Payment Success, Transaction ID: %s"
 msgstr "پرداخت موفق, شناسه تراکنش: %s"
 
-#: inc/WooCommerce.php:109
+#: inc/WooCommerce.php:111
 msgid "Order ID is Invalid."
 msgstr "شناسه سفارش نامعتبر می باشد."
 
-#: inc/WooCommerce.php:113
+#: inc/WooCommerce.php:115
 msgid "Order Status is not pending payment."
 msgstr "وضعیت سفارش در انتظار پرداخت نمی باشد."
 
-#: inc/WooCommerce.php:138
+#. translators: 1: Order number, 2: Customer name, 3: Website domain
+#: inc/WooCommerce.php:140
 #, php-format
-msgid "Order ID: %d | By: %s | Site: %s"
-msgstr "سفارش: %d | خریدار: %s | سایت: %s"
+msgid "Order ID: %1$d | By: %2$s | Site: %3$s"
+msgstr "سفارش: %1$d | خریدار: %2$s | سایت: %3$s"
 
-#: inc/custom-table/pg-log/LogAdminPage.php:169
-#: inc/custom-table/pg-log/LogListTable.php:210
+#: inc/custom-table/pg-log/LogAdminPage.php:174
+#: inc/custom-table/pg-log/LogListTable.php:218
 msgid "ID"
 msgstr "شناسه"
 
-#: inc/custom-table/pg-log/LogAdminPage.php:171
-#: inc/custom-table/pg-log/LogListTable.php:211
+#: inc/custom-table/pg-log/LogAdminPage.php:176
+#: inc/custom-table/pg-log/LogListTable.php:219
 msgid "Gateway"
 msgstr "درگاه"
 
-#: inc/custom-table/pg-log/LogAdminPage.php:176
-#: inc/custom-table/pg-log/LogListTable.php:214
+#: inc/custom-table/pg-log/LogAdminPage.php:181
+#: inc/custom-table/pg-log/LogListTable.php:222
 msgid "Type"
 msgstr "نوع"
 
-#: inc/custom-table/pg-log/LogAdminPage.php:180
-#: inc/custom-table/pg-log/LogListTable.php:212
+#: inc/custom-table/pg-log/LogAdminPage.php:185
+#: inc/custom-table/pg-log/LogListTable.php:220
 msgid "Status Code"
 msgstr "کد وضعیت"
 
-#: inc/custom-table/pg-log/LogListTable.php:203
+#: inc/custom-table/pg-log/LogListTable.php:211
 msgid "Empty gateways log list."
 msgstr "لیست لاگ درگاه خالی می باشد."
 
-#: inc/custom-table/pg-log/LogListTable.php:213
+#: inc/custom-table/pg-log/LogListTable.php:221
 msgid "Url"
 msgstr "آدرس"
 
-#: inc/custom-table/pg-log/LogListTable.php:215
+#: inc/custom-table/pg-log/LogListTable.php:223
 msgid "Request"
 msgstr "درخواست"
 
-#: inc/custom-table/pg-log/LogListTable.php:216
+#: inc/custom-table/pg-log/LogListTable.php:224
 msgid "Created at"
 msgstr "تاریخ ایجاد"
 
-#: inc/custom-table/pg-log/LogListTable.php:236
+#: inc/custom-table/pg-log/LogListTable.php:244
 msgid "Are you sure?"
 msgstr "آیا مطمئن هستید؟"
 
-#: inc/custom-table/pg-log/LogListTable.php:242
-#: inc/custom-table/pg-log/LogListTable.php:422
+#: inc/custom-table/pg-log/LogListTable.php:250
+#: inc/custom-table/pg-log/LogListTable.php:430
 msgid "Delete"
 msgstr "حذف"
 
-#: inc/custom-table/pg-log/LogListTable.php:279
+#: inc/custom-table/pg-log/LogListTable.php:287
 msgid "ago"
 msgstr "پیش"
 
-#: inc/custom-table/pg-log/LogListTable.php:299
+#: inc/custom-table/pg-log/LogListTable.php:307
 msgid "Send: "
 msgstr "ارسال: "
 
-#: inc/custom-table/pg-log/LogListTable.php:311
-#: inc/custom-table/pg-log/LogListTable.php:338
-#: inc/custom-table/pg-log/LogListTable.php:367
+#: inc/custom-table/pg-log/LogListTable.php:319
+#: inc/custom-table/pg-log/LogListTable.php:346
+#: inc/custom-table/pg-log/LogListTable.php:375
 msgid "Close"
 msgstr "بستن"
 
-#: inc/custom-table/pg-log/LogListTable.php:325
-#: inc/custom-table/pg-log/LogListTable.php:352
-#: inc/custom-table/pg-log/LogListTable.php:381
+#: inc/custom-table/pg-log/LogListTable.php:333
+#: inc/custom-table/pg-log/LogListTable.php:360
+#: inc/custom-table/pg-log/LogListTable.php:389
 msgid "Show"
 msgstr "نمایش"
 
-#: inc/custom-table/pg-log/LogListTable.php:331
+#: inc/custom-table/pg-log/LogListTable.php:339
 msgid "Header: "
 msgstr "هدر: "
 
-#: inc/custom-table/pg-log/LogListTable.php:356
+#: inc/custom-table/pg-log/LogListTable.php:364
 msgid "Response: "
 msgstr "خروجی: "
 
-#: inc/custom-table/pg-log/LogListTable.php:407
+#: inc/custom-table/pg-log/LogListTable.php:415
 msgid "All"
 msgstr "همه"
 
-#: inc/custom-table/pg-log/LogListTable.php:462
+#: inc/custom-table/pg-log/LogListTable.php:472
 msgid "You are not Permission for this action."
 msgstr "شما حق دسترسی برای اجرای این عملیات ندارید."
 
-#: inc/custom-table/pg-log/LogListTable.php:468
+#: inc/custom-table/pg-log/LogListTable.php:478
 msgid "Items deleted."
 msgstr "آیتم ها حذف شده اند."
 
-#: inc/custom-table/pg-log/LogListTable.php:486
+#. translators: %d: Number of items to delete
+#: inc/custom-table/pg-log/LogListTable.php:498
 #, php-format
 msgid "Delete %d Id Items"
 msgstr "آیتم با شناسه %d حذف شد"

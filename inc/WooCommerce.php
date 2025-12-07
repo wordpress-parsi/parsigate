@@ -99,10 +99,12 @@ class WooCommerce
 
     public function test_gateway_page()
     {
+        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
         if (isset($_GET[self::$test_gateway_query]) and is_numeric($_GET[self::$test_gateway_query]) and !empty($_GET['callback_url'])) {
 
-            $callback_url = urldecode_deep($_GET['callback_url']);
-            $order_id = absint($_GET[self::$test_gateway_query]);
+            $callback_url = urldecode_deep(sanitize_text_field(wp_unslash($_GET['callback_url'])));
+            $order_id = sanitize_text_field(absint($_GET[self::$test_gateway_query]));
+            // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
             $order = wc_get_order($order_id);
             if (!$order) {
@@ -132,7 +134,7 @@ class WooCommerce
         }
 
         $site_url = get_option('siteurl');
-        $domain = parse_url($site_url, PHP_URL_HOST);
+        $domain = wp_parse_url($site_url, PHP_URL_HOST);
 
         /* translators: 1: Order number, 2: Customer name, 3: Website domain */
         $text = sprintf(__('Order ID: %1$d | By: %2$s | Site: %3$s', 'parsigate'), $order->get_order_number(), trim($name), ucfirst($domain));
@@ -141,6 +143,7 @@ class WooCommerce
 
     public function admin_head()
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
         if (isset($_GET['page']) and $_GET['page'] === 'wc-settings' and isset($_GET['tab']) and $_GET['tab'] === 'checkout') {
             ?>
             <style>

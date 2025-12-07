@@ -35,7 +35,7 @@ class Utility
 
         // Cloudflare
         if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
-            return sanitize_text_field(wp_unslash(trim($_SERVER['HTTP_CF_CONNECTING_IP'])));
+            return sanitize_text_field(wp_unslash($_SERVER['HTTP_CF_CONNECTING_IP']));
         }
 
         $headers = [
