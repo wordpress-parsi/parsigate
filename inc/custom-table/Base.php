@@ -238,7 +238,7 @@ class Base
         return apply_filters('ct_prepare_' . static::table(), $item);
     }
 
-    public static function list($arg = []): array|object
+    public static function list($arg = [])
     {
         global $wpdb;
 
