@@ -25,7 +25,7 @@ class LogAdminPage extends Page
         add_action('admin_enqueue_scripts', array($this, 'admin_assets'));
 
         // Search Box
-        add_filter('admin_post_type_search_box_fields', [$this, 'search_box_field']);
+        add_filter('parsigate_admin_post_type_search_box_fields', [$this, 'search_box_field']);
         add_action('admin_footer', [$this, 'search_box_template']);
 
         // Handler

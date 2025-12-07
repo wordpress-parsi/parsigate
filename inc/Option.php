@@ -39,10 +39,8 @@ class Option
         $raw = [];
         foreach ($tabs as $key => $title) {
             if ($key == 'tools') {
-                $raw['parsigate'] = sprintf(
-                    __('%s ParsiGate', 'parsigate'),
-                    '<span class="dashicons dashicons-bank"></span>'
-                );
+                /* translators: %s: Dashicon HTML for ParsiGate logo */
+                $raw['parsigate'] = sprintf(__('%s ParsiGate', 'parsigate'), '<span class="dashicons dashicons-bank"></span>');
             }
             $raw[$key] = $title;
         }
@@ -79,7 +77,7 @@ class Option
             'desc' => (Option::enable_log() ? '<a href="' . add_query_arg(['page' => 'pg_log'], admin_url('tools.php')) . '" target="_blank">(' . __("Show Logs", "parsigate") . ')</a>' : '')
         );
 
-        $settings['parsigate'] = apply_filters('wpp_patsigate_settings', $options);
+        $settings['parsigate'] = apply_filters('parsigate_settings', $options);
         return $settings;
     }
 

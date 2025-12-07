@@ -1,13 +1,13 @@
 <div class="wrap">
     <h1 class="wp-heading-inline">
-        <?php echo $title; ?>
+        <?php echo esc_html($title); ?>
     </h1>
     <?php
     if (!empty($buttons)) {
-        foreach ($buttons as $button) {
+        foreach ($buttons as $parsigate_btn) {
             ?>
-            <a href="<?php echo $button['link']; ?>"
-               class="page-title-action"><?php echo $button['name']; ?></a>
+            <a href="<?php echo esc_url($parsigate_btn['link']); ?>"
+               class="page-title-action"><?php echo esc_html($parsigate_btn['name']); ?></a>
             <?php
         }
     }
@@ -18,9 +18,9 @@
             <div>
                 <div class="meta-box-sortables ui-sortable">
                     <?php $table->views(); ?>
-                    <form method="post" action="<?php echo remove_query_arg(array('alert')); ?>">
+                    <form method="post" action="<?php echo esc_url(remove_query_arg(array('alert'))); ?>">
                         <?php
-                        $table->search_box(__("Search"), '');
+                        $table->search_box(__("Search", "parsigate"), '');
                         $table->display();
                         ?>
                     </form>

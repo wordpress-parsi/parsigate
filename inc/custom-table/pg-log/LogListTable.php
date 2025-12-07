@@ -200,7 +200,7 @@ class LogListTable extends \WP_List_Table
 
     public function no_items(): void
     {
-        _e('Empty gateways log list.', 'parsigate');
+        esc_html_e('Empty gateways log list.', 'parsigate');
     }
 
     public function get_columns(): array
@@ -304,17 +304,17 @@ class LogListTable extends \WP_List_Table
 
                     add_action('admin_footer', function () use ($item) {
                         ?>
-                        <div class="pg-log-json-pre-area" id="body_<?php echo $item['ID']; ?>">
+                        <div class="pg-log-json-pre-area" id="body_<?php echo absint($item['ID']); ?>">
                             <pre class="json-body"></pre>
                             <div class="pg-log-json-pre-area__close">
                                 <a href="#" class="button">
-                                    <?php echo __('Close', 'parsigate'); ?>
+                                    <?php esc_html_e('Close', 'parsigate'); ?>
                                 </a>
                             </div>
                         </div>
                         <script>
                             jQuery(document).ready(function () {
-                                jQuery("#body_<?php echo $item['ID']; ?> pre").jsonBrowse(<?php echo json_encode($item['body'], JSON_PRETTY_PRINT); ?>, {
+                                jQuery("#body_<?php echo absint($item['ID']); ?> pre").jsonBrowse(<?php echo json_encode($item['body'], JSON_PRETTY_PRINT); ?>, {
                                     collapsed: false,
                                     withQuotes: false
                                 });
@@ -331,17 +331,17 @@ class LogListTable extends \WP_List_Table
                     $text .= __('Header: ', 'parsigate');
                     add_action('admin_footer', function () use ($item) {
                         ?>
-                        <div class="pg-log-json-pre-area" id="header_<?php echo $item['ID']; ?>">
+                        <div class="pg-log-json-pre-area" id="header_<?php echo absint($item['ID']); ?>">
                             <pre class="json-body"></pre>
                             <div class="pg-log-json-pre-area__close">
                                 <a href="#" class="button">
-                                    <?php echo __('Close', 'parsigate'); ?>
+                                    <?php esc_html_e('Close', 'parsigate'); ?>
                                 </a>
                             </div>
                         </div>
                         <script>
                             jQuery(document).ready(function () {
-                                jQuery("#header_<?php echo $item['ID']; ?> pre").jsonBrowse(<?php echo json_encode($item['header'], JSON_PRETTY_PRINT); ?>, {
+                                jQuery("#header_<?php echo absint($item['ID']); ?> pre").jsonBrowse(<?php echo json_encode($item['header'], JSON_PRETTY_PRINT); ?>, {
                                     collapsed: false,
                                     withQuotes: false
                                 });
@@ -360,17 +360,17 @@ class LogListTable extends \WP_List_Table
                 } else {
                     add_action('admin_footer', function () use ($item) {
                         ?>
-                        <div class="pg-log-json-pre-area" id="response_<?php echo $item['ID']; ?>">
+                        <div class="pg-log-json-pre-area" id="response_<?php echo absint($item['ID']); ?>">
                             <pre class="json-body"></pre>
                             <div class="pg-log-json-pre-area__close">
                                 <a href="#" class="button">
-                                    <?php echo __('Close', 'parsigate'); ?>
+                                    <?php esc_html_e('Close', 'parsigate'); ?>
                                 </a>
                             </div>
                         </div>
                         <script>
                             jQuery(document).ready(function () {
-                                jQuery("#response_<?php echo $item['ID']; ?> pre").jsonBrowse(<?php echo json_encode($item['response'], JSON_PRETTY_PRINT); ?>, {
+                                jQuery("#response_<?php echo absint($item['ID']); ?> pre").jsonBrowse(<?php echo json_encode($item['response'], JSON_PRETTY_PRINT); ?>, {
                                     collapsed: false,
                                     withQuotes: false
                                 });
@@ -440,8 +440,8 @@ class LogListTable extends \WP_List_Table
         ?>
 
         <p class="search-box">
-            <label class="screen-reader-text" for="<?php echo $input_id ?>"><?php echo $text; ?>:</label>
-            <input type="search" placeholder="جستجو ..." id="<?php echo $input_id ?>" name="s"
+            <label class="screen-reader-text" for="<?php echo esc_attr($input_id); ?>"><?php echo esc_html($text); ?>:</label>
+            <input type="search" placeholder="جستجو ..." id="<?php echo esc_attr($input_id); ?>" name="s"
                    value="<?php _admin_search_query(); ?>" autocomplete="off"/>
             <?php submit_button($text, 'button', false, false, array('id' => 'search-submit')); ?>
         </p>
@@ -459,7 +459,7 @@ class LogListTable extends \WP_List_Table
             $nonce = esc_attr($_REQUEST['_wpnonce']);
             if (!wp_verify_nonce($nonce, 'delete_action_nonce')) {
 
-                die(__("You are not Permission for this action.", "parsigate"));
+                wp_die(esc_html__("You are not Permission for this action.", "parsigate"));
             } else {
 
                 $deleteItem = self::delete_action(absint($_REQUEST['ID']));
@@ -483,6 +483,8 @@ class LogListTable extends \WP_List_Table
                 $logs = [];
                 foreach ($item_ids as $id) {
                     $deleteItem = self::delete_action($id);
+
+                    /* translators: %d: Number of items to delete */
                     $logs[] = sprintf(__('Delete %d Id Items', 'parsigate'), $id);
                 }
 

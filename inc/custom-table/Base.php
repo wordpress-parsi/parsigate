@@ -54,7 +54,7 @@ class Base
         $defaults = static::default();
         $args = wp_parse_args($arg, $defaults);
 
-        $args = apply_filters('ct_insert_data_' . static::table(), $args);
+        $args = apply_filters('parsigate_insert_data_' . static::table(), $args);
 
         foreach (static::get_json_fields() as $key) {
             $args[$key] = json_encode($args[$key], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -70,7 +70,7 @@ class Base
         endif;
 
         if ($fire_after_hook) {
-            do_action('ct_insert_' . static::table(), $wpdb->insert_id, $args);
+            do_action('parsigate_insert_' . static::table(), $wpdb->insert_id, $args);
         }
 
         return [
@@ -84,25 +84,21 @@ class Base
         global $wpdb;
 
         // Pre Get data
-        $pre = apply_filters('pre_get_ct_' . static::slug(), null, $id);
+        $pre = apply_filters('parsigate_pre_get_ct_' . static::slug(), null, $id);
         if (!is_null($pre)) {
             return $pre;
         }
 
         // Check From Cache
-        $get_cache = wp_cache_get($id, 'ct-' . static::slug());
+        $get_cache = wp_cache_get($id, 'parsigate-' . static::slug());
         if (false === $get_cache) {
 
             // Get From MySQL
-            $sql = $wpdb->prepare("SELECT * FROM `" . static::table() . "` WHERE `" . static::primary_key() . "` = %d", $id);
-
-            // Set Debug
-            if (WP_DEBUG === true) {
-                error_log($sql);
-            }
+            $table_name = static::table();
+            $primary_key = static::primary_key();
 
             // Get Row
-            $row = $wpdb->get_row($sql, ARRAY_A);
+            $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM `" . esc_sql($table_name) . "` WHERE `" . esc_sql($primary_key) . "` = %d", $id), ARRAY_A);
             if (is_null($row)) {
                 return false;
             }
@@ -111,7 +107,7 @@ class Base
             $prepare = static::prepare($row);
 
             // Set Cache
-            wp_cache_set($id, $prepare, 'ct-' . static::slug());
+            wp_cache_set($id, $prepare, 'parsigate-' . static::slug());
 
             // Return
             return $prepare;
@@ -147,13 +143,13 @@ class Base
     {
         global $wpdb;
 
-        $arg = apply_filters('pre_ct_update_data_' . static::table(), $arg, $id);
+        $arg = apply_filters('parsigate_pre_ct_update_data_' . static::table(), $arg, $id);
 
         $changed = [];
         $item = static::get($id);
         foreach ($arg as $key => $value) {
 
-            $isChanged = apply_filters('ct_is_changed_value_' . static::table(), ($value != $item[$key]), $key, $item, $value, $id);
+            $isChanged = apply_filters('parsigate_is_changed_value_' . static::table(), ($value != $item[$key]), $key, $item, $value, $id);
             if ($isChanged) {
                 $changed[$key] = $value;
             }
@@ -174,7 +170,7 @@ class Base
 
             $wpdb->update(
                 static::table(),
-                apply_filters('ct_update_data_' . static::table(), $changed, $item, $id),
+                apply_filters('parsigate_update_data_' . static::table(), $changed, $item, $id),
                 array(static::primary_key() => $id)
             );
 
@@ -183,10 +179,10 @@ class Base
             endif;
 
             if ($fire_after_hook) {
-                do_action('ct_update_' . static::table(), $id, $arg, $changed);
+                do_action('parsigate_update_' . static::table(), $id, $arg, $changed);
             }
 
-            wp_cache_delete($id, 'ct-' . static::slug());
+            wp_cache_delete($id, 'parsigate-' . static::slug());
         }
 
         return ['status' => true, 'id' => $id];
@@ -200,12 +196,12 @@ class Base
             $column = static::primary_key();
         }
 
-        $pre = apply_filters('ct_pre_delete_' . static::table(), null, $value, $column);
+        $pre = apply_filters('parsigate_pre_delete_' . static::table(), null, $value, $column);
         if (!is_null($pre)) {
             return $pre;
         }
 
-        do_action('ct_before_delete_' . static::table(), $value, $column);
+        do_action('parsigate_before_delete_' . static::table(), $value, $column);
 
         $wpdb->delete(
             static::table(),
@@ -214,7 +210,7 @@ class Base
             )
         );
 
-        do_action('ct_deleted_' . static::table(), $value, $column);
+        do_action('parsigate_deleted_' . static::table(), $value, $column);
 
         return [
             'status' => true,
@@ -235,7 +231,7 @@ class Base
             }
         }
 
-        return apply_filters('ct_prepare_' . static::table(), $item);
+        return apply_filters('parsigate_prepare_' . static::table(), $item);
     }
 
     public static function list($arg = [])
@@ -307,7 +303,7 @@ class Base
         }
 
         // Get SQL
-        $sql = apply_filters('ct_sql_' . static::table(), $sql, $args);
+        $sql = apply_filters('parsigate_sql_' . static::table(), $sql, $args);
 
         // Check Cache
         $key = md5($sql);
@@ -316,12 +312,7 @@ class Base
             return $cache;
         }
 
-        // Set Debug
-        if (WP_DEBUG === true) {
-            error_log($sql);
-        }
-
-        // Get results
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
         $results = $wpdb->get_results($sql, ARRAY_A);
 
         // Set Cache
@@ -403,18 +394,21 @@ class Base
                 case 'IN':
                 case 'NOT IN':
                     $compare_string = '(' . substr(str_repeat(',%s', count($value)), 1) . ')';
+                    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
                     $where = $wpdb->prepare($compare_string, $value);
                     break;
 
                 case 'BETWEEN':
                 case 'NOT BETWEEN':
                     $value = array_slice($value, 0, 2);
-                    $where = $wpdb->prepare('%s AND %s', $value);
+                    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+                    $where = $wpdb->prepare('%s AND %s', $value, $value);
                     break;
 
                 case 'LIKE':
                 case 'NOT LIKE':
                     $value = '%' . $wpdb->esc_like($value) . '%';
+                    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
                     $where = $wpdb->prepare('%s', $value);
                     break;
 

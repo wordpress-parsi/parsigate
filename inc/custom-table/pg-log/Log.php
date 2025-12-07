@@ -9,7 +9,7 @@ class Log extends Base
 
     public function __construct()
     {
-        add_filter('ct_prepare_' . static::table(), [$this, 'prepare_item']);
+        add_filter('parsigate_prepare_' . static::table(), [$this, 'prepare_item']);
     }
 
     /* @config */

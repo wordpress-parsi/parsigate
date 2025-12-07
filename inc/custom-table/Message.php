@@ -20,7 +20,7 @@ class Message
         $get = [];
         if (self::$handler == "cookie") {
 
-            $cookie = ($_COOKIE[self::$key] ?? "[]");
+            $cookie = (isset($_COOKIE[self::$key]) ? sanitize_text_field(wp_unslash($_COOKIE[self::$key])) : "[]");
             if (is_string($cookie) && is_array(json_decode(stripslashes_deep($cookie), true))) {
                 $get = json_decode(stripslashes_deep($cookie), true);
             }
@@ -90,7 +90,7 @@ class Message
         </div>
         ';
         if ($echo) {
-            echo $text;
+            echo esc_html($text);
         } else {
             return $text;
         }

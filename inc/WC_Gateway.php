@@ -87,7 +87,7 @@ class WC_Gateway extends \WC_Payment_Gateway
             $html .= '>';
         }
 
-        return apply_filters('woocommerce_gateway_icon', $html, $this->id);
+        return apply_filters('parsigate_woocommerce_gateway_icon', $html, $this->id);
     }
 
     public function init_form_fields()
@@ -96,6 +96,7 @@ class WC_Gateway extends \WC_Payment_Gateway
             'enabled' => [
                 'title' => __('Enabled/Disabled', 'parsigate'),
                 'type' => 'checkbox',
+                /* translators: %s: Gateway method title */
                 'label' => sprintf(__('Activate or deactivate %s gateway', 'parsigate'), $this->method_title),
                 'default' => 'no',
                 'description' => ((isset($this->gateway['requirement']) and !empty($this->gateway['requirement'])) ? '<span style="color: red;">' . $this->gateway['requirement'] . '</span>' : ''),
@@ -110,7 +111,12 @@ class WC_Gateway extends \WC_Payment_Gateway
                 'title' => __('Gateway description', 'parsigate'),
                 'type' => 'textarea',
                 'description' => __('The description that will be displayed during the purchase process for the gateway', 'parsigate'),
-                'default' => ((isset($this->gateway['type']) and $this->gateway['type'] == "installment") ? sprintf(__("Credit and installment payments through %s", 'parsigate'), $this->method_title) : sprintf(__("Secure payment by all Shetab's cards through %s", 'parsigate'), $this->method_title))
+                'default' => ((isset($this->gateway['type']) and $this->gateway['type'] == "installment") ?
+                    /* translators: %s: Gateway name for credit/installment payments */
+                    sprintf(__("Credit and installment payments through %s", 'parsigate'), $this->method_title) :
+                    /* translators: %s: Payment gateway name for Shetab card payments */
+                    sprintf(__("Secure payment by all Shetab's cards through %s", 'parsigate'), $this->method_title)
+                )
             ]
         ];
 
@@ -129,13 +135,13 @@ class WC_Gateway extends \WC_Payment_Gateway
                 'options' => array(
                     'no' => __('No', 'parsigate'),
                     'yes' => __('Yes', 'parsigate')
-                ),
+                )
             ];
         }
 
         $fields = $fields + [
                 'failed_massage' => [
-                    'title' => __('Payment failed message', 'wp-parsidate'),
+                    'title' => __('Payment failed message', 'parsigate'),
                     'type' => 'textarea',
                     'description' => __('Enter the text of the message you want to display to the user after an unsuccessful payment.', 'parsigate'),
                     'default' => __('Your payment has failed. Please try again or contact us in case of problems.', 'parsigate')
@@ -151,6 +157,7 @@ class WC_Gateway extends \WC_Payment_Gateway
                 'min_cart_price' => [
                     'title' => __('Minimum Cart Amount', 'parsigate'),
                     'type' => 'number',
+                    /* translators: %s: Current currency symbol (e.g. $, €, ﷼) */
                     'description' => sprintf(__('Minimum cart amount to display the gateway. Current currency: %s', 'parsigate'), get_woocommerce_currency_symbol()),
                     'default' => '',
                     'placeholder' => 'xxx',
@@ -471,20 +478,21 @@ class WC_Gateway extends \WC_Payment_Gateway
 
     public function redirect_to_gateway($order)
     {
+        $redirect_url = isset($_GET['url']) ? esc_url_raw(urldecode_deep($_GET['url'])) : '';
         ?>
         <html lang="fa-IR">
         <head>
             <meta charset="UTF-8"/>
         </head>
         <body onload="document.forms['redirect'].submit()">
-        <form name="redirect" method="post" action="<?php echo urldecode_deep($_GET['url']) ?>">
+        <form name="redirect" method="post" action="<?php echo esc_html($redirect_url); ?>">
             <?php
             foreach ($_GET as $key => $value) {
                 if (in_array($key, ['wc-api', 'action', 'order_id', 'url'])) {
                     continue;
                 }
                 ?>
-                <input type="hidden" name="<?php echo trim($key); ?>" value="<?php echo esc_attr($value); ?>">
+                <input type="hidden" name="<?php echo esc_attr(trim($key)); ?>" value="<?php echo esc_attr($value); ?>">
                 <?php
             }
             ?>
@@ -550,9 +558,9 @@ class WC_Gateway extends \WC_Payment_Gateway
         // Add Order Note
         if (apply_filters('parsigate_gateway_save_order_note', true, $this->id, $order) === true) {
 
-            $order->add_order_note(
-                apply_filters('parsigate_gateway_completed_order_note', sprintf(__("Payment Success, Transaction ID: %s", 'parsigate'), $transaction_id), $order, $transaction_id, $this->id)
-            );
+            /* translators: %s: Transaction ID number */
+            $note = sprintf(__("Payment Success, Transaction ID: %s", 'parsigate'), $transaction_id);
+            $order->add_order_note(apply_filters('parsigate_gateway_completed_order_note', $note, $order, $transaction_id, $this->id));
         }
 
         // Remove cart.
@@ -567,7 +575,7 @@ class WC_Gateway extends \WC_Payment_Gateway
         do_action('parsigate_gateway_completed_payment', $order, $transaction_id, $this->id, $verify);
 
         // Redirect
-        wp_redirect($this->get_return_url($order));
+        wp_safe_redirect($this->get_return_url($order));
         exit;
     }
 
@@ -590,7 +598,7 @@ class WC_Gateway extends \WC_Payment_Gateway
         do_action('parsigate_gateway_failed_payment', $order, $verify);
 
         // Redirect
-        wp_redirect(wc_get_checkout_url());
+        wp_safe_redirect(wc_get_checkout_url());
         exit;
     }
 

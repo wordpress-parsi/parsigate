@@ -106,11 +106,11 @@ class WooCommerce
 
             $order = wc_get_order($order_id);
             if (!$order) {
-                wp_die(__('Order ID is Invalid.', 'parsigate'));
+                wp_die(esc_html__('Order ID is Invalid.', 'parsigate'));
             }
 
             if ($order->get_status() != 'pending') {
-                wp_die(__('Order Status is not pending payment.', 'parsigate'));
+                wp_die(esc_html__('Order Status is not pending payment.', 'parsigate'));
             }
 
             $template = apply_filters('parsigate_test_gateway_template', \ParsiGate::$plugin_path . '/inc/templates/test-gateway.php');
@@ -119,7 +119,7 @@ class WooCommerce
                 include $template;
                 $output = ob_get_contents();
                 ob_end_clean();
-                wp_die($output, __('Test Gateway', 'parsigate'));
+                wp_die(esc_html($output), esc_html__('Test Gateway', 'parsigate'));
             }
         }
     }
@@ -134,12 +134,9 @@ class WooCommerce
         $site_url = get_option('siteurl');
         $domain = parse_url($site_url, PHP_URL_HOST);
 
-        return apply_filters('parsigate_order_description_api', sprintf(
-            __('Order ID: %d | By: %s | Site: %s', 'parsigate'),
-            $order->get_order_number(),
-            trim($name),
-            ucfirst($domain)
-        ), $order, $gateway);
+        /* translators: 1: Order number, 2: Customer name, 3: Website domain */
+        $text = sprintf(__('Order ID: %1$d | By: %2$s | Site: %3$s', 'parsigate'), $order->get_order_number(), trim($name), ucfirst($domain));
+        return apply_filters('parsigate_order_description_api', $text, $order, $gateway);
     }
 
     public function admin_head()

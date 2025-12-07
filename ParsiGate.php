@@ -71,15 +71,10 @@ class ParsiGate
             esc_url($install_url),
             esc_html($install_text)
         );
-        echo '<div class="notice notice-error"><p>'
-            . sprintf(
-            /* translators: 1: Plugin name in strong tag, 2: Download link, 3: Install link */
-                __('For proper functionality of your plugin, the %1$s plugin is required. Please %2$s or %3$s.', 'parsigate'),
-                '<strong>' . esc_html($plugin_name) . '</strong>',
-                $download_link,
-                $install_link
-            )
-            . '</p></div>';
+
+        /* translators: 1: Plugin name in strong tag, 2: Download link, 3: Install link */
+        $desc = sprintf(esc_html__('For proper functionality of your plugin, the %1$s plugin is required. Please %2$s or %3$s.', 'parsigate'), '<strong>' . esc_html($plugin_name) . '</strong>', esc_html($download_link), esc_html($install_link));
+        echo '<div class="notice notice-error"><p>' . esc_html($desc) . '</p></div>';
     }
 
     public function wpp_init()
@@ -199,7 +194,7 @@ class ParsiGate
         // Delete gateway log table
         global $wpdb;
         $table_name = $wpdb->prefix . 'pg_log';
-        $wpdb->query("DROP TABLE IF EXISTS $table_name");
+        $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %s", $table_name));
     }
 
 }

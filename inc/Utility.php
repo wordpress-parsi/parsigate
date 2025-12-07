@@ -35,7 +35,7 @@ class Utility
 
         // Cloudflare
         if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
-            return trim($_SERVER['HTTP_CF_CONNECTING_IP']);
+            return sanitize_text_field(wp_unslash(trim($_SERVER['HTTP_CF_CONNECTING_IP'])));
         }
 
         $headers = [
@@ -49,7 +49,7 @@ class Utility
 
         foreach ($headers as $header) {
             if (!empty($_SERVER[$header])) {
-                $ip = $_SERVER[$header];
+                $ip = sanitize_text_field(wp_unslash($_SERVER[$header]));
 
                 if (strpos($ip, ',') !== false) {
                     $ips = explode(',', $ip);
@@ -62,7 +62,7 @@ class Utility
             }
         }
 
-        return $_SERVER['REMOTE_ADDR'] ?? '';
+        return (isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '');
     }
 
 }

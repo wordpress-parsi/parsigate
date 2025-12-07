@@ -41,7 +41,7 @@ class Test extends Base
         // Success
         return $this->success(
             [
-                'transaction_id' => mt_rand(1000000000, 9999999999),
+                'transaction_id' => wp_rand(1000000000, 9999999999),
             ],
             [
                 'url' => '',
