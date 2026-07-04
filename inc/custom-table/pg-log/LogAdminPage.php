@@ -4,7 +4,7 @@ namespace ParsiGate\CustomTable;
 
 
 use ParsiGate\Gateways;
-use ParsiGate\Option;
+use WPParsidate\Addons\ParsiGateOption\ParsiGateOption;
 
 class LogAdminPage extends Page
 {
@@ -50,7 +50,7 @@ class LogAdminPage extends Page
 
     public function admin_menu(): void
     {
-        if (!Option::enable_log()) {
+        if (!ParsiGateOption::enable_log()) {
             return;
         }
 

@@ -3,6 +3,7 @@
 namespace ParsiGate\gateways;
 
 use ParsiGate\Option;
+use WPParsidate\Addons\ParsiGateOption\ParsiGateOption;
 
 class AsanPardakht extends Base
 {
@@ -165,7 +166,7 @@ class AsanPardakht extends Base
         }
 
         // Save Log
-        if (Option::enable_log()) {
+        if (ParsiGateOption::enable_log()) {
 
             \ParsiGate\CustomTable\Log::insert([
                 'gateway' => 'asanpardakht',
@@ -241,7 +242,7 @@ class AsanPardakht extends Base
         }
 
         // Save Log
-        if (Option::enable_log()) {
+        if (ParsiGateOption::enable_log()) {
 
             \ParsiGate\CustomTable\Log::insert([
                 'gateway' => 'asanpardakht',

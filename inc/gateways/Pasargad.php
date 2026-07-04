@@ -2,7 +2,7 @@
 
 namespace ParsiGate\gateways;
 
-use ParsiGate\Option;
+use WPParsidate\Addons\ParsiGateOption\ParsiGateOption;
 
 /**
  * @see https://github.com/pep-ipg
@@ -253,7 +253,7 @@ class Pasargad extends Base
         }
 
         // Save Log
-        if (Option::enable_log()) {
+        if (ParsiGateOption::enable_log()) {
 
             \ParsiGate\CustomTable\Log::insert([
                 'gateway' => 'pasargad',

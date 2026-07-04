@@ -50,7 +50,7 @@ class ParsiGate
         add_action('init', [$this, 'i18n']);
 
         // Wrap After ParsiDate
-        add_action('wpp_init', [$this, 'wpp_init']);
+        add_action('wp_parsidate_addons_load', [$this, 'wpp_init']);
     }
 
     public function plugins_loaded()

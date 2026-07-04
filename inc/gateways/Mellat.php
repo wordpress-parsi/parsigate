@@ -2,8 +2,8 @@
 
 namespace ParsiGate\gateways;
 
-use ParsiGate\Option;
 use ParsiGate\Utility;
+use WPParsidate\Addons\ParsiGateOption\ParsiGateOption;
 
 class Mellat extends Base
 {
@@ -126,7 +126,7 @@ class Mellat extends Base
         $VerifyRequest = $this->call($body, 'bpVerifyRequest');
 
         // Save Log
-        if (Option::enable_log() and $VerifyRequest['status'] === true) {
+        if (ParsiGateOption::enable_log() and $VerifyRequest['status'] === true) {
 
             \ParsiGate\CustomTable\Log::insert([
                 'gateway' => 'mellat',

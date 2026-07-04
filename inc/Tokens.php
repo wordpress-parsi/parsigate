@@ -12,7 +12,7 @@ class Tokens
     public function __construct($gateway_id)
     {
         $this->gateway_id = $gateway_id;
-        $this->option_name = Option::$prefix . '_gateway_tokens';
+        $this->option_name = 'pg_gateway_tokens';
     }
 
     public function all()

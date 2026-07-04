@@ -20,6 +20,7 @@ use ParsiGate\gateways\Tara;
 use ParsiGate\gateways\Test;
 use ParsiGate\Gateways\ZarinPal;
 use ParsiGate\gateways\Zibal;
+use WPParsidate\Addons\ParsiGateOption\ParsiGateOption;
 
 class Gateways
 {
@@ -1361,12 +1362,8 @@ class Gateways
             return false;
         }
 
-        $option_name = Option::option_name($item['type']);
-        $option = Option::get($option_name);
-        if (!is_array($option)) {
-            return false;
-        }
-        return in_array($id, $option);
+        $option = ParsiGateOption::get(strtolower($id));
+        return ((int)$option == 1);
     }
 
     public static function choices($type = null, $enable = null): array

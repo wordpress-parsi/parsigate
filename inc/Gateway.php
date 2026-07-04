@@ -2,6 +2,8 @@
 
 namespace ParsiGate;
 
+use WPParsidate\Addons\ParsiGateOption\ParsiGateOption;
+
 class Gateway
 {
     public string $driver;
@@ -18,7 +20,7 @@ class Gateway
 
         // Check Log
         if (!isset($this->args['log'])) {
-            $this->args['log'] = Option::enable_log();
+            $this->args['log'] = ParsiGateOption::enable_log();
         }
 
         // Setup Gateway
