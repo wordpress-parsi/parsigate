@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Parsi Gate
+ * Plugin Name: Parsigate | پارسی گیت - Iranian Payment Gateways for WooCommerce
  * Description: Persian Gateways for WordPress
  * Plugin URI:  https://wp-parsi.com
  * Version:     1.0.0
