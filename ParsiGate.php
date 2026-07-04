@@ -9,8 +9,8 @@
  * License:     MIT
  * Text Domain: parsigate
  * Domain Path: /languages
- * License:     GPL-2.0+
- * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * License:     GPLv3
+ * License URI: http://www.gnu.org/licenses/gpl-3.0.txt
  * Requires at least: 5.6
  * Requires PHP: 7.4
  * Requires Plugins: wp-parsidate
