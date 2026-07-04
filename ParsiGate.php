@@ -6,7 +6,6 @@
  * Version:     1.0.0
  * Author:      Parsidate Teams
  * Author URI:  https://wp-parsi.com
- * License:     MIT
  * Text Domain: parsigate
  * Domain Path: /languages
  * License:     GPLv3
