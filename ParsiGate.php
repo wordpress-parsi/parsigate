@@ -16,6 +16,8 @@
  * Requires Plugins: wp-parsidate
  */
 
+if (!defined('ABSPATH')) exit;
+
 class ParsiGate
 {
 

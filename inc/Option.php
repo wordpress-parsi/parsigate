@@ -6,6 +6,8 @@ use ParsiGate\Gateways;
 use WPParsidate\Addons\Addon;
 use WPParsidate\Settings\Settings;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class ParsiGateOption extends Addon
 {
 

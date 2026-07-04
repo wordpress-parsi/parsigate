@@ -4,6 +4,8 @@ namespace ParsiGate\CustomTable;
 
 use ParsiGate\Gateways;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class Log extends Base
 {
 

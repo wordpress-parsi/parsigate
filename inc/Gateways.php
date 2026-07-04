@@ -22,6 +22,8 @@ use ParsiGate\Gateways\ZarinPal;
 use ParsiGate\gateways\Zibal;
 use WPParsidate\Addons\ParsiGateOption\ParsiGateOption;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class Gateways
 {
     public function __construct()

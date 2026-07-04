@@ -2,6 +2,8 @@
 
 namespace ParsiGate\CustomTable;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class LogListTable extends \WP_List_Table
 {
     public static array $query_search = [

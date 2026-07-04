@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 $parsigate_has_persian_datepicker = false;
 $parsigate_search_fields = apply_filters('parsigate_admin_post_type_search_box_fields', array());

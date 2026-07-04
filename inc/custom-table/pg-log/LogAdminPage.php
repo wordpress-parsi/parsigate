@@ -2,9 +2,10 @@
 
 namespace ParsiGate\CustomTable;
 
-
 use ParsiGate\Gateways;
 use WPParsidate\Addons\ParsiGateOption\ParsiGateOption;
+
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 class LogAdminPage extends Page
 {

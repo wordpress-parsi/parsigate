@@ -2,6 +2,8 @@
 
 namespace ParsiGate;
 
+if (!defined('ABSPATH')) exit;
+
 class WooCommerce
 {
 
