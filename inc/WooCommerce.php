@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) exit;
 class WooCommerce
 {
 
-    private static array $gateways_data = [];
+    private ?array $block_gateways = null;
 
     public static string $test_gateway_query = 'wc-parsigate-test-gateway';
 
@@ -52,11 +52,16 @@ class WooCommerce
         add_action('woocommerce_blocks_payment_method_type_registration', [$this, 'register_block_gateways']);
     }
 
-    public function register_block_gateways($payment_method_registry)
+    private function get_block_gateways(): array
     {
-        $gateways = Gateways::list();
-        foreach ($gateways as $gateway_id => $option) {
-            if (!Gateways::enable($gateway_id) || !in_array('woocommerce', $option['usage'])) {
+        if ($this->block_gateways !== null) {
+            return $this->block_gateways;
+        }
+
+        $this->block_gateways = [];
+
+        foreach (Gateways::list() as $gateway_id => $option) {
+            if (!Gateways::enable($gateway_id) || !in_array('woocommerce', $option['usage'], true)) {
                 continue;
             }
 
@@ -64,19 +69,42 @@ class WooCommerce
             $block_gateway->initialize();
 
             $woocommerce_settings = get_option('woocommerce_' . $gateway_id . '_settings', []);
-            $is_enabled_in_woocommerce = isset($woocommerce_settings['enabled']) && $woocommerce_settings['enabled'] === 'yes';
-            if (!$block_gateway->is_active() || !$is_enabled_in_woocommerce) continue;
+            $is_enabled = isset($woocommerce_settings['enabled']) && $woocommerce_settings['enabled'] === 'yes';
 
-            $payment_method_registry->register($block_gateway);
-            $method_data = $block_gateway->get_payment_method_data();
-            self::$gateways_data[] = [
-                'name' => $gateway_id,
-                'title' => $method_data['title'],
-                'description' => $method_data['description'],
-                'icon' => $method_data['icon'],
-                'driver' => $gateway_id
+            if (!$block_gateway->is_active() || !$is_enabled) {
+                continue;
+            }
+
+            $this->block_gateways[] = $block_gateway;
+        }
+
+        return $this->block_gateways;
+    }
+
+    public function register_block_gateways($payment_method_registry)
+    {
+        foreach ($this->get_block_gateways() as $gateway) {
+            $payment_method_registry->register($gateway);
+        }
+    }
+
+    private function get_js_data(): array
+    {
+        $data = [];
+
+        foreach ($this->get_block_gateways() as $gateway) {
+            $method = $gateway->get_payment_method_data();
+
+            $data[] = [
+                'name'        => $gateway->get_name(),
+                'title'       => $method['title'],
+                'description' => $method['description'],
+                'icon'        => $method['icon'],
+                'driver'      => $gateway->get_name(),
             ];
         }
+
+        return $data;
     }
 
     public function enqueue_block_scripts()
@@ -90,7 +118,7 @@ class WooCommerce
                 true
             );
 
-            wp_localize_script('parsigate-blocks', 'parsigate_gateways', self::$gateways_data);
+            wp_localize_script('parsigate-blocks', 'parsigate_gateways',  $this->get_js_data());
         }
     }
 
@@ -123,7 +151,8 @@ class WooCommerce
                 include $template;
                 $output = ob_get_contents();
                 ob_end_clean();
-                wp_die(esc_html($output), esc_html__('Test Gateway', 'parsigate'));
+                // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+                wp_die($output, esc_html__('Test Gateway', 'parsigate'));
             }
         }
     }
