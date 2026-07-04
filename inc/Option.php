@@ -4,6 +4,7 @@ namespace WPParsidate\Addons\ParsiGateOption;
 
 use ParsiGate\Gateways;
 use WPParsidate\Addons\Addon;
+use WPParsidate\Settings\Settings;
 
 class ParsiGateOption extends Addon
 {
@@ -17,12 +18,6 @@ class ParsiGateOption extends Addon
     private static ?array $settings = null;
 
     /* @method */
-    public static function all(): array
-    {
-        return get_option(WP_PARSI_KEY . '_' . 'parsigate', []);
-    }
-
-    /* @method */
     public static function option_name($type): string
     {
         return strtolower($type);
@@ -31,12 +26,11 @@ class ParsiGateOption extends Addon
     /* @method */
     public static function get($name, $default = null)
     {
-        $all = self::all();
-        if (array_key_exists($name, $all)) {
-            return $all[$name];
+        if (Settings::get('internal_addon_parsigate', false) !== 1) {
+            return null;
         }
 
-        return $default;
+        return Settings::get($name, $default, 'parsigate');
     }
 
     /* @method */
