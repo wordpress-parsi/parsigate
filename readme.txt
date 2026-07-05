@@ -1,6 +1,5 @@
 === Parsigate ===
 Contributors: saeedfard, wordpress-parsi, mehrshaddarzi
-Donate link: https://parsidate.com
 Tags: woocommerce, payment, gateway, درگاه, ووکامرس
 Requires at least: 5.6
 Tested up to: 7.0
