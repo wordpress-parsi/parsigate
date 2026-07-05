@@ -1,4 +1,4 @@
-=== Parsigate | پارسی گیت - Iranian Payment Gateways for WooCommerce ===
+=== Parsigate | پارسی گیت ===
 Contributors: wordpress-parsi
 Donate link: https://parsidate.com
 Tags: woocommerce, payment, gateway, درگاه, ووکامرس
