@@ -36,7 +36,7 @@ class ParsiGate
 
     public function __construct()
     {
-        // Setup Default constant
+        // Define
         $this->define_constants();
 
         // Activation Hook
@@ -51,11 +51,51 @@ class ParsiGate
         add_action('wp_parsidate_addons_load', [$this, 'wpp_init']);
     }
 
+    public function required_plugins(): array
+    {
+        return [
+            'parsidate' => [
+                'name' => 'WP-Parsidate',
+                'slug' => 'wp-parsidate',
+                'class' => '\WPParsidate\WP_Parsidate',
+                'plugin_url' => 'https://wordpress.org/plugins/wp-parsidate/',
+            ],
+            'woocommerce' => [
+                'name' => 'WooCommerce',
+                'slug' => 'woocommerce',
+                'class' => 'WooCommerce',
+                'plugin_url' => 'https://wordpress.org/plugins/woocommerce/',
+            ]
+        ];
+    }
+
     public function plugins_loaded()
     {
-        if (!class_exists('WP_Parsidate')) {
+
+        if (!$this->is_woocommerce_active() || !$this->is_parsidate_active()) {
             add_action('admin_notices', [$this, 'admin_notices']);
         }
+    }
+
+    private function is_plugin_active(string $slug): bool
+    {
+        $plugins = $this->required_plugins();
+
+        if (!isset($plugins[$slug])) {
+            return false;
+        }
+
+        return class_exists($plugins[$slug]['class']);
+    }
+
+    public function is_parsidate_active(): bool
+    {
+        return $this->is_plugin_active('parsidate');
+    }
+
+    public function is_woocommerce_active(): bool
+    {
+        return $this->is_plugin_active('woocommerce');
     }
 
     public function admin_notices()
@@ -64,30 +104,47 @@ class ParsiGate
             return;
         }
 
-        $plugin_url = 'https://wordpress.org/plugins/wp-parsidate/';
-        $install_url = wp_nonce_url(admin_url('update.php?action=install-plugin&plugin=wp-parsidate'), 'install-plugin_wp-parsidate');
-        $plugin_name = __('WP-Parsidate', 'parsigate');
-        $download_text = __('Download it from WordPress', 'parsigate');
-        $install_text = __('install it directly', 'parsigate');
-        $download_link = sprintf(
-            '<a href="%s" target="_blank">%s</a>',
-            esc_url($plugin_url),
-            esc_html($download_text)
-        );
-        $install_link = sprintf(
-            '<a href="%s">%s</a>',
-            esc_url($install_url),
-            esc_html($install_text)
-        );
+        foreach ($this->required_plugins() as $slug => $plugin) {
+            if ($this->is_plugin_active($slug)) {
+                continue;
+            }
 
-        /* translators: 1: Plugin name in strong tag, 2: Download link, 3: Install link */
-        $desc = sprintf(esc_html__('For proper functionality of your plugin, the %1$s plugin is required. Please %2$s or %3$s.', 'parsigate'), '<strong>' . esc_html($plugin_name) . '</strong>', esc_html($download_link), esc_html($install_link));
-        echo '<div class="notice notice-error"><p>' . esc_html($desc) . '</p></div>';
+            $install_url = wp_nonce_url(
+                admin_url('update.php?action=install-plugin&plugin=' . $plugin['slug']),
+                'install-plugin_' . $plugin['slug']
+            );
+            $download_link = sprintf(
+                '<a href="%s" target="_blank">%s</a>',
+                esc_url($plugin['plugin_url']),
+                esc_html__('Download it from WordPress', 'parsigate')
+            );
+            $install_link = sprintf(
+                '<a href="%s">%s</a>',
+                esc_url($install_url),
+                esc_html__('install it directly', 'parsigate')
+            );
+            $message = sprintf(
+            // translators: %1$s is the plugin name, %2$s is the download link, %3$s is the install link
+                __('For proper functionality of your plugin, the %1$s plugin is required. Please %2$s or %3$s.', 'parsigate'),
+                '<strong>' . esc_html($plugin['name']) . '</strong>',
+                $download_link,
+                $install_link
+            );
+            echo '<div class="notice notice-error is-dismissible"><p>' . wp_kses_post($message) . '</p></div>';
+        }
     }
 
     public function wpp_init()
     {
+        // Check required plugin
+        if (!$this->is_woocommerce_active() || !$this->is_parsidate_active()) {
+            return;
+        }
+
+        // include files
         $this->includes();
+
+        // parsigate has loaded
         do_action('parsigate_loaded');
     }
 
