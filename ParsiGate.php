@@ -190,9 +190,12 @@ class ParsiGate
         require_once self::$plugin_path . '/inc/gateways/Test.php';
 
         // WooCommerce
-        require_once self::$plugin_path . '/inc/WooCommerce.php';
-        require_once self::$plugin_path . '/inc/WC_Gateway.php';
-        require_once self::$plugin_path . '/inc/WC_Gateway_Block.php';
+        if ($this->is_woocommerce_active()) {
+
+            require_once self::$plugin_path . '/inc/WooCommerce.php';
+            require_once self::$plugin_path . '/inc/WC_Gateway.php';
+            require_once self::$plugin_path . '/inc/WC_Gateway_Block.php';
+        }
 
         // Custom Table
         if (is_admin() and !class_exists('WP_List_Table')) {
