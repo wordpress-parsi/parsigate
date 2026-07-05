@@ -1,13 +1,13 @@
 === Parsigate ===
-Contributors: wordpress-parsi
+Contributors: saeedfard, wordpress-parsi, mehrshaddarzi
 Donate link: https://parsidate.com
 Tags: woocommerce, payment, gateway, درگاه, ووکامرس
 Requires at least: 5.6
 Tested up to: 7.0
 Requires PHP: 7.4
 Stable tag: 1.0.0
-License: GPLv3
-License URI: http://www.gnu.org/licenses/gpl-3.0.txt
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Support for Iranian banking, installment, and intermediary payment gateways for WooCommerce. Requires the Parsidate plugin to be installed and active.
 
