@@ -20,18 +20,8 @@ class ParsiGateOption extends Addon
     private static ?array $settings = null;
 
     /* @method */
-    public static function option_name($type): string
-    {
-        return strtolower($type);
-    }
-
-    /* @method */
     public static function get($name, $default = null)
     {
-        if (Settings::get('internal_addon_parsigate', false) !== 1) {
-            return null;
-        }
-
         return Settings::get($name, $default, 'parsigate');
     }
 
@@ -121,7 +111,7 @@ class ParsiGateOption extends Addon
             'title' => __('Parsi Gate', 'parsigate'),
             'menu_title' => __('Parsi Gate', 'parsigate'),
             'has_page' => true,
-            'force_enable' => false,
+            'force_enable' => true,
             'desc' => __('Payment gateways', 'parsigate'),
             'icon' => self::icon,
             'image_link' => 'https://parsidate.com',
