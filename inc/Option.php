@@ -119,7 +119,7 @@ class ParsiGateOption extends Addon
             'tags' => [
                 __('Payment gateway', 'parsigate')
             ],
-            'cat' => 'ecommerce',
+            'cat' => 'recommended',
             'settings_key' => $this->addonID,
         );
     }
