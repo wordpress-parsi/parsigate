@@ -48,9 +48,6 @@ class ParsiGate
         // Plugin Loaded
         add_action('plugins_loaded', [$this, 'plugins_loaded'], 20);
 
-        // i18n
-        add_action('init', [$this, 'i18n']);
-
         // Wrap After ParsiDate
         add_action('wp_parsidate_addons_load', [$this, 'wpp_init']);
     }
@@ -154,11 +151,6 @@ class ParsiGate
             require_once dirname(__FILE__) . '/inc/custom-table/pg-log/LogAdminPage.php';
             require_once dirname(__FILE__) . '/inc/custom-table/pg-log/LogListTable.php';
         }
-    }
-
-    public function i18n()
-    {
-        load_plugin_textdomain('parsigate', false, wp_normalize_path(self::$plugin_path . '/languages'));
     }
 
     public function register_activation_hook()
