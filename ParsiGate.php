@@ -1,17 +1,17 @@
 <?php
 /**
  * Plugin Name: Parsigate
- * Description: Persian Gateways for WordPress
- * Plugin URI:  https://wp-parsi.com
+ * Description: Persian Gateways for WooCommerce/WordPress
  * Version:     1.0.0
  * Author:      Parsidate Teams
  * Author URI:  https://wp-parsi.com
  * Text Domain: parsigate
  * Domain Path: /languages
- * License:     GPLv3
- * License URI: http://www.gnu.org/licenses/gpl-3.0.txt
+ * License:     GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Requires at least: 5.6
  * Requires PHP: 7.4
+ * Tested up to: 7.0
  */
 
 if (!defined('ABSPATH')) exit;
