@@ -1,5 +1,6 @@
 === Parsigate ===
 Contributors: saeedfard, wordpress-parsi, mehrshaddarzi
+Donate link: https://wp-parsi.com/support/
 Tags: woocommerce, payment, gateway, درگاه, ووکامرس
 Requires at least: 5.6
 Tested up to: 7.0
@@ -51,6 +52,11 @@ Parsigate has a modular structure. Developers can add new gateways by creating a
 
 = Is Parsigate free? =
 Yes. Parsigate is open-source and free to use under the GPLv2 license.
+
+== Screenshots ==
+
+1. Setting page
+2. Gateway settings
 
 == Changelog ==
 
