@@ -1,4 +1,4 @@
-=== Parsigate | پارسی گیت ===
+=== Parsigate ===
 Contributors: wordpress-parsi
 Donate link: https://parsidate.com
 Tags: woocommerce, payment, gateway, درگاه, ووکامرس
