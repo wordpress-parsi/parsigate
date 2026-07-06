@@ -155,7 +155,7 @@ class ParsiGate
                 $install_button
             );
 
-            echo '<div class="notice notice-error is-dismissible">' . wp_kses_post($message) . '</div>';
+            echo '<div class="notice notice-warning is-dismissible">' . wp_kses_post($message) . '</div>';
         }
     }
 
