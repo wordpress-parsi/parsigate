@@ -6,7 +6,7 @@ use ParsiGate\Gateways;
 use WPParsidate\Addons\Addon;
 use WPParsidate\Settings\Settings;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('ABSPATH')) exit;
 
 class ParsiGateOption extends Addon
 {
@@ -35,6 +35,23 @@ class ParsiGateOption extends Addon
     /* @class */
     public function initAction(): void
     {
+        add_filter('plugin_action_links', [$this, 'plugin_action_links'], 10, 2);
+    }
+
+    /* @hook */
+    public function plugin_action_links($links, $file)
+    {
+        if ($file !== \ParsiGate::$plugin_basename) {
+            return $links;
+        }
+
+        $links['settings'] = sprintf(
+            '<a href="%s">%s</a>',
+            admin_url('admin.php?page=' . WP_PARSI_KEY_SLUG . '&tab=' . $this->addonID),
+            __('Settings', 'parsigate')
+        );
+
+        return $links;
     }
 
     /* @class */

@@ -25,6 +25,8 @@ class ParsiGate
 
     public static string $plugin_version;
 
+    public static string $plugin_basename;
+
     protected static ?ParsiGate $instance = null;
 
     public static function instance(): ?ParsiGate
@@ -157,6 +159,7 @@ class ParsiGate
         self::$plugin_version = $plugin_data['Version'];
         self::$plugin_url = plugins_url('', __FILE__);
         self::$plugin_path = plugin_dir_path(__FILE__);
+        self::$plugin_basename = plugin_basename(__FILE__);
     }
 
     public function includes()
