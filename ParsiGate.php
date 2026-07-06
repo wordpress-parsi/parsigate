@@ -114,24 +114,48 @@ class ParsiGate
                 admin_url('update.php?action=install-plugin&plugin=' . $plugin['slug']),
                 'install-plugin_' . $plugin['slug']
             );
-            $download_link = sprintf(
-                '<a href="%s" target="_blank">%s</a>',
+
+            $download_button = sprintf(
+                '<a href="%s" target="_blank" class="button button-secondary">%s %s</a>',
                 esc_url($plugin['plugin_url']),
-                esc_html__('Download it from WordPress', 'parsigate')
+                '<span class="dashicons dashicons-wordpress"></span>',
+                __('Download from WordPress', 'parsigate')
             );
-            $install_link = sprintf(
-                '<a href="%s">%s</a>',
+
+            $install_button = sprintf(
+                '<a href="%s" class="button button-primary">%s %s</a>',
                 esc_url($install_url),
-                esc_html__('install it directly', 'parsigate')
+                '<span class="dashicons dashicons-admin-plugins"></span>',
+                __('Install directly', 'parsigate')
             );
+
+
+            $line1 = sprintf(
+                // translators: %1$s is the plugin name (Parsigate), %2$s is the required plugin name
+                __('%1$s plugin requires %2$s plugin to function properly.', 'parsigate'),
+                '<strong>' . __('Parsigate', 'parsigate') . '</strong>',
+                '<strong>' . esc_html($plugin['name']) . '</strong>'
+            );
+
+
+            $line2 = sprintf(
+                // translators: %s is the required plugin name
+                __('Please install and activate %s plugin first to access all features.', 'parsigate'),
+                '<strong>' . esc_html($plugin['name']) . '</strong>'
+            );
+
+            // translators: %1$s is the download button, %2$s is the install button
             $message = sprintf(
-            // translators: %1$s is the plugin name, %2$s is the download link, %3$s is the install link
-                __('For proper functionality of your plugin, the %1$s plugin is required. Please %2$s or %3$s.', 'parsigate'),
-                '<strong>' . esc_html($plugin['name']) . '</strong>',
-                $download_link,
-                $install_link
+                '<p>%s</p>
+            <p>%s</p>
+            <p style="margin-top: 20px;">%s %s</p>',
+                $line1,
+                $line2,
+                $download_button,
+                $install_button
             );
-            echo '<div class="notice notice-error is-dismissible"><p>' . wp_kses_post($message) . '</p></div>';
+
+            echo '<div class="notice notice-error is-dismissible">' . wp_kses_post($message) . '</div>';
         }
     }
 
