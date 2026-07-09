@@ -79,7 +79,7 @@ class Log extends Base
     public static function get_type_name($type_id): string
     {
         $list = static::get_type_list();
-        return (isset($list[$type_id]) ? trim($list[$type_id]) : 'نامشخص');
+        return (isset($list[$type_id]) ? trim($list[$type_id]) : __('Unknown', 'parsigate'));
     }
 
     /* @method */
