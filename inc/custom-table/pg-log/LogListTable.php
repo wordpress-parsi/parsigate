@@ -2,7 +2,7 @@
 
 namespace ParsiGate\CustomTable;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('ABSPATH')) exit;
 
 class LogListTable extends \WP_List_Table
 {
@@ -312,26 +312,23 @@ class LogListTable extends \WP_List_Table
                     $text .= '_';
                 } else {
 
-                    add_action('admin_footer', function () use ($item) {
-                        ?>
-                        <div class="pg-log-json-pre-area" id="body_<?php echo absint($item['ID']); ?>">
+                    $text .= '<div class="pg-log-json-pre-area" id="body_' . absint($item['ID']) . '">
                             <pre class="json-body"></pre>
                             <div class="pg-log-json-pre-area__close">
                                 <a href="#" class="button">
-                                    <?php esc_html_e('Close', 'parsigate'); ?>
+                                    ' . esc_html__('Close', 'parsigate') . '
                                 </a>
                             </div>
-                        </div>
-                        <script>
-                            jQuery(document).ready(function () {
-                                jQuery("#body_<?php echo absint($item['ID']); ?> pre").jsonBrowse(<?php echo json_encode($item['body'], JSON_PRETTY_PRINT); ?>, {
-                                    collapsed: false,
-                                    withQuotes: false
-                                });
-                            });
-                        </script>
-                        <?php
-                    });
+                        </div>';
+
+                    $inline_script = 'jQuery(document).ready(function () {
+                                        jQuery("#body_' . absint($item['ID']) . ' pre").jsonBrowse(' . json_encode($item['body'], JSON_PRETTY_PRINT) . ', {
+                                            collapsed: false,
+                                            withQuotes: false
+                                        });
+                                    });';
+                    wp_add_inline_script('parsigate-logs', $inline_script);
+
                     $text .= '<a href="" data-pg-log-show-json="body_' . $item['ID'] . '">' . __('Show', 'parsigate') . '</a>';
                 }
 
@@ -339,26 +336,24 @@ class LogListTable extends \WP_List_Table
                 if (!empty($item['header'])) {
 
                     $text .= __('Header: ', 'parsigate');
-                    add_action('admin_footer', function () use ($item) {
-                        ?>
-                        <div class="pg-log-json-pre-area" id="header_<?php echo absint($item['ID']); ?>">
+
+                    $text .= '<div class="pg-log-json-pre-area" id="header_' . absint($item['ID']) . '">
                             <pre class="json-body"></pre>
                             <div class="pg-log-json-pre-area__close">
                                 <a href="#" class="button">
-                                    <?php esc_html_e('Close', 'parsigate'); ?>
+                                    ' . esc_html__('Close', 'parsigate') . '
                                 </a>
                             </div>
-                        </div>
-                        <script>
-                            jQuery(document).ready(function () {
-                                jQuery("#header_<?php echo absint($item['ID']); ?> pre").jsonBrowse(<?php echo json_encode($item['header'], JSON_PRETTY_PRINT); ?>, {
+                        </div>';
+
+                    $inline_script = 'jQuery(document).ready(function () {
+                                jQuery("#header_' . absint($item['ID']) . ' pre").jsonBrowse(' . json_encode($item['header'], JSON_PRETTY_PRINT) . ', {
                                     collapsed: false,
                                     withQuotes: false
                                 });
-                            });
-                        </script>
-                        <?php
-                    });
+                            });';
+                    wp_add_inline_script('parsigate-logs', $inline_script);
+
                     $text .= '<a href="" data-pg-log-show-json="header_' . $item['ID'] . '">' . __('Show', 'parsigate') . '</a>';
                     $text .= '<br />';
                 }
@@ -368,26 +363,23 @@ class LogListTable extends \WP_List_Table
 
                     $text .= '_';
                 } else {
-                    add_action('admin_footer', function () use ($item) {
-                        ?>
-                        <div class="pg-log-json-pre-area" id="response_<?php echo absint($item['ID']); ?>">
+
+                    $text .= '<div class="pg-log-json-pre-area" id="response_' . absint($item['ID']) . '">
                             <pre class="json-body"></pre>
                             <div class="pg-log-json-pre-area__close">
                                 <a href="#" class="button">
-                                    <?php esc_html_e('Close', 'parsigate'); ?>
+                                    ' . esc_html__('Close', 'parsigate') . '
                                 </a>
                             </div>
-                        </div>
-                        <script>
-                            jQuery(document).ready(function () {
-                                jQuery("#response_<?php echo absint($item['ID']); ?> pre").jsonBrowse(<?php echo json_encode($item['response'], JSON_PRETTY_PRINT); ?>, {
-                                    collapsed: false,
-                                    withQuotes: false
-                                });
-                            });
-                        </script>
-                        <?php
-                    });
+                        </div>';
+
+                    $inline_script = 'jQuery(document).ready(function () {
+                                    jQuery("#response_' . absint($item['ID']) . ' pre").jsonBrowse(' . json_encode($item['response'], JSON_PRETTY_PRINT) . ', {
+                                        collapsed: false,
+                                        withQuotes: false
+                                    });
+                                });';
+                    wp_add_inline_script('parsigate-logs', $inline_script);
                     $text .= '<a href="" data-pg-log-show-json="response_' . $item['ID'] . '">' . __('Show', 'parsigate') . '</a>';
                 }
 

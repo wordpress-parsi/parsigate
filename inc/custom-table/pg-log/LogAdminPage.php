@@ -5,7 +5,7 @@ namespace ParsiGate\CustomTable;
 use ParsiGate\Gateways;
 use WPParsidate\Addons\ParsiGateOption\ParsiGateOption;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('ABSPATH')) exit;
 
 class LogAdminPage extends Page
 {
@@ -27,7 +27,6 @@ class LogAdminPage extends Page
 
         // Search Box
         add_filter('parsigate_admin_post_type_search_box_fields', [$this, 'search_box_field']);
-        add_action('admin_footer', [$this, 'search_box_template']);
 
         // Handler
         add_action("admin_init", array($this, 'handler'));
@@ -77,6 +76,55 @@ class LogAdminPage extends Page
 
             // Add Thickbox
             add_thickbox();
+
+            // Setup Options Search Box Select
+            $search_input_id = 'pg_log-search-input';
+            $parsigate_search_fields = apply_filters('parsigate_admin_post_type_search_box_fields', []);
+
+            $options_html = '';
+            foreach ($parsigate_search_fields as $parsigate_name => $parsigate_value_array) {
+                $type = 'text';
+                if (isset($parsigate_value_array['type'])) {
+                    $type = $parsigate_value_array['type'];
+                }
+                $parsigate_choices = [];
+                if ($type == "select") {
+                    if (is_array($parsigate_value_array['choices']) && !empty($parsigate_value_array['choices'])) {
+                        $parsigate_choices = json_encode($parsigate_value_array['choices'], JSON_NUMERIC_CHECK);
+                    }
+                }
+                if (is_array($parsigate_value_array)) {
+                    $title = $parsigate_value_array['title'];
+                } else {
+                    $title = $parsigate_value_array;
+                }
+                $selected = '';
+                if (isset($_REQUEST['search-type'])) {
+                    $selected = selected(sanitize_text_field(wp_unslash($_REQUEST['search-type'])), $parsigate_name, false);
+                }
+                $data_selected = !empty($parsigate_choices) ? ' data-selected=\'' . esc_attr($parsigate_choices) . '\' ' : '';
+                $options_html .= sprintf(
+                    '<option %s data-type="%s" value="%s" %s>%s</option>',
+                    $data_selected,
+                    esc_attr($type),
+                    esc_attr($parsigate_name),
+                    $selected,
+                    esc_html($title)
+                );
+            }
+            $current_search_value = '';
+            if (!empty($_REQUEST['s'])) {
+                $current_search_value = esc_js(sanitize_text_field(wp_unslash($_REQUEST['s'])));
+            }
+
+            // Add Js and Css
+            wp_enqueue_style('parsigate-logs', \ParsiGate::$plugin_url . '/assets/admin/logs.min.css', array(), \ParsiGate::$plugin_version, 'all');
+            wp_enqueue_script('parsigate-logs', \ParsiGate::$plugin_url . '/assets/admin/logs.min.js', array('jquery'), \ParsiGate::$plugin_version, true);
+            wp_localize_script('parsigate-logs', 'parsigateAdminData', array(
+                'searchInputId' => $search_input_id,
+                'optionsHtml' => $options_html,
+                'currentSearchValue' => $current_search_value,
+            ));
 
             // Add Json Browse
             wp_enqueue_style('parsigate-json-browser', \ParsiGate::$plugin_url . '/assets/json-browse/json-browse.css', array(), \ParsiGate::$plugin_version, 'all');
@@ -154,15 +202,7 @@ class LogAdminPage extends Page
             $table = $this->admin_list_table;
             $title = (static::model())::title();
             $buttons = [];
-            include \ParsiGate::$plugin_path . '/inc/custom-table/' . str_ireplace("_", "-", (static::model())::slug()) . '/views/list-table.php';
-        }
-    }
-
-    public function search_box_template(): void
-    {
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-        if (static::is_page() and empty($_GET['screen'])) {
-            include \ParsiGate::$plugin_path . '/inc/custom-table/' . str_ireplace("_", "-", (static::model())::slug()) . '/views/search-box.php';
+            include \ParsiGate::$plugin_path . '/inc/custom-table/pg-log/views/list-table.php';
         }
     }
 

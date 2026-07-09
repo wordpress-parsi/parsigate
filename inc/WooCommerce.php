@@ -24,7 +24,7 @@ class WooCommerce
         add_action('init', [$this, 'test_gateway_page']);
 
         // Ltr Input Class
-        add_action('admin_head', [$this, 'admin_head']);
+        add_action('admin_enqueue_scripts', [$this, 'admin_enqueue_scripts']);
     }
 
     public function woocommerce_payment_gateways($methods)
@@ -96,11 +96,11 @@ class WooCommerce
             $method = $gateway->get_payment_method_data();
 
             $data[] = [
-                'name'        => $gateway->get_name(),
-                'title'       => $method['title'],
+                'name' => $gateway->get_name(),
+                'title' => $method['title'],
                 'description' => $method['description'],
-                'icon'        => $method['icon'],
-                'driver'      => $gateway->get_name(),
+                'icon' => $method['icon'],
+                'driver' => $gateway->get_name(),
             ];
         }
 
@@ -118,7 +118,7 @@ class WooCommerce
                 true
             );
 
-            wp_localize_script('parsigate-blocks', 'parsigate_gateways',  $this->get_js_data());
+            wp_localize_script('parsigate-blocks', 'parsigate_gateways', $this->get_js_data());
         }
     }
 
@@ -145,14 +145,21 @@ class WooCommerce
                 wp_die(esc_html__('Order Status is not pending payment.', 'parsigate'));
             }
 
+            wp_enqueue_style('parsigate-test-gateway', \ParsiGate::$plugin_url . '/assets/css/test-gateway.min.css', array(), \ParsiGate::$plugin_version, 'all');
+            remove_action('wp_print_styles', 'print_emoji_styles');
+
             $template = apply_filters('parsigate_test_gateway_template', \ParsiGate::$plugin_path . '/inc/templates/test-gateway.php');
             if (file_exists($template)) {
                 ob_start();
                 include $template;
                 $output = ob_get_contents();
                 ob_end_clean();
+                wp_die(
                 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-                wp_die($output, esc_html__('Test Gateway', 'parsigate'));
+                    $output,
+                    esc_html__('Test Gateway', 'parsigate'),
+                    array('response' => 200)
+                );
             }
         }
     }
@@ -172,18 +179,17 @@ class WooCommerce
         return apply_filters('parsigate_order_description_api', $text, $order, $gateway);
     }
 
-    public function admin_head()
+    public function admin_enqueue_scripts($hook)
     {
         // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
         if (isset($_GET['page']) and $_GET['page'] === 'wc-settings' and isset($_GET['tab']) and $_GET['tab'] === 'checkout') {
-            ?>
-            <style>
-                .pg-ltr-input {
-                    direction: ltr !important;
-                    text-align: left !important;
-                }
-            </style>
-            <?php
+            $inline_style = '
+                    .pg-ltr-input {
+                        direction: ltr !important;
+                        text-align: left !important;
+                    }
+                ';
+            wp_add_inline_style('wc-admin-app', $inline_style);
         }
     }
 
