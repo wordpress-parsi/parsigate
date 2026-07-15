@@ -125,7 +125,7 @@ Privacy: https://pep.co.ir/shaparak-requirements/
 PayPing
 Website: https://payping.ir/
 Terms: https://payping.ir/terms
-Privacy: https://payping.ir/privacy
+Privacy: https://payping.ir/terms/
 
 Saman Electronic Payment (SEP)
 Website: https://sep.ir/
