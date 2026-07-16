@@ -470,7 +470,7 @@ class WC_Gateway extends \WC_Payment_Gateway
             : 0;
 
         if ($order_id < 1) {
-            wp_die(__('Invalid order id.', 'parsigate'));
+            wp_die(esc_html__('Invalid order id.', 'parsigate'));
         }
 
         $request = apply_filters('parsigate_gateway_verify_payment_inputs', [
