@@ -244,7 +244,7 @@ class ParsiGate
 
         // Load DB delta
         if (!function_exists('dbDelta')) {
-            require(ABSPATH . 'wp-admin/includes/upgrade.php');
+            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         }
 
         // Charset Collate
