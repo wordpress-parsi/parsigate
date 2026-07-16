@@ -129,12 +129,19 @@ class WooCommerce
 
     public function test_gateway_page()
     {
-        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-        if (isset($_GET[self::$test_gateway_query]) and is_numeric($_GET[self::$test_gateway_query]) and !empty($_GET['callback_url'])) {
+        if (isset($_GET[self::$test_gateway_query]) and is_numeric($_GET[self::$test_gateway_query]) and !empty($_GET['callback_url']) and !empty($_GET['parsigate_nonce'])) {
 
             $callback_url = urldecode_deep(sanitize_text_field(wp_unslash($_GET['callback_url'])));
             $order_id = sanitize_text_field(absint($_GET[self::$test_gateway_query]));
-            // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+            $nonce = isset($_GET['parsigate_nonce']) ? sanitize_text_field(wp_unslash($_GET['parsigate_nonce'])) : '';
+
+            if (!wp_verify_nonce($nonce, 'parsigate_test_gateway_' . $order_id)) {
+                wp_die(
+                    esc_html__('Security verification failed. Invalid or expired nonce.', 'parsigate'),
+                    esc_html__('Security Error', 'parsigate'),
+                    ['response' => 403]
+                );
+            }
 
             $order = wc_get_order($order_id);
             if (!$order) {

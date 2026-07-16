@@ -8,9 +8,12 @@ class Test extends Base
 {
     public function pay(array $args = []): array
     {
+        $nonce = wp_create_nonce('parsigate_test_gateway_' . $args['order_id']);
+
         $redirect = add_query_arg([
             WooCommerce::$test_gateway_query => $args['order_id'],
             'callback_url' => urlencode_deep($args['callback_url']),
+            'parsigate_nonce' => $nonce
         ], get_site_url(null, "/"));
 
         return $this->success(
