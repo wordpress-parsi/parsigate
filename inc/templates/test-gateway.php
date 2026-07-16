@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) exit;
 ?>
 
-<?php wp_print_styles(); ?>
+<?php wp_print_styles(['parsigate-test-gateway']); ?>
 
 <div class="container">
     <h1><?php esc_html_e("Test Gateway", "parsigate"); ?></h1>

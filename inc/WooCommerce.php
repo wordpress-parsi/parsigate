@@ -146,7 +146,6 @@ class WooCommerce
             }
 
             wp_enqueue_style('parsigate-test-gateway', \ParsiGate::$plugin_url . '/assets/css/test-gateway.min.css', array(), \ParsiGate::$plugin_version, 'all');
-            remove_action('wp_print_styles', 'print_emoji_styles');
 
             $template = apply_filters('parsigate_test_gateway_template', \ParsiGate::$plugin_path . '/inc/templates/test-gateway.php');
             if (file_exists($template)) {

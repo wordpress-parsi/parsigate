@@ -502,11 +502,6 @@ class WC_Gateway extends \WC_Payment_Gateway
             }
             ?>
         </form>
-        <script type="text/javascript">
-            setTimeout(function () {
-                document.forms['redirect'].submit();
-            }, 100);
-        </script>
         </body>
         </html>
         <?php
