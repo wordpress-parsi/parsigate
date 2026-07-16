@@ -57,7 +57,7 @@ class Base
         $args = apply_filters('parsigate_insert_data_' . static::table(), $args);
 
         foreach (static::get_json_fields() as $key) {
-            $args[$key] = json_encode($args[$key], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            $args[$key] = wp_json_encode($args[$key], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
@@ -160,7 +160,7 @@ class Base
 
             foreach (static::get_json_fields() as $key) {
                 if (isset($changed[$key])) {
-                    $changed[$key] = json_encode($changed[$key], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                    $changed[$key] = wp_json_encode($changed[$key], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
                 }
             }
 

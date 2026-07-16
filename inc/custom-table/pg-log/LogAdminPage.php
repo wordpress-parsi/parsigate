@@ -92,7 +92,7 @@ class LogAdminPage extends Page
                 $parsigate_choices = [];
                 if ($type == "select") {
                     if (is_array($parsigate_value_array['choices']) && !empty($parsigate_value_array['choices'])) {
-                        $parsigate_choices = json_encode($parsigate_value_array['choices'], JSON_NUMERIC_CHECK);
+                        $parsigate_choices = wp_json_encode($parsigate_value_array['choices'], JSON_NUMERIC_CHECK);
                     }
                 }
                 if (is_array($parsigate_value_array)) {

@@ -55,7 +55,7 @@ class Message
         ];
 
         if (self::$handler == "cookie") {
-            setcookie(self::$key, json_encode($args, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), (time() + self::$timeout), COOKIEPATH, COOKIE_DOMAIN);
+            setcookie(self::$key, wp_json_encode($args, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), (time() + self::$timeout), COOKIEPATH, COOKIE_DOMAIN);
         } else {
             update_user_meta($user_id, self::$key, $args);
         }

@@ -417,7 +417,7 @@ class WC_Gateway extends \WC_Payment_Gateway
 
             $error_message = '';
             if (isset($pay['errors']) and !empty($pay['errors']) and is_array($pay['errors'])) {
-                $error_message = json_encode($pay['errors'], JSON_UNESCAPED_UNICODE);
+                $error_message = wp_json_encode($pay['errors'], JSON_UNESCAPED_UNICODE);
             }
             if (isset($pay['message']) and !empty($pay['message'])) {
                 $error_message = $pay['message'];
@@ -602,7 +602,7 @@ class WC_Gateway extends \WC_Payment_Gateway
         if (empty($error_message)) {
 
             if (isset($verify['errors']) and !empty($verify['errors']) and is_array($verify['errors'])) {
-                $error_message = json_encode($verify['errors'], JSON_UNESCAPED_UNICODE);
+                $error_message = wp_json_encode($verify['errors'], JSON_UNESCAPED_UNICODE);
             }
             if (isset($verify['message']) and !empty($verify['message'])) {
                 $error_message = $verify['message'];

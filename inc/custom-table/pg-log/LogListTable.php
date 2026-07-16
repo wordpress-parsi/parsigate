@@ -322,7 +322,7 @@ class LogListTable extends \WP_List_Table
                         </div>';
 
                     $inline_script = 'jQuery(document).ready(function () {
-                                        jQuery("#body_' . absint($item['ID']) . ' pre").jsonBrowse(' . json_encode($item['body'], JSON_PRETTY_PRINT) . ', {
+                                        jQuery("#body_' . absint($item['ID']) . ' pre").jsonBrowse(' . wp_json_encode($item['body'], JSON_PRETTY_PRINT) . ', {
                                             collapsed: false,
                                             withQuotes: false
                                         });
@@ -347,7 +347,7 @@ class LogListTable extends \WP_List_Table
                         </div>';
 
                     $inline_script = 'jQuery(document).ready(function () {
-                                jQuery("#header_' . absint($item['ID']) . ' pre").jsonBrowse(' . json_encode($item['header'], JSON_PRETTY_PRINT) . ', {
+                                jQuery("#header_' . absint($item['ID']) . ' pre").jsonBrowse(' . wp_json_encode($item['header'], JSON_PRETTY_PRINT) . ', {
                                     collapsed: false,
                                     withQuotes: false
                                 });
@@ -374,7 +374,7 @@ class LogListTable extends \WP_List_Table
                         </div>';
 
                     $inline_script = 'jQuery(document).ready(function () {
-                                    jQuery("#response_' . absint($item['ID']) . ' pre").jsonBrowse(' . json_encode($item['response'], JSON_PRETTY_PRINT) . ', {
+                                    jQuery("#response_' . absint($item['ID']) . ' pre").jsonBrowse(' . wp_json_encode($item['response'], JSON_PRETTY_PRINT) . ', {
                                         collapsed: false,
                                         withQuotes: false
                                     });

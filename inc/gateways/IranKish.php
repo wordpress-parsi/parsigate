@@ -31,7 +31,7 @@ class IranKish extends Base
 
         // Setup Request args
         $request = [
-            'body' => json_encode($body),
+            'body' => wp_json_encode($body),
             'timeout' => 30,
             'redirection' => '5',
             'httpsversion' => '1.0',
@@ -125,7 +125,7 @@ class IranKish extends Base
 
         // Setup Request args
         $request = [
-            'body' => json_encode($body),
+            'body' => wp_json_encode($body),
             'timeout' => 30,
             'redirection' => '5',
             'httpsversion' => '1.0',

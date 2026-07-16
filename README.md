@@ -96,9 +96,9 @@ function new_define_gateway_parsigate($list)
                     "description" => sprintf(__('Order ID: %d', 'parsigate'), $order->get_order_number()),
                 ];
             },
-            'verify' => function ($amount, $order, $option, $class) {
-                $authority = ($_GET['Authority'] ?? '');
-                $status = ($_GET['Status'] ?? '');
+            'verify' => function ($amount, $order, $option, $class, $request) {
+                $authority = ($request['get']['Authority'] ?? '');
+                $status = ($request['get']['Status'] ?? '');
                 return [
                     "merchant_id" => $option['merchant_id'],
                     "amount" => $amount,
