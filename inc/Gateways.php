@@ -22,7 +22,7 @@ use ParsiGate\Gateways\ZarinPal;
 use ParsiGate\gateways\Zibal;
 use WPParsidate\Addons\ParsiGateOption\ParsiGateOption;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('ABSPATH')) exit;
 
 class Gateways
 {
@@ -76,10 +76,9 @@ class Gateways
                             'AdditionalData' => WooCommerce::get_order_description($order, 'parsian')
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $token = (isset($_REQUEST['Token']) ? sanitize_text_field(wp_unslash($_REQUEST['Token'])) : '');
+                        $token = (isset($request['post']['Token']) ? sanitize_text_field($request['post']['Token']) : '');
 
                         return [
                             'LoginAccount' => $option['merchant_id'],
@@ -162,14 +161,12 @@ class Gateways
                             "terminalNumber" => $option['terminal_id']
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $invoiceId = (isset($_REQUEST['invoiceId']) ? sanitize_text_field(wp_unslash($_REQUEST['invoiceId'])) : '');
-                        $status = (isset($_REQUEST['status']) ? sanitize_text_field(wp_unslash($_REQUEST['status'])) : '');
-                        $referenceNumber = (isset($_REQUEST['referenceNumber']) ? sanitize_text_field(wp_unslash($_REQUEST['referenceNumber'])) : '');
-                        $trackId = (isset($_REQUEST['trackId']) ? sanitize_text_field(wp_unslash($_REQUEST['trackId'])) : '');
-                        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+                        $invoiceId = (isset($request['get']['invoiceId']) ? sanitize_text_field($request['get']['invoiceId']) : '');
+                        $status = (isset($request['get']['status']) ? sanitize_text_field($request['get']['status']) : '');
+                        $referenceNumber = (isset($request['get']['referenceNumber']) ? sanitize_text_field($request['get']['referenceNumber']) : '');
+                        $trackId = (isset($request['get']['trackId']) ? sanitize_text_field($request['get']['trackId']) : '');
 
                         $tokens = new Tokens('pasargad');
 
@@ -221,13 +218,11 @@ class Gateways
                             "ResNum4" => ''
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $State = (isset($_POST['State']) ? sanitize_text_field(wp_unslash($_POST['State'])) : '');
-                        $ResNum = (isset($_POST['ResNum']) ? sanitize_text_field(wp_unslash($_POST['ResNum'])) : '');
-                        $RefNum = (isset($_POST['RefNum']) ? sanitize_text_field(wp_unslash($_POST['RefNum'])) : '');
-                        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+                        $State = (isset($request['post']['State']) ? sanitize_text_field($request['post']['State']) : '');
+                        $ResNum = (isset($request['post']['ResNum']) ? sanitize_text_field($request['post']['ResNum']) : '');
+                        $RefNum = (isset($request['post']['RefNum']) ? sanitize_text_field($request['post']['RefNum']) : '');
 
                         return [
                             'State' => $State,
@@ -286,16 +281,14 @@ class Gateways
                             'payerId' => $order->get_customer_id()
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $resCode = (isset($_POST['ResCode']) ? sanitize_text_field(wp_unslash($_POST['ResCode'])) : '');
-                        $saleOrderId = (isset($_POST['SaleOrderId']) ? sanitize_text_field(wp_unslash($_POST['SaleOrderId'])) : '');
-                        $saleReferenceId = (isset($_POST['SaleReferenceId']) ? sanitize_text_field(wp_unslash($_POST['SaleReferenceId'])) : '');
-                        $CardHolderInfo = (isset($_POST['CardHolderInfo']) ? sanitize_text_field(wp_unslash($_POST['CardHolderInfo'])) : '');
-                        $CardHolderPan = (isset($_POST['CardHolderPan']) ? sanitize_text_field(wp_unslash($_POST['CardHolderPan'])) : '');
-                        $FinalAmount = (isset($_POST['FinalAmount']) ? sanitize_text_field(wp_unslash($_POST['FinalAmount'])) : '');
-                        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+                        $resCode = (isset($request['post']['ResCode']) ? sanitize_text_field($request['post']['ResCode']) : '');
+                        $saleOrderId = (isset($request['post']['SaleOrderId']) ? sanitize_text_field($request['post']['SaleOrderId']) : '');
+                        $saleReferenceId = (isset($request['post']['SaleReferenceId']) ? sanitize_text_field($request['post']['SaleReferenceId']) : '');
+                        $CardHolderInfo = (isset($request['post']['CardHolderInfo']) ? sanitize_text_field($request['post']['CardHolderInfo']) : '');
+                        $CardHolderPan = (isset($request['post']['CardHolderPan']) ? sanitize_text_field($request['post']['CardHolderPan']) : '');
+                        $FinalAmount = (isset($request['post']['FinalAmount']) ? sanitize_text_field($request['post']['FinalAmount']) : '');
 
                         return [
                             'ResCode' => $resCode,
@@ -358,13 +351,11 @@ class Gateways
                             'OrderId' => $order->get_id()
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $OrderId = (isset($_POST["OrderId"]) ? sanitize_text_field(wp_unslash($_POST["OrderId"])) : '');
-                        $Token = (isset($_POST["token"]) ? sanitize_text_field(wp_unslash($_POST["token"])) : '');
-                        $ResCode = (isset($_POST["ResCode"]) ? sanitize_text_field(wp_unslash($_POST["ResCode"])) : '');
-                        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+                        $OrderId = (isset($request["post"]["OrderId"]) ? sanitize_text_field($request["post"]["OrderId"]) : '');
+                        $Token = (isset($request["post"]["token"]) ? sanitize_text_field($request["post"]["token"]) : '');
+                        $ResCode = (isset($request["post"]["ResCode"]) ? sanitize_text_field($request["post"]["ResCode"]) : '');
 
                         return [
                             'ResCode' => $ResCode,
@@ -428,7 +419,7 @@ class Gateways
                             'additionalData' => '',
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
                         return [
                             'username' => $option['username'],
@@ -467,14 +458,12 @@ class Gateways
                             'Payload' => $order->get_billing_phone()
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $invoiceNumber = (isset($_POST['invoiceid'])) ? sanitize_text_field(wp_unslash($_POST['invoiceid'])) : "";
-                        $digitalreceipt = (isset($_POST['digitalreceipt'])) ? sanitize_text_field(wp_unslash($_POST['digitalreceipt'])) : "";
-                        $respcode = (isset($_POST['respcode'])) ? sanitize_text_field(wp_unslash($_POST['respcode'])) : "";
-                        $rrn = (isset($_POST['rrn'])) ? sanitize_text_field(wp_unslash($_POST['rrn'])) : "";
-                        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+                        $invoiceNumber = (isset($request['post']['invoiceid'])) ? sanitize_text_field($request['post']['invoiceid']) : "";
+                        $digitalreceipt = (isset($request['post']['digitalreceipt'])) ? sanitize_text_field($request['post']['digitalreceipt']) : "";
+                        $respcode = (isset($request['post']['respcode'])) ? sanitize_text_field($request['post']['respcode']) : "";
+                        $rrn = (isset($request['post']['rrn'])) ? sanitize_text_field($request['post']['rrn']) : "";
 
                         return [
                             'respcode' => $respcode,
@@ -546,14 +535,12 @@ class Gateways
                             "transactionType" => "Purchase"
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $responseCode = (isset($_POST['responseCode']) ? sanitize_text_field(wp_unslash($_POST['responseCode'])) : '');
-                        $retrievalReferenceNumber = (isset($_POST['retrievalReferenceNumber']) ? sanitize_text_field(wp_unslash($_POST['retrievalReferenceNumber'])) : '');
-                        $systemTraceAuditNumber = (isset($_POST['systemTraceAuditNumber']) ? sanitize_text_field(wp_unslash($_POST['systemTraceAuditNumber'])) : '');
-                        $tokenIdentity = (isset($_POST['token']) ? sanitize_text_field(wp_unslash($_POST['token'])) : '');
-                        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+                        $responseCode = (isset($request['post']['responseCode']) ? sanitize_text_field($request['post']['responseCode']) : '');
+                        $retrievalReferenceNumber = (isset($request['post']['retrievalReferenceNumber']) ? sanitize_text_field($request['post']['retrievalReferenceNumber']) : '');
+                        $systemTraceAuditNumber = (isset($request['post']['systemTraceAuditNumber']) ? sanitize_text_field($request['post']['systemTraceAuditNumber']) : '');
+                        $tokenIdentity = (isset($request['post']['token']) ? sanitize_text_field($request['post']['token']) : '');
 
                         return [
                             'terminalId' => $option['terminal_id'],
@@ -601,12 +588,10 @@ class Gateways
                             "metadata" => $metadata,
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $authority = (isset($_GET['Authority']) ? sanitize_text_field(wp_unslash($_GET['Authority'])) : '');
-                        $status = (isset($_GET['Status']) ? sanitize_text_field(wp_unslash($_GET['Status'])) : '');
-                        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+                        $authority = (isset($request['get']['Authority']) ? sanitize_text_field($request['get']['Authority']) : '');
+                        $status = (isset($request['get']['Status']) ? sanitize_text_field($request['get']['Status']) : '');
 
                         return [
                             'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',
@@ -649,12 +634,10 @@ class Gateways
                             'description' => WooCommerce::get_order_description($order, 'zibal')
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $success = (isset($_GET['success']) ? sanitize_text_field(wp_unslash($_GET['success'])) : '');
-                        $trackId = (isset($_GET['trackId']) ? sanitize_text_field(wp_unslash($_GET['trackId'])) : '');
-                        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+                        $success = (isset($request['get']['success']) ? sanitize_text_field($request['get']['success']) : '');
+                        $trackId = (isset($request['get']['trackId']) ? sanitize_text_field($request['get']['trackId']) : '');
 
                         return [
                             'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',
@@ -708,19 +691,17 @@ class Gateways
                             'clientRefId' => (string)$order->get_id()
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        if (!isset($_POST['status']) || !isset($_POST['data'])) {
+                        if (!isset($request['post']['status']) || !isset($request['post']['data'])) {
                             return ['success' => false];
                         }
 
-                        if ($_POST['status'] != '1') {
+                        if ($request['post']['status'] != '1') {
                             return ['success' => false];
                         }
 
-                        $raw = sanitize_text_field(wp_unslash($_POST['data']));
-                        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+                        $raw = sanitize_text_field($request['post']['data']);
 
                         $sanitize = str_ireplace("\\", "", $raw);
                         $data = json_decode($sanitize, true);
@@ -767,12 +748,10 @@ class Gateways
                             'description' => WooCommerce::get_order_description($order, 'aqayepardakht')
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $status = (isset($_POST['status']) ? sanitize_text_field(wp_unslash($_POST['status'])) : '');
-                        $transid = (isset($_POST['transid']) ? sanitize_text_field(wp_unslash($_POST['transid'])) : '');
-                        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+                        $status = (isset($request['post']['status']) ? sanitize_text_field($request['post']['status']) : '');
+                        $transid = (isset($request['post']['transid']) ? sanitize_text_field($request['post']['transid']) : '');
 
                         return [
                             'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',
@@ -813,12 +792,10 @@ class Gateways
                             'description' => WooCommerce::get_order_description($order, 'shepa')
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $status = (isset($_GET['status']) ? sanitize_text_field(wp_unslash($_GET['status'])) : '');
-                        $token = (isset($_GET['token']) ? sanitize_text_field(wp_unslash($_GET['token'])) : '');
-                        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+                        $status = (isset($request['get']['status']) ? sanitize_text_field($request['get']['status']) : '');
+                        $token = (isset($request['get']['token']) ? sanitize_text_field($request['get']['token']) : '');
 
                         return [
                             'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',
@@ -944,10 +921,9 @@ class Gateways
                             'discountAmount' => ((int)$order_data['discount_total'] > 0 ? WooCommerce::price($order_data['discount_total'], $order, 'snapppay') : 0)
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $state = (isset($_POST['state']) ? sanitize_text_field(wp_unslash($_POST['state'])) : '');
+                        $state = (isset($request['post']['state']) ? sanitize_text_field($request['post']['state']) : '');
 
                         // Get Token
                         $tokens = new Tokens('snapppay');
@@ -1038,12 +1014,10 @@ class Gateways
                             'callbackUrl' => $callback_url
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $type = (isset($_REQUEST['type']) ? sanitize_text_field(wp_unslash($_REQUEST['type'])) : '');
-                        $trackingCode = (isset($_REQUEST['trackingCode']) ? sanitize_text_field(wp_unslash($_REQUEST['trackingCode'])) : '');
-                        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+                        $type = (isset($request['post']['type']) ? sanitize_text_field($request['post']['type']) : '');
+                        $trackingCode = (isset($request['post']['trackingCode']) ? sanitize_text_field($request['post']['trackingCode']) : '');
 
                         // Get Token
                         $tokens = new Tokens('digipay');
@@ -1150,12 +1124,10 @@ class Gateways
                             'items' => $items
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $status = (isset($_GET['status']) ? sanitize_text_field(wp_unslash($_GET['status'])) : '');
-                        $ticketId = (isset($_GET['ticketId']) ? sanitize_text_field(wp_unslash($_GET['ticketId'])) : '');
-                        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+                        $status = (isset($request['get']['status']) ? sanitize_text_field($request['get']['status']) : '');
+                        $ticketId = (isset($request['get']['ticketId']) ? sanitize_text_field($request['get']['ticketId']) : '');
 
                         return [
                             'api_url' => $option['api_url'],
@@ -1297,13 +1269,11 @@ class Gateways
                             'ip' => Utility::ip()
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $token = (isset($_POST['token']) ? sanitize_text_field(wp_unslash($_POST['token'])) : '');
-                        $result = (isset($_POST['result']) ? sanitize_text_field(wp_unslash($_POST['result'])) : '');
-                        $channelRefNumber = (isset($_POST['channelRefNumber']) ? sanitize_text_field(wp_unslash($_POST['channelRefNumber'])) : '');
-                        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+                        $token = (isset($request['post']['token']) ? sanitize_text_field($request['post']['token']) : '');
+                        $result = (isset($request['post']['result']) ? sanitize_text_field($request['post']['result']) : '');
+                        $channelRefNumber = (isset($request['post']['channelRefNumber']) ? sanitize_text_field($request['post']['channelRefNumber']) : '');
 
                         // Get Token
                         $tokens = new Tokens('tara');
@@ -1335,10 +1305,9 @@ class Gateways
                             "callback_url" => $callback_url,
                         ];
                     },
-                    'verify' => function ($amount, $order, $option, $class) {
+                    'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                        $status = (isset($_GET['status']) ? sanitize_text_field(wp_unslash($_GET['status'])) : 'NOK');
+                        $status = (isset($request['get']['status']) ? sanitize_text_field($request['get']['status']) : 'NOK');
 
                         return [
                             'status' => $status

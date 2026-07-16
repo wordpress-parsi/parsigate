@@ -461,39 +461,55 @@ class WC_Gateway extends \WC_Payment_Gateway
 
     public function handle_gateway_response()
     {
-        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+        // phpcs:disable WordPress.Security.NonceVerification.Missing
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended
+
         $action = (isset($_GET['action']) ? sanitize_text_field(wp_unslash($_GET['action'])) : '');
-        $order_id = (isset($_GET['order_id']) ? sanitize_text_field(intval($_GET['order_id'])) : 0);
-        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+        $order_id = isset($_GET['order_id'])
+            ? absint(wp_unslash($_GET['order_id']))
+            : 0;
+
+        if ($order_id < 1) {
+            wp_die(__('Invalid order id.', 'parsigate'));
+        }
+
+        $request = apply_filters('parsigate_gateway_verify_payment_inputs', [
+            'get' => wp_unslash($_GET),
+            'post' => wp_unslash($_POST),
+            'body' => file_get_contents('php://input'),
+        ], $order_id, $this->id);
 
         $order = wc_get_order($order_id);
 
         switch ($action) {
             case 'redirect':
-                $this->redirect_to_gateway($order);
+                $this->redirect_to_gateway($order, $request);
                 break;
 
             default:
-                $this->verify_payment($order);
+                $this->verify_payment($order, $request);
                 break;
         }
+
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
     }
 
-    public function redirect_to_gateway($order)
+    public function redirect_to_gateway($order, $request)
     {
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-        $redirect_url = isset($_GET['url']) ? esc_url_raw(urldecode_deep(sanitize_text_field(wp_unslash($_GET['url'])))) : '';
+        $redirect_url = isset($request['get']['url'])
+            ? esc_url_raw(urldecode($request['get']['url']))
+            : '';
         ?>
         <html lang="fa-IR">
         <head>
             <meta charset="UTF-8"/>
         </head>
         <body onload="document.forms['redirect'].submit()">
-        <form name="redirect" method="post" action="<?php echo esc_html($redirect_url); ?>">
+        <form name="redirect" method="post" action="<?php echo esc_url($redirect_url); ?>">
             <?php
-            // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-            foreach ($_GET as $key => $value) {
-                if (in_array($key, ['wc-api', 'action', 'order_id', 'url'])) {
+            foreach ($request['get'] as $key => $value) {
+                if (in_array($key, ['wc-api', 'action', 'order_id', 'url'], true)) {
                     continue;
                 }
                 ?>
@@ -508,12 +524,12 @@ class WC_Gateway extends \WC_Payment_Gateway
         exit;
     }
 
-    public function verify_payment($order)
+    public function verify_payment($order, $request)
     {
         $option = WooCommerce::get_gateway_option($this->id);
         $amount = $this->get_amount($order);
 
-        do_action('parsigate_gateway_before_verify_payment', $order, $this->id);
+        do_action('parsigate_gateway_before_verify_payment', $order, $this->id, $request);
 
         $class = new Gateway($this->driver);
 
@@ -527,7 +543,7 @@ class WC_Gateway extends \WC_Payment_Gateway
 
         $params = [];
         if (isset($this->gateway['woocommerce']['verify']) && is_callable($this->gateway['woocommerce']['verify'])) {
-            $params = $this->gateway['woocommerce']['verify']($amount, $order, $option, $class);
+            $params = $this->gateway['woocommerce']['verify']($amount, $order, $option, $class, $request);
         }
 
         if ($params instanceof \WP_Error) {
@@ -536,7 +552,7 @@ class WC_Gateway extends \WC_Payment_Gateway
 
         $verify = $class->verify(apply_filters('parsigate_gateway_verify_payment_params', $params, $order, $this->id));
 
-        do_action('parsigate_gateway_after_verify_payment', $verify, $order, $this->id, wp_is_json_request());
+        do_action('parsigate_gateway_after_verify_payment', $verify, $order, $this->id, wp_is_json_request(), $request);
 
         if ($verify['success'] === true) {
             $this->set_completed_payment($order, $verify['data']['transaction_id'], $verify);
