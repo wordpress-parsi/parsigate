@@ -42,30 +42,18 @@ class LogListTable extends \WP_List_Table
             'ajax' => false
         ));
 
-        // Fixed Params
-        $this->sanitize_query_link();
-    }
-
-    public function sanitize_query_link(): void
-    {
-        foreach (array_merge(static::$query_filter, static::$query_search) as $key) {
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            if (isset($_REQUEST[$key])) {
-                // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-                $_GET[$key] = sanitize_text_field(wp_unslash($_REQUEST[$key]));
-            }
-        }
     }
 
     public function url($args = []): string
     {
         // Setup Default Params
         foreach (array_merge(static::$query_filter, static::$query_search) as $key) {
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+            // phpcs:disable WordPress.Security.NonceVerification
             if (isset($_REQUEST[$key])) {
-                // phpcs:ignore WordPress.Security.NonceVerification.Recommended
                 $args[$key] = sanitize_text_field(wp_unslash($_REQUEST[$key]));
             }
+            // phpcs:enable WordPress.Security.NonceVerification
         }
 
         // Return
@@ -100,107 +88,169 @@ class LogListTable extends \WP_List_Table
     {
         global $wpdb;
 
-        $tbl = (static::model())::table();
-        $sql = "SELECT * FROM `$tbl`";
+        $table = (static::model())::table();
 
-        // Where conditional
-        $conditional = self::conditional_sql();
-        if (!empty($conditional)) {
-            $sql .= ' WHERE ' . implode(' AND ', $conditional);
+        $sql = "SELECT * FROM `{$table}`";
+
+        $condition = self::conditional_sql();
+
+        if (!empty($condition['where'])) {
+            $sql .= ' WHERE ' . implode(' AND ', $condition['where']);
         }
 
-        // Check Order By
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-        if (!empty($_REQUEST['orderby'])) {
+        $allowed_orderby = array_unique(
+            array_merge(
+                self::$query_filter,
+                [(static::model())::primary_key()]
+            )
+        );
 
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            $sql .= ' ORDER BY ' . esc_sql(sanitize_text_field(wp_unslash($_REQUEST['orderby'])));
-        } else {
-            $sql .= ' ORDER BY `' . (static::model())::primary_key() . '`';
+        // phpcs:disable WordPress.Security.NonceVerification
+
+        $orderby = !empty($_REQUEST['orderby'])
+            ? sanitize_key(wp_unslash($_REQUEST['orderby']))
+            : (static::model())::primary_key();
+
+        if (!in_array($orderby, $allowed_orderby, true)) {
+            $orderby = (static::model())::primary_key();
         }
 
-        // Check Order
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-        $sql .= !empty($_REQUEST['order']) ? ' ' . esc_sql(sanitize_text_field(wp_unslash($_REQUEST['order']))) : ' DESC';
-        $sql .= " LIMIT $per_page";
-        $sql .= ' OFFSET ' . ($page_number - 1) * $per_page;
+        $order = !empty($_REQUEST['order'])
+            ? strtoupper(sanitize_text_field(wp_unslash($_REQUEST['order'])))
+            : 'DESC';
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-        return array_map([static::model(), 'prepare'], $wpdb->get_results($sql, ARRAY_A));
+        $order = ('ASC' === $order) ? 'ASC' : 'DESC';
+
+        // phpcs:enable WordPress.Security.NonceVerification
+
+        $sql .= " ORDER BY `{$orderby}` {$order}";
+        $sql .= ' LIMIT %d OFFSET %d';
+
+        $args = $condition['args'];
+        $args[] = absint($per_page);
+        $args[] = max(0, (absint($page_number) - 1) * absint($per_page));
+
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        $prepared = $wpdb->prepare($sql, $args);
+
+        return array_map(
+            [static::model(), 'prepare'],
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+            $wpdb->get_results($prepared, ARRAY_A)
+        );
     }
 
     public static function record_count($condition = true): ?string
     {
         global $wpdb;
-        $tbl = (static::model())::table();
-        $sql = "SELECT COUNT(*) FROM `$tbl`";
 
-        // Where conditional
+        $table = (static::model())::table();
+
+        $sql = "SELECT COUNT(*) FROM `{$table}`";
+        $args = [];
+
         if ($condition) {
 
             $conditional = self::conditional_sql();
-            if (!empty($conditional)) {
-                $sql .= ' WHERE ' . implode(' AND ', $conditional);
+
+            if (!empty($conditional['where'])) {
+                $sql .= ' WHERE ' . implode(' AND ', $conditional['where']);
+                $args = $conditional['args'];
             }
         }
 
+        if (!empty($args)) {
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+            $sql = $wpdb->prepare($sql, $args);
+        }
+
         $cache_key = 'db_var_' . md5($sql);
+
         $cached = wp_cache_get($cache_key, 'db_var');
-        if ($cached !== false) {
+        if (false !== $cached) {
             return $cached;
         }
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared
         $result = $wpdb->get_var($sql);
-        wp_cache_set($cache_key, $result, 'db_var', 3600);
+
+        wp_cache_set($cache_key, $result, 'db_var', HOUR_IN_SECONDS);
 
         return $result;
     }
 
     public static function conditional_sql(): array
     {
-        // phpcs:disable WordPress.Security.NonceVerification.Recommended
         $where = [];
+        $args = [];
 
-        // Check Search
-        if (isset($_REQUEST['search-type']) and !empty($_REQUEST['search-type']) and isset($_REQUEST['s']) and !empty($_REQUEST['s'])) {
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended
 
-            // Set Request URL
-            if (isset($_SERVER['REQUEST_URI'])) {
+        if (
+            !empty($_REQUEST['search-type']) &&
+            !empty($_REQUEST['s'])
+        ) {
 
-                $_SERVER['REQUEST_URI'] = add_query_arg([
-                    'search-type' => sanitize_text_field(wp_unslash($_REQUEST['search-type'])),
-                    's' => sanitize_text_field(wp_unslash($_REQUEST['s'])),
-                ], sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])));
-            }
-
-            // Get search Input
+            $search_type = sanitize_key(wp_unslash($_REQUEST['search-type']));
             $search = sanitize_text_field(wp_unslash($_REQUEST['s']));
 
-            // Setup Case Switch
-            switch (strtolower(sanitize_text_field(wp_unslash($_REQUEST['search-type'])))) {
+            if (isset($_SERVER['REQUEST_URI'])) {
+                $_SERVER['REQUEST_URI'] = add_query_arg(
+                    [
+                        'search-type' => $search_type,
+                        's' => $search,
+                    ],
+                    sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI']))
+                );
+            }
 
-                case "ID":
-                    $explodeIds = array_filter(array_map('trim', explode(",", $search)));
-                    $where[] = "`" . (static::model())::primary_key() . "` IN ('" . implode("','", $explodeIds) . "')";
-                    break;
+            $allowed_columns = array_unique(
+                array_merge(
+                    self::$query_filter,
+                    [(static::model())::primary_key()]
+                )
+            );
 
-                default:
-                    $where[] = "`" . sanitize_text_field(wp_unslash($_REQUEST['search-type'])) . "` = '{$search}'";
-                    break;
+            if ('ID' === strtoupper($search_type)) {
+
+                $ids = array_filter(
+                    array_map(
+                        'absint',
+                        explode(',', $search)
+                    )
+                );
+
+                if (!empty($ids)) {
+                    $placeholders = implode(',', array_fill(0, count($ids), '%d'));
+
+                    $where[] = '`' . (static::model())::primary_key() . "` IN ($placeholders)";
+                    $args = array_merge($args, $ids);
+                }
+            } elseif (in_array($search_type, $allowed_columns, true)) {
+
+                $where[] = "`{$search_type}` = %s";
+                $args[] = $search;
             }
         }
 
-        // Setup Filter Query
         foreach (self::$query_filter as $key) {
-            if (isset($_REQUEST[$key]) and $_REQUEST[$key] != '') {
-                $search = sanitize_text_field(wp_unslash($_REQUEST[$key]));
-                $where[] = "`$key` = '{$search}'";
+
+            if (
+                isset($_REQUEST[$key]) &&
+                '' !== $_REQUEST[$key]
+            ) {
+
+                $where[] = "`{$key}` = %s";
+                $args[] = sanitize_text_field(wp_unslash($_REQUEST[$key]));
             }
         }
 
         // phpcs:enable WordPress.Security.NonceVerification.Recommended
-        return $where;
+
+        return [
+            'where' => $where,
+            'args' => $args,
+        ];
     }
 
     public static function delete_action($id): array
@@ -247,7 +297,7 @@ class LogListTable extends \WP_List_Table
                     href="' . $this->url(array(
                         'page' => (static::pageClass())::page_slug(),
                         'action' => 'delete',
-                        '_wpnonce' => wp_create_nonce('delete_action_nonce'),
+                        '_wpnonce' => wp_create_nonce('parsigate_delete_action'),
                         'ID' => $item[(static::model())::primary_key()]
                     )) . '">' . __('Delete', 'parsigate') . '</a>';
 
@@ -461,7 +511,7 @@ class LogListTable extends \WP_List_Table
         if ('delete' === $this->current_action()) {
 
             $nonce = (isset($_REQUEST['_wpnonce']) ? sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])) : '');
-            if (!wp_verify_nonce($nonce, 'delete_action_nonce')) {
+            if (!wp_verify_nonce($nonce, 'parsigate_delete_action')) {
 
                 wp_die(esc_html__("You are not Permission for this action.", "parsigate"));
             } else {
@@ -483,7 +533,12 @@ class LogListTable extends \WP_List_Table
         // Bulk Action `Delete`
         if (isset($_POST['action']) && $_POST['action'] == 'bulk-delete') {
 
-            $item_ids = (isset($_POST['bulk-ID']) ? sanitize_text_field(wp_unslash($_POST['bulk-ID'])) : '');
+            check_admin_referer('bulk-' . $this->_args['plural']);
+
+            $item_ids = isset($_POST['bulk-ID'])
+                ? array_map('absint', (array)wp_unslash($_POST['bulk-ID']))
+                : [];
+
             if (is_array($item_ids) and count($item_ids) > 0) {
                 $logs = [];
                 foreach ($item_ids as $id) {

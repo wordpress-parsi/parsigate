@@ -1,6 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.NonceVerification.Recommended
-// phpcs:disable WordPress.Security.NonceVerification.Missing
 
 namespace ParsiGate\CustomTable;
 
@@ -73,65 +71,67 @@ class LogAdminPage extends Page
             return;
         }
 
-        // Load On Admin List Table
-        if (empty(static::screen())) {
+        // Add Thickbox
+        add_thickbox();
 
-            // Add Thickbox
-            add_thickbox();
+        // phpcs:disable WordPress.Security.NonceVerification
 
-            // Setup Options Search Box Select
-            $search_input_id = 'pg_log-search-input';
-            $parsigate_search_fields = apply_filters('parsigate_admin_post_type_search_box_fields', []);
+        // Setup Options Search Box Select
+        $search_input_id = 'pg_log-search-input';
+        $parsigate_search_fields = apply_filters('parsigate_admin_post_type_search_box_fields', []);
 
-            $options_html = '';
-            foreach ($parsigate_search_fields as $parsigate_name => $parsigate_value_array) {
-                $type = 'text';
-                if (isset($parsigate_value_array['type'])) {
-                    $type = $parsigate_value_array['type'];
-                }
-                $parsigate_choices = [];
-                if ($type == "select") {
-                    if (is_array($parsigate_value_array['choices']) && !empty($parsigate_value_array['choices'])) {
-                        $parsigate_choices = wp_json_encode($parsigate_value_array['choices'], JSON_NUMERIC_CHECK);
-                    }
-                }
-                if (is_array($parsigate_value_array)) {
-                    $title = $parsigate_value_array['title'];
-                } else {
-                    $title = $parsigate_value_array;
-                }
-                $selected = '';
-                if (isset($_REQUEST['search-type'])) {
-                    $selected = selected(sanitize_text_field(wp_unslash($_REQUEST['search-type'])), $parsigate_name, false);
-                }
-                $data_selected = !empty($parsigate_choices) ? ' data-selected=\'' . esc_attr($parsigate_choices) . '\' ' : '';
-                $options_html .= sprintf(
-                    '<option %s data-type="%s" value="%s" %s>%s</option>',
-                    $data_selected,
-                    esc_attr($type),
-                    esc_attr($parsigate_name),
-                    $selected,
-                    esc_html($title)
-                );
+        $options_html = '';
+        foreach ($parsigate_search_fields as $parsigate_name => $parsigate_value_array) {
+            $type = 'text';
+            if (isset($parsigate_value_array['type'])) {
+                $type = $parsigate_value_array['type'];
             }
-            $current_search_value = '';
-            if (!empty($_REQUEST['s'])) {
-                $current_search_value = esc_js(sanitize_text_field(wp_unslash($_REQUEST['s'])));
+            $parsigate_choices = [];
+            if ($type == "select") {
+                if (is_array($parsigate_value_array['choices']) && !empty($parsigate_value_array['choices'])) {
+                    $parsigate_choices = wp_json_encode($parsigate_value_array['choices'], JSON_NUMERIC_CHECK);
+                }
+            }
+            if (is_array($parsigate_value_array)) {
+                $title = $parsigate_value_array['title'];
+            } else {
+                $title = $parsigate_value_array;
             }
 
-            // Add Js and Css
-            wp_enqueue_style('parsigate-logs', \ParsiGate::$plugin_url . '/assets/admin/logs.min.css', array(), \ParsiGate::$plugin_version, 'all');
-            wp_enqueue_script('parsigate-logs', \ParsiGate::$plugin_url . '/assets/admin/logs.min.js', array('jquery'), \ParsiGate::$plugin_version, true);
-            wp_localize_script('parsigate-logs', 'parsigateAdminData', array(
-                'searchInputId' => $search_input_id,
-                'optionsHtml' => $options_html,
-                'currentSearchValue' => $current_search_value,
-            ));
 
-            // Add Json Browse
-            wp_enqueue_style('parsigate-json-browser', \ParsiGate::$plugin_url . '/assets/json-browse/json-browse.css', array(), \ParsiGate::$plugin_version, 'all');
-            wp_enqueue_script('parsigate-json-browser', \ParsiGate::$plugin_url . '/assets/json-browse/json-browse.js', array('jquery'), \ParsiGate::$plugin_version, false);
+            $selected = '';
+            if (isset($_REQUEST['search-type'])) {
+                $selected = selected(sanitize_text_field(wp_unslash($_REQUEST['search-type'])), $parsigate_name, false);
+            }
+            $data_selected = !empty($parsigate_choices) ? ' data-selected=\'' . esc_attr($parsigate_choices) . '\' ' : '';
+            $options_html .= sprintf(
+                '<option %s data-type="%s" value="%s" %s>%s</option>',
+                $data_selected,
+                esc_attr($type),
+                esc_attr($parsigate_name),
+                $selected,
+                esc_html($title)
+            );
         }
+        $current_search_value = '';
+        if (!empty($_GET['s'])) {
+            $current_search_value = esc_js(sanitize_text_field(wp_unslash($_GET['s'])));
+        }
+
+        // phpcs:enable WordPress.Security.NonceVerification
+
+        // Add Js and Css
+        wp_enqueue_style('parsigate-logs', \ParsiGate::$plugin_url . '/assets/admin/logs.min.css', array(), \ParsiGate::$plugin_version, 'all');
+        wp_enqueue_script('parsigate-logs', \ParsiGate::$plugin_url . '/assets/admin/logs.min.js', array('jquery'), \ParsiGate::$plugin_version, true);
+        wp_localize_script('parsigate-logs', 'parsigateAdminData', array(
+            'searchInputId' => $search_input_id,
+            'optionsHtml' => $options_html,
+            'currentSearchValue' => $current_search_value,
+        ));
+
+        // Add Json Browse
+        wp_enqueue_style('parsigate-json-browser', \ParsiGate::$plugin_url . '/assets/json-browse/json-browse.css', array(), \ParsiGate::$plugin_version, 'all');
+        wp_enqueue_script('parsigate-json-browser', \ParsiGate::$plugin_url . '/assets/json-browse/json-browse.js', array('jquery'), \ParsiGate::$plugin_version, false);
     }
 
     public static function set_screen_option($status, $option, $value)
@@ -146,12 +146,15 @@ class LogAdminPage extends Page
         return $value;
     }
 
+    public static function screen_id(): string
+    {
+        return 'tools_page_' . static::page_slug();
+    }
+
     public static function is_page(): bool
     {
-        global $pagenow;
-
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-        return ($pagenow == "tools.php" and isset($_GET['page']) and $_GET['page'] == static::page_slug());
+        $screen = get_current_screen();
+        return ($screen->id == static::screen_id());
     }
 
     public static function url($args = []): string
@@ -163,8 +166,7 @@ class LogAdminPage extends Page
 
     public function screen_option(): void
     {
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-        if (static::is_page() and empty($_GET['screen'])) {
+        if (static::is_page()) {
 
             // Set Screen Option
             add_screen_option('per_page', array(
@@ -186,7 +188,7 @@ class LogAdminPage extends Page
 
     public function admin_notices(): void
     {
-        if (static::is_page() and !empty(static::screen())) {
+        if (static::is_page()) {
 
             $flashMessage = Message::get();
             if (!empty($flashMessage)) {
@@ -198,20 +200,15 @@ class LogAdminPage extends Page
     public function page(): void
     {
 
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-        if (!isset($_GET['screen'])) {
-
-            $table = $this->admin_list_table;
-            $title = (static::model())::title();
-            $buttons = [];
-            include \ParsiGate::$plugin_path . '/inc/custom-table/pg-log/views/list-table.php';
-        }
+        $table = $this->admin_list_table;
+        $title = (static::model())::title();
+        $buttons = [];
+        include \ParsiGate::$plugin_path . '/inc/custom-table/pg-log/views/list-table.php';
     }
 
     public function search_box_field($list)
     {
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-        if (static::is_page() and empty($_GET['screen'])) {
+        if (static::is_page()) {
 
             $list = [
                 'ID' => __('ID', 'parsigate'),

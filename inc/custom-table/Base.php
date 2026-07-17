@@ -99,7 +99,11 @@ class Base
             $primary_key = static::primary_key();
 
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM `" . esc_sql($table_name) . "` WHERE `" . esc_sql($primary_key) . "` = %d", $id), ARRAY_A);
+            $row = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT * FROM `" . esc_sql($table_name) . "` WHERE `" . esc_sql($primary_key) . "` = %d",
+                    $id
+                ), ARRAY_A);
             if (is_null($row)) {
                 return false;
             }
