@@ -202,7 +202,7 @@ https://api.payping.ir/
 The plugin sends the order amount, order ID, callback URL, merchant credentials and other payment parameters required to create and verify the transaction.
 
 Website: https://payping.ir/
-Terms: https://payping.ir/terms
+Terms: https://payping.ir/terms/
 Privacy: https://payping.ir/terms/
 
 === Saman Electronic Payment (SEP) ===
