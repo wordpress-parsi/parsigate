@@ -55,31 +55,34 @@ Yes. Parsigate is open-source and free to use under the GPLv2 license.
 
 == External Services ==
 
-Parsigate connects to third-party payment providers only to process and verify customer payments.
+Parsigate connects to third-party payment providers to process and verify online payments.
 
-No external requests are made unless:
+External requests are made only when:
 * A site administrator enables a payment gateway.
-* A customer selects that gateway during checkout.
-* The payment provider requires payment verification or inquiry.
+* A customer selects that payment gateway during checkout.
+* A payment request, verification, inquiry, or confirmation is required by the payment provider.
 
-Depending on the selected gateway, the following information may be transmitted:
+Depending on the selected gateway, the plugin may transmit the following information:
 
 * Order ID
 * Order amount
 * Currency
 * Callback URL
-* Merchant credentials configured by the administrator
+* Merchant credentials configured by the site administrator
 * Payment token or authority code
 * Transaction reference
-* Other parameters required by the payment provider
+* Other payment parameters required by the selected payment provider
 
-No data is transmitted unless a customer initiates a payment.
+No payment-related data is transmitted unless a customer initiates a payment.
 
 === AqayePardakht ===
 
 Used to process online payments through the AqayePardakht payment gateway.
 
-When a customer selects this gateway during checkout, the plugin sends the order amount, order ID, callback URL, merchant credentials and other payment parameters required to create and verify the transaction.
+Payment requests are sent to:
+https://panel.aqayepardakht.ir/
+
+The plugin sends the order amount, order ID, callback URL, merchant credentials and other payment parameters required to create and verify the transaction.
 
 Website: https://aqayepardakht.ir/
 Terms: https://aqayepardakht.ir/terms/
@@ -89,7 +92,10 @@ Privacy: https://aqayepardakht.ir/
 
 Used to process online payments through the Asan Pardakht payment gateway.
 
-When a customer selects this gateway during checkout, the plugin sends the order amount, order ID, callback URL and merchant credentials required to process the payment.
+Payment requests are sent to:
+https://ipgrest.asanpardakht.ir/
+
+The plugin sends the order amount, order ID, callback URL, merchant credentials and other payment parameters required to create and verify the transaction.
 
 Website: https://asanpardakht.ir/
 Terms: https://asanpardakht.ir/faq
@@ -99,7 +105,10 @@ Privacy: https://asanpardakht.ir/privacy
 
 Used to process installment payments through Azki Loan.
 
-When a customer selects this gateway during checkout, the plugin sends the order amount, order ID, callback URL and payment parameters required to create and verify the transaction.
+Payment requests are sent to:
+https://api.azkiloan.com/
+
+The plugin sends the order amount, order ID, callback URL and other payment parameters required to create and verify the transaction.
 
 Website: https://www.azki.com/
 Terms: https://www.azki.com/terms
@@ -122,7 +131,10 @@ Privacy: https://pep.co.ir/shaparak-requirements/
 
 Used to process installment payments through DigiPay.
 
-When a customer selects this gateway during checkout, the plugin sends the order amount, order ID, callback URL and payment parameters required to create and verify the transaction.
+Payment requests are sent to:
+https://api.mydigipay.com/
+
+The plugin sends the order amount, order ID, callback URL and other payment parameters required to create and verify the transaction.
 
 Website: https://www.mydigipay.com/
 Terms: https://www.mydigipay.com/rules/
@@ -158,7 +170,10 @@ Privacy: https://sadadpsp.ir/
 
 Used to process online payments through Parsian Electronic Commerce.
 
-When a customer selects this gateway during checkout, the plugin sends the order amount, order ID, callback URL and merchant credentials required to process the payment.
+Payment requests are sent to:
+https://pec.shaparak.ir/
+
+The plugin sends the order amount, order ID, callback URL, merchant credentials and other payment parameters required to create and verify the transaction.
 
 Website: https://pec.ir/
 Terms: https://pec.ir/
@@ -181,7 +196,10 @@ Privacy: https://pep.co.ir/shaparak-requirements/
 
 Used to process online payments through PayPing.
 
-When a customer selects this gateway during checkout, the plugin sends the order amount, order ID, callback URL and merchant credentials required to process the payment.
+Payment requests are sent to:
+https://api.payping.ir/
+
+The plugin sends the order amount, order ID, callback URL, merchant credentials and other payment parameters required to create and verify the transaction.
 
 Website: https://payping.ir/
 Terms: https://payping.ir/terms
@@ -204,7 +222,10 @@ Privacy: https://sep.ir/
 
 Used to process online payments through Sepehr Payment.
 
-When a customer selects this gateway during checkout, the plugin sends the order amount, order ID, callback URL and merchant credentials required to process the payment.
+Payment requests are sent to:
+https://sepehr.shaparak.ir/
+
+The plugin sends the order amount, order ID, callback URL, merchant credentials and other payment parameters required to create and verify the transaction.
 
 Website: https://sepehrpay.com/
 Terms: https://sepehrpay.com/
@@ -214,7 +235,10 @@ Privacy: https://sepehrpay.com/
 
 Used to process online payments through Shepa.
 
-When a customer selects this gateway during checkout, the plugin sends the order amount, order ID, callback URL and payment parameters required to create and verify the transaction.
+Payment requests are sent to:
+https://merchant.shepa.com/
+
+The plugin sends the order amount, order ID, callback URL and other payment parameters required to create and verify the transaction.
 
 Website: https://shepa.com/
 Terms: https://shepa.com/shepa_rules/
@@ -237,7 +261,10 @@ Privacy: https://snapppay.ir/merchant-acquisition/
 
 Used to process installment payments through Tara.
 
-When a customer selects this gateway during checkout, the plugin sends the order amount, order ID, callback URL and payment parameters required to create and verify the transaction.
+Payment requests are sent to:
+https://pay.tara360.ir/
+
+The plugin sends the order amount, order ID, callback URL and other payment parameters required to create and verify the transaction.
 
 Website: https://tara360.ir/
 Terms: https://tara360.ir/termscondition/
@@ -247,7 +274,10 @@ Privacy: https://tara360.ir/termscondition/
 
 Used to process online payments through ZarinPal.
 
-When a customer selects this gateway during checkout, the plugin sends the order amount, order ID, callback URL, merchant credentials and other payment parameters required to create and verify the transaction.
+Payment requests are sent to:
+https://api.zarinpal.com/
+
+The plugin sends the order amount, order ID, callback URL, merchant credentials and other payment parameters required to create and verify the transaction.
 
 Website: https://www.zarinpal.com/
 Terms: https://www.zarinpal.com/terms
@@ -257,7 +287,10 @@ Privacy: https://www.zarinpal.com/policy
 
 Used to process online payments through Zibal.
 
-When a customer selects this gateway during checkout, the plugin sends the order amount, order ID, callback URL, merchant credentials and other payment parameters required to create and verify the transaction.
+Payment requests are sent to:
+https://gateway.zibal.ir/
+
+The plugin sends the order amount, order ID, callback URL, merchant credentials and other payment parameters required to create and verify the transaction.
 
 Website: https://zibal.ir/
 Terms: https://zibal.ir/privacy-policy
