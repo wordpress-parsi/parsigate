@@ -86,7 +86,7 @@ The plugin sends the order amount, order ID, callback URL, merchant credentials 
 
 Website: https://aqayepardakht.ir/
 Terms: https://aqayepardakht.ir/terms/
-Privacy: https://aqayepardakht.ir/
+Privacy: https://aqayepardakht.ir/terms/
 
 === Asan Pardakht ===
 
@@ -112,7 +112,7 @@ The plugin sends the order amount, order ID, callback URL and other payment para
 
 Website: https://www.azki.com/
 Terms: https://www.azki.com/terms
-Privacy: https://azkiloan.com/
+Privacy: https://www.azki.com/terms
 
 === Beh Pardakht Mellat ===
 
@@ -163,8 +163,8 @@ https://sadad.shaparak.ir/
 The plugin sends payment request and payment verification data required by the gateway.
 
 Website: https://sadadpsp.ir/
-Terms: https://sadadpsp.ir/
-Privacy: https://sadadpsp.ir/
+Terms: https://sadadpsp.ir/admission-rules
+Privacy: https://sadadpsp.ir/admission-rules
 
 === Parsian (PEC) ===
 
@@ -176,8 +176,8 @@ https://pec.shaparak.ir/
 The plugin sends the order amount, order ID, callback URL, merchant credentials and other payment parameters required to create and verify the transaction.
 
 Website: https://pec.ir/
-Terms: https://pec.ir/
-Privacy: https://pec.ir/
+Terms: https://pep.co.ir/shaparak-requirements/
+Privacy: https://pep.co.ir/shaparak-requirements/
 
 === Pasargad (PEP) ===
 
@@ -215,8 +215,8 @@ https://sep.shaparak.ir/
 The plugin sends payment request and payment verification data required by the gateway.
 
 Website: https://sep.ir/
-Terms: https://sep.ir/
-Privacy: https://sep.ir/
+Terms: https://www.sep.ir/%D9%82%D9%88%D8%A7%D9%86%DB%8C%D9%86-%D9%88-%D9%85%D9%82%D8%B1%D8%B1%D8%A7%D8%AA-%D9%BE%D8%B0%DB%8C%D8%B1%D9%86%D8%AF%DA%AF%D8%A7%D9%86
+Privacy: https://www.sep.ir/%D9%82%D9%88%D8%A7%D9%86%DB%8C%D9%86-%D9%88-%D9%85%D9%82%D8%B1%D8%B1%D8%A7%D8%AA-%D9%BE%D8%B0%DB%8C%D8%B1%D9%86%D8%AF%DA%AF%D8%A7%D9%86
 
 === Sepehr ===
 
@@ -228,8 +228,8 @@ https://sepehr.shaparak.ir/
 The plugin sends the order amount, order ID, callback URL, merchant credentials and other payment parameters required to create and verify the transaction.
 
 Website: https://sepehrpay.com/
-Terms: https://sepehrpay.com/
-Privacy: https://sepehrpay.com/
+Terms: https://pep.co.ir/shaparak-requirements/
+Privacy: https://pep.co.ir/shaparak-requirements/
 
 === Shepa ===
 
