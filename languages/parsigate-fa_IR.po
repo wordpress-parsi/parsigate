@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Parsi Gate\n"
-"POT-Creation-Date: 2026-07-18 19:33+0330\n"
-"PO-Revision-Date: 2026-07-18 19:34+0330\n"
+"POT-Creation-Date: 2026-07-25 19:44+0330\n"
+"PO-Revision-Date: 2026-07-25 19:44+0330\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fa_IR\n"
@@ -441,7 +441,7 @@ msgid "Invalid order id."
 msgstr "شناسه سفارش نامعتبر است."
 
 #. translators: %s: Transaction ID number
-#: inc/WC_Gateway.php:578
+#: inc/WC_Gateway.php:591
 #, php-format
 msgid "Payment Success, Transaction ID: %s"
 msgstr "پرداخت موفق, شناسه تراکنش: %s"
@@ -473,92 +473,92 @@ msgid "Unknown"
 msgstr "نامشخص"
 
 #: inc/custom-table/pg-log/LogAdminPage.php:214
-#: inc/custom-table/pg-log/LogListTable.php:270
+#: inc/custom-table/pg-log/LogListTable.php:259
 msgid "ID"
 msgstr "شناسه"
 
 #: inc/custom-table/pg-log/LogAdminPage.php:216
-#: inc/custom-table/pg-log/LogListTable.php:271
+#: inc/custom-table/pg-log/LogListTable.php:260
 msgid "Gateway"
 msgstr "درگاه"
 
 #: inc/custom-table/pg-log/LogAdminPage.php:221
-#: inc/custom-table/pg-log/LogListTable.php:274
+#: inc/custom-table/pg-log/LogListTable.php:263
 msgid "Type"
 msgstr "نوع"
 
 #: inc/custom-table/pg-log/LogAdminPage.php:225
-#: inc/custom-table/pg-log/LogListTable.php:272
+#: inc/custom-table/pg-log/LogListTable.php:261
 msgid "Status Code"
 msgstr "کد وضعیت"
 
-#: inc/custom-table/pg-log/LogListTable.php:263
+#: inc/custom-table/pg-log/LogListTable.php:252
 msgid "Empty gateways log list."
 msgstr "لیست لاگ درگاه خالی می باشد."
 
-#: inc/custom-table/pg-log/LogListTable.php:273
+#: inc/custom-table/pg-log/LogListTable.php:262
 msgid "Url"
 msgstr "آدرس"
 
-#: inc/custom-table/pg-log/LogListTable.php:275
+#: inc/custom-table/pg-log/LogListTable.php:264
 msgid "Request"
 msgstr "درخواست"
 
-#: inc/custom-table/pg-log/LogListTable.php:276
+#: inc/custom-table/pg-log/LogListTable.php:265
 msgid "Created at"
 msgstr "تاریخ ایجاد"
 
-#: inc/custom-table/pg-log/LogListTable.php:296
+#: inc/custom-table/pg-log/LogListTable.php:285
 msgid "Are you sure?"
 msgstr "آیا مطمئن هستید؟"
 
-#: inc/custom-table/pg-log/LogListTable.php:302
-#: inc/custom-table/pg-log/LogListTable.php:474
+#: inc/custom-table/pg-log/LogListTable.php:291
+#: inc/custom-table/pg-log/LogListTable.php:463
 msgid "Delete"
 msgstr "حذف"
 
-#: inc/custom-table/pg-log/LogListTable.php:339
+#: inc/custom-table/pg-log/LogListTable.php:328
 msgid "ago"
 msgstr "پیش"
 
-#: inc/custom-table/pg-log/LogListTable.php:359
+#: inc/custom-table/pg-log/LogListTable.php:348
 msgid "Send: "
 msgstr "ارسال: "
 
-#: inc/custom-table/pg-log/LogListTable.php:369
-#: inc/custom-table/pg-log/LogListTable.php:394
-#: inc/custom-table/pg-log/LogListTable.php:421
+#: inc/custom-table/pg-log/LogListTable.php:358
+#: inc/custom-table/pg-log/LogListTable.php:383
+#: inc/custom-table/pg-log/LogListTable.php:410
 msgid "Close"
 msgstr "بستن"
 
-#: inc/custom-table/pg-log/LogListTable.php:382
-#: inc/custom-table/pg-log/LogListTable.php:407
-#: inc/custom-table/pg-log/LogListTable.php:433
+#: inc/custom-table/pg-log/LogListTable.php:371
+#: inc/custom-table/pg-log/LogListTable.php:396
+#: inc/custom-table/pg-log/LogListTable.php:422
 msgid "Show"
 msgstr "نمایش"
 
-#: inc/custom-table/pg-log/LogListTable.php:388
+#: inc/custom-table/pg-log/LogListTable.php:377
 msgid "Header: "
 msgstr "هدر: "
 
-#: inc/custom-table/pg-log/LogListTable.php:411
+#: inc/custom-table/pg-log/LogListTable.php:400
 msgid "Response: "
 msgstr "خروجی: "
 
-#: inc/custom-table/pg-log/LogListTable.php:459
+#: inc/custom-table/pg-log/LogListTable.php:448
 msgid "All"
 msgstr "همه"
 
-#: inc/custom-table/pg-log/LogListTable.php:516
+#: inc/custom-table/pg-log/LogListTable.php:505
 msgid "You are not Permission for this action."
 msgstr "شما حق دسترسی برای اجرای این عملیات ندارید."
 
-#: inc/custom-table/pg-log/LogListTable.php:523
+#: inc/custom-table/pg-log/LogListTable.php:512
 msgid "Items deleted."
 msgstr "آیتم ها حذف شده اند."
 
 #. translators: %d: Number of items to delete
-#: inc/custom-table/pg-log/LogListTable.php:549
+#: inc/custom-table/pg-log/LogListTable.php:538
 #, php-format
 msgid "Delete %d Id Items"
 msgstr "آیتم با شناسه %d حذف شد"

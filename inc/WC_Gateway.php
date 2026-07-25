@@ -473,11 +473,24 @@ class WC_Gateway extends \WC_Payment_Gateway
             wp_die(esc_html__('Invalid order id.', 'parsigate'));
         }
 
-        $request = apply_filters('parsigate_gateway_verify_payment_inputs', [
-            'get' => wp_unslash($_GET),
-            'post' => wp_unslash($_POST),
-            'body' => file_get_contents('php://input'),
-        ], $order_id, $this->id);
+        $raw_body = file_get_contents('php://input');
+        $body = json_decode($raw_body, true);
+        if (json_last_error() === JSON_ERROR_NONE and is_array($body)) {
+            $body = map_deep($body, 'sanitize_text_field');
+        } else {
+            $body = sanitize_textarea_field($raw_body);
+        }
+
+        $request = apply_filters(
+            'parsigate_gateway_verify_payment_inputs',
+            [
+                'get' => map_deep(wp_unslash($_GET), 'sanitize_text_field'),
+                'post' => map_deep(wp_unslash($_POST), 'sanitize_text_field'),
+                'body' => $body,
+            ],
+            absint($order_id),
+            sanitize_key($this->id)
+        );
 
         $order = wc_get_order($order_id);
 

@@ -164,19 +164,8 @@ class LogListTable extends \WP_List_Table
             $sql = $wpdb->prepare($sql, $args);
         }
 
-        $cache_key = 'db_var_' . md5($sql);
-
-        $cached = wp_cache_get($cache_key, 'db_var');
-        if (false !== $cached) {
-            return $cached;
-        }
-
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared
-        $result = $wpdb->get_var($sql);
-
-        wp_cache_set($cache_key, $result, 'db_var', HOUR_IN_SECONDS);
-
-        return $result;
+        return $wpdb->get_var($sql);
     }
 
     public static function conditional_sql(): array

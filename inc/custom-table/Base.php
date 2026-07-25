@@ -312,18 +312,8 @@ class Base
         // Get SQL
         $sql = apply_filters('parsigate_sql_' . static::table(), $sql, $args);
 
-        // Check Cache
-        $key = md5($sql);
-        $cache = wp_cache_get($key, 'ct-query-' . static::slug());
-        if ($cache) {
-            return $cache;
-        }
-
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.NoCaching
         $results = $wpdb->get_results($sql, ARRAY_A);
-
-        // Set Cache
-        wp_cache_set($key, $results, 'ct-query-' . static::slug());
 
         // Check Empty
         if (empty($results)) {
