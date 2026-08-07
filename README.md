@@ -5,7 +5,7 @@
 [![WordPress Plugin Downloads](https://img.shields.io/wordpress/plugin/dt/parsigate.svg)](https://wordpress.org/plugins/parsigate/)
 ![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-purple)
 
-**دریافت افزونه از وردپرس:** [https://wordpress.org/plugins/parsigate](https://wordpress.org/plugins/parsigate/)
+**دریافت افزونه از وردپرس:** [https://fa.wordpress.org/plugins/parsigate](https://fa.wordpress.org/plugins/parsigate/)
 
 پارسی‌گیت یک افزونه حرفه‌ای برای اتصال فروشگاه‌های ووکامرس به درگاه‌های پرداخت ایرانی است. تنها با چند دقیقه تنظیمات، می‌توانید پرداخت آنلاین را در فروشگاه خود فعال کنید و بدون نیاز به دانش برنامه‌نویسی، سفارش‌های مشتریان را به‌صورت امن و خودکار مدیریت کنید.
 این افزونه با تمرکز بر سرعت، امنیت، سازگاری و تجربه کاربری توسعه داده شده و تلاش می‌کند فرآیند پرداخت را برای مدیر فروشگاه و مشتری تا حد امکان ساده و مطمئن کند.
