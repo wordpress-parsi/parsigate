@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Parsigate
  * Description: Persian Gateways for WooCommerce/WordPress
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      Parsidate Teams
  * Author URI:  https://wp-parsi.com
  * Text Domain: parsigate
@@ -11,7 +11,7 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Requires at least: 5.6
  * Requires PHP: 7.4
- * Tested up to: 7.0
+ * Tested up to: 7.0.3
  */
 
 if (!defined('ABSPATH')) exit;
