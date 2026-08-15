@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Parsi Gate\n"
-"POT-Creation-Date: 2026-07-25 19:44+0330\n"
-"PO-Revision-Date: 2026-07-25 19:44+0330\n"
+"POT-Creation-Date: 2026-08-15 20:33+0330\n"
+"PO-Revision-Date: 2026-08-15 20:45+0330\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fa_IR\n"
@@ -21,31 +21,53 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: ParsiGate.php:122
-msgid "Download from WordPress"
-msgstr "دانلود از مخزن وردپرس"
-
-#: ParsiGate.php:129
-msgid "Install directly"
-msgstr "دانلود بطور مستقیم"
-
 #. translators: %1$s is the plugin name (Parsigate), %2$s is the required plugin name
-#: ParsiGate.php:135
+#: ParsiGate.php:150
 #, php-format
 msgid "%1$s plugin requires %2$s plugin to function properly."
 msgstr "افزونه %1$s نیازمند افزونه %2$s برای اجرا می باشد."
 
 #. Plugin Name of the plugin/theme
-#: ParsiGate.php:136
+#: ParsiGate.php:151
 msgid "Parsigate"
 msgstr "پارسی گیت"
 
+#. translators: %1$s is the required plugin name, %2$s is the minimum required version
+#: ParsiGate.php:163
+#, php-format
+msgid "Please update %1$s to version %2$s or later to access all features."
+msgstr ""
+"لطفا افزونه %1$s را به نگارش %2$s یا بالاتر به‌روزرسانی کنید تا به همه "
+"امکانات دسترسی داشته باشید."
+
+#: ParsiGate.php:172 ParsiGate.php:215
+msgid "Download from WordPress"
+msgstr "دانلود از مخزن وردپرس"
+
+#: ParsiGate.php:179
+msgid "Update directly"
+msgstr "به‌روزرسانی مستقیم"
+
 #. translators: %s is the required plugin name
-#: ParsiGate.php:143
+#: ParsiGate.php:189
+#, php-format
+msgid "Please activate %s plugin to access all features."
+msgstr "لطفا افزونه %s را فعال کنید تا به همه امکانات دسترسی داشته باشید."
+
+#: ParsiGate.php:197
+msgid "Activate"
+msgstr "فعال‌سازی"
+
+#. translators: %s is the required plugin name
+#: ParsiGate.php:207
 #, php-format
 msgid "Please install and activate %s plugin first to access all features."
 msgstr ""
 "لطفا افزونه %s  را نصب و فعال کنید تا به همه ی امکانات دسترسی داشته باشید."
+
+#: ParsiGate.php:222
+msgid "Install directly"
+msgstr "دانلود بطور مستقیم"
 
 #: inc/Gateway.php:86
 msgid "Gateway class not found"
@@ -277,43 +299,43 @@ msgstr "دیگر"
 msgid "Shipping"
 msgstr "هزینه حمل و نقل"
 
-#: inc/Option.php:51
+#: inc/Option.php:49
 msgid "Settings"
 msgstr "تنظیمات"
 
-#: inc/Option.php:90
+#: inc/Option.php:88
 msgid "Gateways log"
 msgstr "لاگ درگاه"
 
-#: inc/Option.php:97 inc/custom-table/pg-log/Log.php:26
+#: inc/Option.php:95 inc/custom-table/pg-log/Log.php:26
 msgid "ParsiGate Log"
 msgstr "لاگ پارسی گیت"
 
-#: inc/Option.php:100 inc/WC_Gateway.php:137
+#: inc/Option.php:98 inc/WC_Gateway.php:137
 msgid "Yes"
 msgstr "آری"
 
-#: inc/Option.php:101 inc/WC_Gateway.php:136
+#: inc/Option.php:99 inc/WC_Gateway.php:136
 msgid "No"
 msgstr "خیر"
 
-#: inc/Option.php:105
+#: inc/Option.php:103
 msgid "Show logs list"
 msgstr "نمایش لیست لاگ"
 
-#: inc/Option.php:113 inc/Option.php:128 inc/Option.php:129
+#: inc/Option.php:111 inc/Option.php:126 inc/Option.php:127
 msgid "Parsi Gate"
 msgstr "پارسی گیت"
 
-#: inc/Option.php:114
+#: inc/Option.php:112
 msgid "Parsi Gate Tools"
 msgstr "تنظیمات پارسی گیت"
 
-#: inc/Option.php:132
+#: inc/Option.php:131
 msgid "Payment gateways"
 msgstr "درگاه پرداخت"
 
-#: inc/Option.php:137
+#: inc/Option.php:136
 msgid "Payment gateway"
 msgstr "درگاه پرداخت"
 
