@@ -58,12 +58,15 @@ class ParsiGate
             'parsidate' => [
                 'name' => 'WP-Parsidate',
                 'slug' => 'wp-parsidate',
+                'file' => 'wp-parsidate/wp-parsidate.php',
                 'class' => '\WPParsidate\WP_Parsidate',
+                'min_version' => '6.0',
                 'plugin_url' => 'https://wordpress.org/plugins/wp-parsidate/',
             ],
             'woocommerce' => [
                 'name' => 'WooCommerce',
                 'slug' => 'woocommerce',
+                'file' => 'woocommerce/woocommerce.php',
                 'class' => 'WooCommerce',
                 'plugin_url' => 'https://wordpress.org/plugins/woocommerce/',
             ]
@@ -89,6 +92,33 @@ class ParsiGate
         return class_exists($plugins[$slug]['class']);
     }
 
+    private function get_plugin_status(array $plugin): string
+    {
+        if (empty($plugin['file'])) {
+            return 'missing';
+        }
+
+        $plugin_path = WP_PLUGIN_DIR . '/' . $plugin['file'];
+
+        if (!file_exists($plugin_path)) {
+            return 'missing';
+        }
+
+        if (!empty($plugin['min_version'])) {
+            $plugin_data = get_plugin_data($plugin_path, false, false);
+
+            if (version_compare($plugin_data['Version'], $plugin['min_version'], '<')) {
+                return 'outdated';
+            }
+        }
+
+        if (!is_plugin_active($plugin['file'])) {
+            return 'inactive';
+        }
+
+        return 'active';
+    }
+
     public function is_parsidate_active(): bool
     {
         return $this->is_plugin_active('parsidate');
@@ -105,30 +135,15 @@ class ParsiGate
             return;
         }
 
-        foreach ($this->required_plugins() as $slug => $plugin) {
-            if ($this->is_plugin_active($slug)) {
+        foreach ($this->required_plugins() as $plugin) {
+            $status = $this->get_plugin_status($plugin);
+
+            if ('active' === $status) {
                 continue;
             }
 
-            $install_url = wp_nonce_url(
-                admin_url('update.php?action=install-plugin&plugin=' . $plugin['slug']),
-                'install-plugin_' . $plugin['slug']
-            );
-
-            $download_button = sprintf(
-                '<a href="%s" target="_blank" class="button button-secondary">%s %s</a>',
-                esc_url($plugin['plugin_url']),
-                '<span class="dashicons dashicons-wordpress"></span>',
-                __('Download from WordPress', 'parsigate')
-            );
-
-            $install_button = sprintf(
-                '<a href="%s" class="button button-primary">%s %s</a>',
-                esc_url($install_url),
-                '<span class="dashicons dashicons-admin-plugins"></span>',
-                __('Install directly', 'parsigate')
-            );
-
+            $download_button = '';
+            $action_button = '';
 
             $line1 = sprintf(
                 // translators: %1$s is the plugin name (Parsigate), %2$s is the required plugin name
@@ -137,22 +152,85 @@ class ParsiGate
                 '<strong>' . esc_html($plugin['name']) . '</strong>'
             );
 
+            if ('outdated' === $status) {
+                $update_url = wp_nonce_url(
+                    self_admin_url('update.php?action=upgrade-plugin&plugin=' . $plugin['file']),
+                    'upgrade-plugin_' . $plugin['file']
+                );
 
-            $line2 = sprintf(
-                // translators: %s is the required plugin name
-                __('Please install and activate %s plugin first to access all features.', 'parsigate'),
-                '<strong>' . esc_html($plugin['name']) . '</strong>'
-            );
+                $line2 = sprintf(
+                    // translators: %1$s is the required plugin name, %2$s is the minimum required version
+                    __('Please update %1$s to version %2$s or later to access all features.', 'parsigate'),
+                    '<strong>' . esc_html($plugin['name']) . '</strong>',
+                    '<strong>' . esc_html($plugin['min_version']) . '</strong>'
+                );
 
-            // translators: %1$s is the download button, %2$s is the install button
+                $download_button = sprintf(
+                    '<a href="%s" target="_blank" class="button button-secondary">%s %s</a>',
+                    esc_url($plugin['plugin_url']),
+                    '<span class="dashicons dashicons-wordpress"></span>',
+                    __('Download from WordPress', 'parsigate')
+                );
+
+                $action_button = sprintf(
+                    '<a href="%s" class="button button-primary">%s %s</a>',
+                    esc_url($update_url),
+                    '<span class="dashicons dashicons-update"></span>',
+                    __('Update directly', 'parsigate')
+                );
+            } elseif ('inactive' === $status) {
+                $activate_url = wp_nonce_url(
+                    self_admin_url('plugins.php?action=activate&plugin=' . urlencode($plugin['file'])),
+                    'activate-plugin_' . $plugin['file']
+                );
+
+                $line2 = sprintf(
+                    // translators: %s is the required plugin name
+                    __('Please activate %s plugin to access all features.', 'parsigate'),
+                    '<strong>' . esc_html($plugin['name']) . '</strong>'
+                );
+
+                $action_button = sprintf(
+                    '<a href="%s" class="button button-primary">%s %s</a>',
+                    esc_url($activate_url),
+                    '<span class="dashicons dashicons-admin-plugins"></span>',
+                    __('Activate', 'parsigate')
+                );
+            } else {
+                $install_url = wp_nonce_url(
+                    self_admin_url('update.php?action=install-plugin&plugin=' . $plugin['slug']),
+                    'install-plugin_' . $plugin['slug']
+                );
+
+                $line2 = sprintf(
+                    // translators: %s is the required plugin name
+                    __('Please install and activate %s plugin first to access all features.', 'parsigate'),
+                    '<strong>' . esc_html($plugin['name']) . '</strong>'
+                );
+
+                $download_button = sprintf(
+                    '<a href="%s" target="_blank" class="button button-secondary">%s %s</a>',
+                    esc_url($plugin['plugin_url']),
+                    '<span class="dashicons dashicons-wordpress"></span>',
+                    __('Download from WordPress', 'parsigate')
+                );
+
+                $action_button = sprintf(
+                    '<a href="%s" class="button button-primary">%s %s</a>',
+                    esc_url($install_url),
+                    '<span class="dashicons dashicons-admin-plugins"></span>',
+                    __('Install directly', 'parsigate')
+                );
+            }
+
             $message = sprintf(
                 '<p>%s</p>
-            <p>%s</p>
-            <p style="margin-top: 20px;">%s %s</p>',
+                <p>%s</p>
+                <p style="margin-top: 20px;">%s %s</p>',
                 $line1,
                 $line2,
                 $download_button,
-                $install_button
+                $action_button
             );
 
             echo '<div class="notice notice-warning is-dismissible">' . wp_kses_post($message) . '</div>';
