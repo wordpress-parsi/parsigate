@@ -494,6 +494,10 @@ class WC_Gateway extends \WC_Payment_Gateway
 
         $order = wc_get_order($order_id);
 
+        if (!$order) {
+            wp_die(esc_html__('Invalid order id.', 'parsigate'));
+        }
+
         switch ($action) {
             case 'redirect':
                 $this->redirect_to_gateway($order, $request);
