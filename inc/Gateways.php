@@ -7,6 +7,7 @@ use ParsiGate\gateways\AsanPardakht;
 use ParsiGate\gateways\Azkivam;
 use ParsiGate\gateways\DigiPay;
 use ParsiGate\gateways\IranKish;
+use ParsiGate\gateways\Jibit;
 use ParsiGate\gateways\Mellat;
 use ParsiGate\gateways\Melli;
 use ParsiGate\gateways\Parsian;
@@ -803,6 +804,103 @@ class Gateways
                             'amount' => $amount,
                             'token' => $token,
                             'status' => $status
+                        ];
+                    }
+                ]
+            ],
+            'jibit' => [
+                'title' => __('Jibit', 'parsigate'),
+                'class' => Jibit::class,
+                'website' => 'jibit.ir',
+                'type' => 'intermediary',
+                'usage' => ['woocommerce'],
+                'auth' => function ($option, $class, $args) {
+
+                    $tokens = new Tokens('jibit');
+                    if (!$tokens->is_valid()) {
+
+                        $token = $class->call('token', [
+                            'username' => $option['apiKey'],
+                            'password' => $option['secretKey']
+                        ]);
+                        if ($token['success'] === false) {
+                            return new \WP_Error('invalid_token', $token['message']);
+                        }
+
+                        $access_token = $token['data']['accessToken'];
+                        $tokens->store($access_token, (int)(MINUTE_IN_SECONDS * 5));
+                    } else {
+
+                        $access_token = $tokens->get_value();
+                    }
+
+                    return $access_token;
+                },
+                'woocommerce' => [
+                    'sandbox' => false,
+                    'settings' => [
+                        'apiKey' => [
+                            'title' => __('apiKey', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway apiKey.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ],
+                        'secretKey' => [
+                            'title' => __('secretKey', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway secretKey.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
+
+                        $tokens = new Tokens('jibit');
+                        $args = [
+                            'token' => $tokens->get_value(),
+                            'amount' => $amount,
+                            'currency' => 'IRR',
+                            'wage' => 0,
+                            'description' => WooCommerce::get_order_description($order, 'jibit'),
+                            'callbackUrl' => $callback_url,
+                            'clientReferenceNumber' => $order->get_id()
+                        ];
+
+                        // userIdentifier
+                        $user_id = (int)$order->get_user_id();
+                        if ($user_id > 0) {
+                            $user = get_userdata($user_id);
+                            if ($user) {
+                                $args['userIdentifier'] = $user->user_login;
+                            }
+                        }
+
+                        // Mobile
+                        $mobile = eng_number($order->get_billing_phone());
+                        if (!empty($mobile) and preg_match('/^09[0-9]{9}/i', $mobile)) {
+                            $args['payerMobileNumber'] = $mobile;
+                            $args['checkPayerMobileNumber'] = true;
+                        }
+
+                        // Return
+                        return $args;
+                    },
+                    'verify' => function ($amount, $order, $option, $class, $request) {
+
+                        $status = (isset($request['post']['status']) ? sanitize_text_field($request['post']['status']) : '');
+                        $purchaseId = (isset($request['post']['purchaseId']) ? sanitize_text_field($request['post']['purchaseId']) : '');
+
+                        // Get Token
+                        $tokens = new Tokens('jibit');
+
+                        // Return
+                        return [
+                            'token' => $tokens->get_value(),
+                            'status' => $status,
+                            'purchaseId' => $purchaseId
                         ];
                     }
                 ]
