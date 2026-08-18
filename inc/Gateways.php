@@ -820,8 +820,8 @@ class Gateways
                     if (!$tokens->is_valid()) {
 
                         $token = $class->call('token', [
-                            'username' => $option['apiKey'],
-                            'password' => $option['secretKey']
+                            'apiKey' => $option['apiKey'],
+                            'secretKey' => $option['secretKey']
                         ]);
                         if ($token['success'] === false) {
                             return new \WP_Error('invalid_token', $token['message']);
