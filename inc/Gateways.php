@@ -828,7 +828,7 @@ class Gateways
                         }
 
                         $access_token = $token['data']['accessToken'];
-                        $tokens->store($access_token, (int)(MINUTE_IN_SECONDS * 5));
+                        $tokens->store($access_token, (int)(HOUR_IN_SECONDS * 20));
                     } else {
 
                         $access_token = $tokens->get_value();
