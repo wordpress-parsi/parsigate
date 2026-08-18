@@ -1,11 +1,11 @@
 === Parsigate ===
-Contributors: saeedfard, wordpress-parsi, mehrshaddarzi
+Contributors: saeedfard, wordpress-parsi, mehrshaddarzi, man4toman
 Donate link: https://wp-parsi.com/support/
 Tags: woocommerce, payment, gateway, درگاه, ووکامرس
 Requires at least: 5.6
-Tested up to: 7.0
+Tested up to: 7.0.3
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,16 +13,28 @@ Support for Iranian banking, installment, and intermediary payment gateways for 
 
 == Description ==
 
-Parsigate allows you to integrate various Iranian payment gateways into your WooCommerce store.
+ParsiGate is a professional WooCommerce payment gateway plugin designed for Iranian online stores. With ParsiGate, you can easily connect your WooCommerce store to Iranian payment providers and offer your customers a simple, secure, and reliable online payment experience.
 
-Features:
-* Bank gateways: Parsian, Pasargad, Sadaad, Melli, Behpardakht, Asan Pardakht, Saman, Saderat, Eghtesad Novin, Iran Kish, Sepehr
-* Installment gateways: SnappPay, Tara, Digipay, Azki Loan
+Built with WordPress and WooCommerce standards in mind, ParsiGate focuses on performance, compatibility, and ease of use. Whether you run a small online shop, a digital product store, an educational website, or a growing ecommerce business, ParsiGate helps you manage your online payments with confidence.
+
+## Features
+- Connect WooCommerce stores to Iranian payment gateways
+- Easy gateway configuration from WordPress dashboard
+- Secure transaction verification
+- Automatic customer redirection after payment
+- Lightweight and performance-friendly architecture
+- Compatible with modern WooCommerce stores
+- Developer-friendly structure with WordPress standards
+- Regular updates and improvements
+
+## Supported Gateways:
+* Bank gateways: Mellat, Parsian, Pasargad, Sadaad, Melli, Behpardakht, Asan Pardakht, Saman, Saderat, Eghtesad Novin, Iran Kish, Sepehr
+* Installment gateways: SnappPay, Tara, Digipay, Azki
 * Intermediary gateways: Zibal, Zarinpal, PayPing, Aghayepardakht
 * Test gateway for simulating purchases without a bank account
 * Unified settings interface integrated with the Parsidate plugin
 
-Requirements:
+## Requirements:
 * [Parsidate plugin](https://wordpress.org/plugins/wp-parsidate/) must be installed and active
 * WooCommerce version 4.0 or higher
 
@@ -33,27 +45,7 @@ Requirements:
 3. Activate the plugin through the 'Plugins' screen in WordPress.
 4. Go to Parsidate settings → "Payment Gateways" tab, configure your desired gateways, and save.
 
-== Frequently Asked Questions ==
-
-= Does Parsigate work without Parsidate? =
-No. Parsigate is an extension module and requires the Parsidate plugin to be installed and active.
-
-= Can I use multiple payment gateways at the same time? =
-Yes. You can enable and configure multiple gateways from the Parsidate settings.
-
-= Is there a test gateway for development purposes? =
-Yes. Parsigate includes a test gateway so you can simulate the checkout process without a real bank account.
-
-= Which currencies are supported? =
-Parsigate is designed for Iranian Rials (IRR) and Tomans (IRT). Make sure your WooCommerce currency setting matches your desired usage.
-
-= How do I add new gateways in the future? =
-Parsigate has a modular structure. Developers can add new gateways by creating a new gateway class in the `includes/gateways/` folder and registering it in the main plugin class.
-
-= Is Parsigate free? =
-Yes. Parsigate is open-source and free to use under the GPLv2 license.
-
-== External Services ==
+= External Services =
 
 Parsigate connects to third-party payment providers to process and verify online payments.
 
@@ -75,7 +67,7 @@ Depending on the selected gateway, the plugin may transmit the following informa
 
 No payment-related data is transmitted unless a customer initiates a payment.
 
-=== AqayePardakht ===
+= AqayePardakht =
 
 Used to process online payments through the AqayePardakht payment gateway.
 
@@ -88,7 +80,7 @@ Website: https://aqayepardakht.ir/
 Terms: https://aqayepardakht.ir/terms/
 Privacy: https://aqayepardakht.ir/terms/
 
-=== Asan Pardakht ===
+= Asan Pardakht =
 
 Used to process online payments through the Asan Pardakht payment gateway.
 
@@ -101,7 +93,7 @@ Website: https://asanpardakht.ir/
 Terms: https://asanpardakht.ir/faq
 Privacy: https://asanpardakht.ir/privacy
 
-=== Azki Loan ===
+= Azki Loan =
 
 Used to process installment payments through Azki Loan.
 
@@ -114,7 +106,7 @@ Website: https://www.azki.com/
 Terms: https://www.azki.com/terms
 Privacy: https://www.azki.com/terms
 
-=== Beh Pardakht Mellat ===
+= Beh Pardakht Mellat =
 
 Used to process online payments through Beh Pardakht Mellat.
 
@@ -127,7 +119,7 @@ Website: https://behpardakht.com/
 Terms: https://pep.co.ir/shaparak-requirements/
 Privacy: https://pep.co.ir/shaparak-requirements/
 
-=== DigiPay ===
+= DigiPay =
 
 Used to process installment payments through DigiPay.
 
@@ -140,7 +132,7 @@ Website: https://www.mydigipay.com/
 Terms: https://www.mydigipay.com/rules/
 Privacy: https://www.mydigipay.com/privacy-policy
 
-=== Iran Kish ===
+= Iran Kish =
 
 Used to process online payments through Iran Kish.
 
@@ -153,7 +145,7 @@ Website: https://www.irankish.com/
 Terms: https://www.irankish.com/Page/buyers
 Privacy: https://www.irankish.com/Page/buyers
 
-=== Melli (Sadad) ===
+= Melli (Sadad) =
 
 Used to process online payments through Bank Melli Sadad.
 
@@ -166,7 +158,7 @@ Website: https://sadadpsp.ir/
 Terms: https://sadadpsp.ir/admission-rules
 Privacy: https://sadadpsp.ir/admission-rules
 
-=== Parsian (PEC) ===
+= Parsian (PEC) =
 
 Used to process online payments through Parsian Electronic Commerce.
 
@@ -179,7 +171,7 @@ Website: https://pec.ir/
 Terms: https://pep.co.ir/shaparak-requirements/
 Privacy: https://pep.co.ir/shaparak-requirements/
 
-=== Pasargad (PEP) ===
+= Pasargad (PEP) =
 
 Used to process online payments through Pasargad Electronic Payment.
 
@@ -192,7 +184,7 @@ Website: https://pep.co.ir/
 Terms: https://pep.co.ir/shaparak-requirements/
 Privacy: https://pep.co.ir/shaparak-requirements/
 
-=== PayPing ===
+= PayPing =
 
 Used to process online payments through PayPing.
 
@@ -205,7 +197,7 @@ Website: https://payping.ir/
 Terms: https://payping.ir/terms/
 Privacy: https://payping.ir/terms/
 
-=== Saman Electronic Payment (SEP) ===
+= Saman Electronic Payment (SEP) =
 
 Used to process online payments through Saman Electronic Payment.
 
@@ -215,10 +207,10 @@ https://sep.shaparak.ir/
 The plugin sends payment request and payment verification data required by the gateway.
 
 Website: https://sep.ir/
-Terms: https://www.sep.ir/%D9%82%D9%88%D8%A7%D9%86%DB%8C%D9%86-%D9%88-%D9%85%D9%82%D8%B1%D8%B1%D8%A7%D8%AA-%D9%BE%D8%B0%DB%8C%D8%B1%D9%86%D8%AF%DA%AF%D8%A7%D9%86
-Privacy: https://www.sep.ir/%D9%82%D9%88%D8%A7%D9%86%DB%8C%D9%86-%D9%88-%D9%85%D9%82%D8%B1%D8%B1%D8%A7%D8%AA-%D9%BE%D8%B0%DB%8C%D8%B1%D9%86%D8%AF%DA%AF%D8%A7%D9%86
+Terms: https://www.sep.ir/
+Privacy: https://www.sep.ir/
 
-=== Sepehr ===
+= Sepehr =
 
 Used to process online payments through Sepehr Payment.
 
@@ -231,7 +223,7 @@ Website: https://sepehrpay.com/
 Terms: https://pep.co.ir/shaparak-requirements/
 Privacy: https://pep.co.ir/shaparak-requirements/
 
-=== Shepa ===
+= Shepa =
 
 Used to process online payments through Shepa.
 
@@ -244,7 +236,7 @@ Website: https://shepa.com/
 Terms: https://shepa.com/shepa_rules/
 Privacy: https://shepa.com/privacy-policy
 
-=== SnappPay ===
+= SnappPay =
 
 Used to process installment payments through SnappPay.
 
@@ -257,7 +249,7 @@ Website: https://snapppay.ir/
 Terms: https://snapppay.ir/merchant-acquisition/
 Privacy: https://snapppay.ir/merchant-acquisition/
 
-=== Tara ===
+= Tara =
 
 Used to process installment payments through Tara.
 
@@ -270,7 +262,7 @@ Website: https://tara360.ir/
 Terms: https://tara360.ir/termscondition/
 Privacy: https://tara360.ir/termscondition/
 
-=== ZarinPal ===
+= ZarinPal =
 
 Used to process online payments through ZarinPal.
 
@@ -283,7 +275,7 @@ Website: https://www.zarinpal.com/
 Terms: https://www.zarinpal.com/terms
 Privacy: https://www.zarinpal.com/policy
 
-=== Zibal ===
+= Zibal =
 
 Used to process online payments through Zibal.
 
@@ -296,12 +288,36 @@ Website: https://zibal.ir/
 Terms: https://zibal.ir/privacy-policy
 Privacy: https://zibal.ir/privacy-policy
 
+== Frequently Asked Questions ==
+
+= Does Parsigate work without Parsidate? =
+No. Parsigate is an extension module and requires the Parsidate plugin to be installed and active.
+
+= Can I use multiple payment gateways at the same time? =
+Yes. You can enable and configure multiple gateways from the Parsidate settings.
+
+= Is there a test gateway for development purposes? =
+Yes. Parsigate includes a test gateway so you can simulate the checkout process without a real bank account.
+
+= Which currencies are supported? =
+Parsigate is designed for Iranian Rials (IRR) and Tomans (IRT). Make sure your WooCommerce currency setting matches your desired usage.
+
+= How do I add new gateways in the future? =
+Parsigate has a modular structure. Developers can add new gateways by creating a new gateway class in the `includes/gateways/` folder and registering it in the main plugin class.
+
+= Is Parsigate free? =
+Yes. Parsigate is open-source and free to use under the GPLv2 license.
+
 == Screenshots ==
 
 1. Setting page
 2. Gateway settings
 
 == Changelog ==
+
+= 1.0.1 =
+* Update readme
+* Fixed: parsigate icon
 
 = 1.0.0 =
 * Initial release with Zarinpal and Zibal support
