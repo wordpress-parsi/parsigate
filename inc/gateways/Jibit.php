@@ -183,6 +183,11 @@ class Jibit extends Base
     public function verify(array $args = []): array
     {
 
+        // Check Status
+        if (strtoupper($args['status']) == "FAILED") {
+            return $this->error();
+        }
+
         // Setup Body
         $body = [];
 
