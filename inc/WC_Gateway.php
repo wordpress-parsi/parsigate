@@ -473,6 +473,12 @@ class WC_Gateway extends \WC_Payment_Gateway
             wp_die(esc_html__('Invalid order id.', 'parsigate'));
         }
 
+        $order = wc_get_order($order_id);
+
+        if (!$order) {
+            wp_die(esc_html__('Invalid order id.', 'parsigate'));
+        }
+
         $raw_body = file_get_contents('php://input');
         $body = json_decode($raw_body, true);
         if (json_last_error() === JSON_ERROR_NONE and is_array($body)) {
@@ -491,8 +497,6 @@ class WC_Gateway extends \WC_Payment_Gateway
             absint($order_id),
             sanitize_key($this->id)
         );
-
-        $order = wc_get_order($order_id);
 
         switch ($action) {
             case 'redirect':
