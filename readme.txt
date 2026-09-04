@@ -3,7 +3,7 @@ Contributors: saeedfard, wordpress-parsi, mehrshaddarzi, man4toman
 Donate link: https://wp-parsi.com/support/
 Tags: woocommerce, payment, gateway, درگاه, ووکامرس
 Requires at least: 5.6
-Tested up to: 7.0.3
+Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 1.0.1
 License: GPLv2 or later
