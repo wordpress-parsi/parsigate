@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Parsi Gate\n"
-"POT-Creation-Date: 2026-09-06 10:30+0330\n"
-"PO-Revision-Date: 2026-09-06 10:30+0330\n"
+"POT-Creation-Date: 2026-09-06 12:32+0330\n"
+"PO-Revision-Date: 2026-09-06 12:32+0330\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fa_IR\n"
@@ -63,7 +63,7 @@ msgstr "درگاه واسط"
 msgid "Installment Gateway"
 msgstr "درگاه اعتباری"
 
-#: inc/Gateways.php:41 inc/Gateways.php:1393 inc/WooCommerce.php:165
+#: inc/Gateways.php:41 inc/Gateways.php:1393 inc/WooCommerce.php:185
 #: inc/templates/test-gateway.php:8
 msgid "Test Gateway"
 msgstr "درگاه تست"
@@ -462,27 +462,31 @@ msgstr "شناسه سفارش نامعتبر است."
 msgid "Payment Success, Transaction ID: %s"
 msgstr "پرداخت موفق, شناسه تراکنش: %s"
 
-#: inc/WooCommerce.php:137
+#: inc/WooCommerce.php:157
 msgid "Security verification failed. Invalid or expired nonce."
 msgstr "خطای اعتبارسنجی امنیتی رخ داده است."
 
-#: inc/WooCommerce.php:138
+#: inc/WooCommerce.php:158
 msgid "Security Error"
 msgstr "خطای امنیتی"
 
-#: inc/WooCommerce.php:147
+#: inc/WooCommerce.php:167
 msgid "Order ID is Invalid."
 msgstr "شناسه سفارش نامعتبر می باشد."
 
-#: inc/WooCommerce.php:151
+#: inc/WooCommerce.php:171
 msgid "Order Status is not pending payment."
 msgstr "وضعیت سفارش در انتظار پرداخت نمی باشد."
 
 #. translators: 1: Order number, 2: Customer name, 3: Website domain
-#: inc/WooCommerce.php:183
+#: inc/WooCommerce.php:203
 #, php-format
 msgid "Order ID: %1$d | By: %2$s | Site: %3$s"
 msgstr "سفارش: %1$d | خریدار: %2$s | سایت: %3$s"
+
+#: inc/compatibility/ZarinPlus.php:47
+msgid "Gateways is found:"
+msgstr "درگاه یافت شد:"
 
 #: inc/custom-table/pg-log/Log.php:82
 msgid "Unknown"

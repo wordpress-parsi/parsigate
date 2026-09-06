@@ -43,7 +43,7 @@ class WooCommerce
             $compat_class = str_replace('gateways', 'compatibility', $option['class']);
             if (class_exists($compat_class) and method_exists($compat_class, '__construct')) {
                 try {
-                    new $compat_class();
+                    new $compat_class($gateway_id);
                 } catch (\Exception $e) {
                     //
                 }
@@ -243,6 +243,34 @@ class WooCommerce
         }
 
         return apply_filters('parsigate_get_order_price', $amount, $order, $raw, $gateway);
+    }
+
+    public static function is_gateway_option_page($gateway_id): bool
+    {
+        global $pagenow;
+
+        // phpcs:disable WordPress.Security.NonceVerification.Missing
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended
+
+        if (!is_admin()) {
+            return false;
+        }
+
+        $page = $tab = $section= '';
+        if(isset($_GET['page']) and isset($_GET['tab']) and isset($_GET['section'])) {
+
+            $page = sanitize_text_field(wp_unslash($_GET['page']) ?? '');
+            $tab = sanitize_text_field(wp_unslash($_GET['tab']) ?? '');
+            $section = sanitize_text_field(wp_unslash($_GET['section']) ?? '');
+        }
+
+        if ($pagenow != "admin.php" || $page != 'wc-settings' || $tab != 'checkout' || $section != $gateway_id) {
+            return false;
+        }
+
+        return true;
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
     }
 }
 
