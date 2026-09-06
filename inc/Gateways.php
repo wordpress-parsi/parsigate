@@ -1358,7 +1358,7 @@ class Gateways
                             'title' => __('Merchant token', 'parsigate'),
                             'type' => 'text',
                             'default' => '',
-                            'description' => __('Please enter the gateway merchant token.', 'parsigate'),
+                            'description' => apply_filters('parsigate_zarinplus_token_description', __('Please enter the gateway merchant token.', 'parsigate')),
                             'desc_tip' => false,
                             'class' => 'pg-ltr-input'
                         ]

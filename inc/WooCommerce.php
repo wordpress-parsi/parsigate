@@ -31,13 +31,33 @@ class WooCommerce
     {
         $gateways = Gateways::list();
         foreach ($gateways as $gateway_id => $option) {
+            // Check enable
             if (!Gateways::enable($gateway_id) || !in_array('woocommerce', $option['usage'])) {
                 continue;
             }
 
+            // Do Action
+            do_action('parsigate_before_woocommerce_gateway_loaded', $gateway_id);
+
+            // Compatibility
+            $compat_class = str_replace('gateways', 'compatibility', $option['class']);
+            if (class_exists($compat_class) and method_exists($compat_class, '__construct')) {
+                try {
+                    new $compat_class();
+                } catch (\Exception $e) {
+                    //
+                }
+            }
+
+            // Setup Gateway
             $gateway_class = new \ParsiGate\WC_Gateway();
             $gateway_class->setup_gateway($gateway_id);
+
+            // Append to list
             $methods[] = $gateway_class;
+
+            // Do Action
+            do_action('parsigate_after_woocommerce_gateway_loaded', $gateway_id);
         }
 
         return $methods;

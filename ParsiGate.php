@@ -131,7 +131,7 @@ class ParsiGate
 
 
             $line1 = sprintf(
-                // translators: %1$s is the plugin name (Parsigate), %2$s is the required plugin name
+            // translators: %1$s is the plugin name (Parsigate), %2$s is the required plugin name
                 __('%1$s plugin requires %2$s plugin to function properly.', 'parsigate'),
                 '<strong>' . __('Parsigate', 'parsigate') . '</strong>',
                 '<strong>' . esc_html($plugin['name']) . '</strong>'
@@ -139,7 +139,7 @@ class ParsiGate
 
 
             $line2 = sprintf(
-                // translators: %s is the required plugin name
+            // translators: %s is the required plugin name
                 __('Please install and activate %s plugin first to access all features.', 'parsigate'),
                 '<strong>' . esc_html($plugin['name']) . '</strong>'
             );
@@ -225,6 +225,9 @@ class ParsiGate
             require_once self::$plugin_path . '/inc/WC_Gateway.php';
             require_once self::$plugin_path . '/inc/WC_Gateway_Block.php';
         }
+
+        // Compatibility
+        require_once self::$plugin_path . '/inc/compatibility/ZarinPlus.php';
 
         // Custom Table
         if (is_admin() and !class_exists('WP_List_Table')) {
