@@ -1421,18 +1421,25 @@ class Gateways
     public static function get($name)
     {
         $list = self::list();
-        return $list[$name] ? apply_filters('parsigate_gateway', $list[$name], $name) : false;
+        return apply_filters('parsigate_gateway', ($list[$name] ?? false), $name);
     }
 
     public static function enable($id): bool
     {
-        $item = self::get(strtolower($id));
+        $gateway_id = strtolower($id);
+        $item = self::get($gateway_id);
         if (!$item) {
             return false;
         }
 
-        $option = ParsiGateOption::get(strtolower($id));
-        return ((int)$option == 1);
+        if (isset($item['force_enable']) and $item['force_enable'] === true) {
+            $enable = true;
+        } else {
+            $option = ParsiGateOption::get($gateway_id);
+            $enable = ((int)$option == 1);
+        }
+
+        return apply_filters('parsigate_enable_gateway', $enable, $id);
     }
 
     public static function choices($type = null, $enable = null): array
@@ -1446,6 +1453,12 @@ class Gateways
         $choices = [];
 
         foreach ($list as $id => $array) {
+            // Check hidden Choices
+            if (isset($array['hidden']) and $array['hidden'] === true) {
+                continue;
+            }
+
+            // Check Enable
             if (is_bool($enable) and $enable === true and self::enable($id) === false) {
                 continue;
             }

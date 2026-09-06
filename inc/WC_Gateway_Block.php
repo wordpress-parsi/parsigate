@@ -22,7 +22,7 @@ class WC_Gateway_Block extends \Automattic\WooCommerce\Blocks\Payments\Integrati
 
     public function is_active()
     {
-        return filter_var($this->settings['enabled'], FILTER_VALIDATE_BOOLEAN);
+        return filter_var((array_key_exists('enabled', $this->settings) ? $this->settings['enabled'] : false), FILTER_VALIDATE_BOOLEAN);
     }
 
     public function get_payment_method_script_handles()

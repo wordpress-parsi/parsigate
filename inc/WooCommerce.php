@@ -39,16 +39,6 @@ class WooCommerce
             // Do Action
             do_action('parsigate_before_woocommerce_gateway_loaded', $gateway_id);
 
-            // Compatibility
-            $compat_class = str_replace('gateways', 'compatibility', $option['class']);
-            if (class_exists($compat_class) and method_exists($compat_class, '__construct')) {
-                try {
-                    new $compat_class($gateway_id);
-                } catch (\Exception $e) {
-                    //
-                }
-            }
-
             // Setup Gateway
             $gateway_class = new \ParsiGate\WC_Gateway();
             $gateway_class->setup_gateway($gateway_id);
