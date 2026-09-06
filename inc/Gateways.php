@@ -20,6 +20,7 @@ use ParsiGate\gateways\SnappPay;
 use ParsiGate\gateways\Tara;
 use ParsiGate\gateways\Test;
 use ParsiGate\Gateways\ZarinPal;
+use ParsiGate\gateways\ZarinPlus;
 use ParsiGate\gateways\Zibal;
 use WPParsidate\Addons\ParsiGateOption\ParsiGateOption;
 
@@ -1152,87 +1153,45 @@ class Gateways
                 'website' => 'azkivam.com',
                 'type' => 'installment',
                 'usage' => ['woocommerce'],
-                'requirement' => (Utility::is_enable_open_ssl() === false ? __("Note: To activate the Gateway, the OpenSSL module must be enabled in your host's PHP settings.", "parsigate") : ''),
                 'woocommerce' => [
-                    'sandbox' => false,
+                    'sandbox' => true,
                     'settings' => [
-                        'terminal_id' => [
-                            'title' => __('Terminal No.', 'parsigate'),
+                        'merchant_id' => [
+                            'title' => __('Merchant ID', 'parsigate'),
                             'type' => 'text',
                             'default' => '',
-                            'description' => __("Please enter the gateway terminal number.", "parsigate"),
-                            'desc_tip' => false,
-                            'class' => 'pg-ltr-input'
-                        ],
-                        'api_key' => [
-                            'title' => __('API Key', 'parsigate'),
-                            'type' => 'text',
-                            'default' => '',
-                            'description' => __('Please enter the gateway api key.', 'parsigate'),
-                            'desc_tip' => false,
-                            'class' => 'pg-ltr-input'
-                        ],
-                        'api_url' => [
-                            'title' => __('API Url', 'parsigate'),
-                            'type' => 'text',
-                            'default' => 'https://api.azkiloan.com',
-                            'description' => __('Please enter the gateway api url.', 'parsigate'),
+                            'description' => __('Please enter the gateway merchant id.', 'parsigate'),
                             'desc_tip' => false,
                             'class' => 'pg-ltr-input'
                         ]
                     ],
                     'pay' => function ($amount, $order, $option, $callback_url, $class) {
 
-                        // Get Mobile Number
-                        $mobile = $order->get_billing_phone();
-
-                        // Items
-                        $items = [];
-                        for ($index = 0; $index < count($order->get_items()); $index++) {
-                            $key = array_keys($order->get_items())[$index];
-                            $value = $order->get_items()[$key];
-
-                            $items[] = array(
-                                'name' => $value->get_name(),
-                                'url' => get_permalink($value->get_product_id()),
-                                'count' => $value->get_quantity(),
-                                'amount' => WooCommerce::price($value->get_total(), $order, 'azkivam') / $value->get_quantity()
-                            );
+                        $metadata = [];
+                        if (!empty($order->get_billing_phone())) {
+                            $metadata['mobile'] = $order->get_billing_phone();
                         }
 
-                        if (0 < WC()->cart->get_shipping_total()) {
-                            $items[] = array(
-                                'name' => __('Shipping Cost', 'parsigate'),
-                                'url' => home_url(),
-                                'count' => 1,
-                                'amount' => WooCommerce::price(intval(WC()->cart->get_shipping_total()), $order, 'azkivam')
-                            );
-                        }
-
-                        // Return
                         return [
-                            'api_url' => $option['api_url'],
-                            'api_key' => $option['api_key'],
-                            'MerchantId' => $option['terminal_id'],
-                            'amount' => $amount,
-                            'redirect_uri' => $callback_url,
-                            'fallback_uri' => $callback_url,
-                            'provider_id' => $order->get_id() . wp_rand(100000000, 999999999),
-                            'mobile_number' => (!empty($mobile)) ? (preg_match('/^09[0-9]{9}/i', $mobile) ? $mobile : '') : '',
-                            'items' => $items
+                            "sandbox" => isset($option['sandbox']) and $option['sandbox'] == 'yes',
+                            "merchant_id" => $option['merchant_id'],
+                            "amount" => $amount,
+                            "callback_url" => $callback_url,
+                            "description" => WooCommerce::get_order_description($order, 'zarinpal'),
+                            "metadata" => $metadata,
                         ];
                     },
                     'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        $status = (isset($request['get']['status']) ? sanitize_text_field($request['get']['status']) : '');
-                        $ticketId = (isset($request['get']['ticketId']) ? sanitize_text_field($request['get']['ticketId']) : '');
+                        $authority = (isset($request['get']['Authority']) ? sanitize_text_field($request['get']['Authority']) : '');
+                        $status = (isset($request['get']['Status']) ? sanitize_text_field($request['get']['Status']) : '');
 
                         return [
-                            'api_url' => $option['api_url'],
-                            'api_key' => $option['api_key'],
-                            'MerchantId' => $option['terminal_id'],
-                            'status' => $status,
-                            'ticket_id' => $ticketId,
+                            'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',
+                            "merchant_id" => $option['merchant_id'],
+                            "amount" => $amount,
+                            'Authority' => $authority,
+                            'Status' => $status
                         ];
                     }
                 ]
@@ -1383,6 +1342,47 @@ class Gateways
                             'result' => $result,
                             'channelRefNumber' => $channelRefNumber,
                             'ip' => Utility::ip()
+                        ];
+                    }
+                ]
+            ],
+            'zarinplus' => [
+                'title' => __('ZarinPlus', 'parsigate'),
+                'class' => ZarinPlus::class,
+                'website' => 'zarinplus.com',
+                'type' => 'installment',
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'settings' => [
+                        'token' => [
+                            'title' => __('Merchant token', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway merchant token.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
+
+                        return [
+                            'amount' => $amount,
+                            'cancel' => wc_get_checkout_url(),
+                            'success' => $callback_url,
+                            'item' => WooCommerce::get_order_description($order, 'zarinplus'),
+                            'cellphone' => $order->get_billing_phone(),
+                            'email' => $order->get_billing_email(),
+                            'token' => $option['token'],
+                            'gateway_slug' => 'zarinplus'
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option, $class, $request) {
+
+                        $authority = (isset($request['get']['authority']) ? sanitize_text_field($request['get']['authority']) : '');
+                        return [
+                            'authority' => $authority,
+                            "token" => $option['token'],
+                            "amount" => $amount
                         ];
                     }
                 ]
