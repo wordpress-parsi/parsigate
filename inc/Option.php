@@ -69,9 +69,16 @@ class ParsiGateOption extends Addon
 
                 foreach (Gateways::choices($key) as $gateway_key => $gateway_title) {
 
+                    $img = '';
+                    $image = \ParsiGate::$plugin_path . '/assets/logo/' . $gateway_key . '.png';
+                    if (file_exists($image)) {
+                        $logo = \ParsiGate::$plugin_url . '/assets/logo/' . $gateway_key . '.png';
+                        $img = wp_kses_post('<img src="' . esc_attr($logo) . '" alt="' . esc_attr($gateway_title) . '" style="width: 30px;height: auto;vertical-align: -10px; margin-left: 5px;">');
+                    }
+
                     $settings[$gateway_key] = [
                         'id' => $gateway_key,
-                        'title' => $gateway_title,
+                        'title' => $img . $gateway_title,
                         'type' => 'toggle',
                         'value' => 1,
                         'default' => false,
