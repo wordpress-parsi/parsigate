@@ -3,18 +3,16 @@
 namespace ParsiGate\compatibility;
 
 use ParsiGate\WooCommerce;
-use WPParsidate\Addons\ParsiGateOption\ParsiGateOption;
 
 if (!defined('ABSPATH')) exit;
 
-class ZarinPlus
+class ZarinPlus extends Base
 {
 
-    public string $gateway_id;
+    public string $gateway_id = 'zarinplus';
 
     public function __construct()
     {
-        $this->gateway_id = 'zarinplus';
 
         add_action('woocommerce_update_options_payment_gateways_' . $this->gateway_id, [$this, 'save_option']);
         add_filter('parsigate_' . $this->gateway_id . '_token_description', [$this, 'description'], 30);
@@ -24,8 +22,8 @@ class ZarinPlus
     public function save_option()
     {
 
-        $settings = get_option('woocommerce_' . $this->gateway_id . '_settings');
-        if (is_array($settings) and isset($settings['token']) and !empty($settings['token'])) {
+        $settings = $this->wc();
+        if (isset($settings['token']) and !empty($settings['token'])) {
 
             $gateways = \ParsiGate\gateways\ZarinPlus::gateways([
                 'token' => $settings['token']
@@ -42,8 +40,8 @@ class ZarinPlus
     {
         if (WooCommerce::is_gateway_option_page($this->gateway_id)) {
 
-            $settings = get_option('woocommerce_' . $this->gateway_id . '_settings');
-            if (is_array($settings) and isset($settings['lists']) and is_array($settings['lists']) and !empty($settings['lists'])) {
+            $settings = $this->wc();
+            if (isset($settings['lists']) and is_array($settings['lists']) and !empty($settings['lists'])) {
 
                 $desc = sprintf(
                     wp_kses_post('<p>%d %s</p>'),
@@ -62,15 +60,13 @@ class ZarinPlus
     public function setup_gateways($lists)
     {
         // Check enable ZarinPlus
-        $option = ParsiGateOption::get($this->gateway_id);
-        $enable = ((int)$option == 1);
-        if (!$enable) {
+        if (!$this->enable()) {
             return $lists;
         }
 
-        // Check MultiPay Gateways ZarinPal Lists
-        $settings = get_option('woocommerce_' . $this->gateway_id . '_settings');
-        if (is_array($settings) and isset($settings['lists']) and is_array($settings['lists']) and !empty($settings['lists'])) {
+        // Check multi Gateways ZarinPal Lists
+        $settings = $this->wc();
+        if (isset($settings['lists']) and is_array($settings['lists']) and !empty($settings['lists'])) {
             foreach ($settings['lists'] as $item) {
 
                 if ($item['slug'] == $this->gateway_id) {
