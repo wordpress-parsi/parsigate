@@ -227,7 +227,9 @@ class ParsiGate
         }
 
         // Compatibility
+        require_once self::$plugin_path . '/inc/compatibility/Base.php';
         require_once self::$plugin_path . '/inc/compatibility/ZarinPlus.php';
+        require_once self::$plugin_path . '/inc/compatibility/Test.php';
 
         // Custom Table
         if (is_admin() and !class_exists('WP_List_Table')) {

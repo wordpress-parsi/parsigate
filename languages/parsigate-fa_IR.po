@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Parsi Gate\n"
-"POT-Creation-Date: 2026-09-06 12:33+0330\n"
-"PO-Revision-Date: 2026-09-06 14:11+0330\n"
+"POT-Creation-Date: 2026-09-06 15:14+0330\n"
+"PO-Revision-Date: 2026-09-06 16:30+0330\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fa_IR\n"
@@ -63,7 +63,7 @@ msgstr "درگاه واسط"
 msgid "Installment Gateway"
 msgstr "درگاه اعتباری"
 
-#: inc/Gateways.php:41 inc/Gateways.php:1393 inc/WooCommerce.php:185
+#: inc/Gateways.php:41 inc/Gateways.php:1393 inc/WooCommerce.php:175
 #: inc/templates/test-gateway.php:8
 msgid "Test Gateway"
 msgstr "درگاه تست"
@@ -285,11 +285,11 @@ msgstr "هزینه حمل و نقل"
 msgid "ZarinPlus"
 msgstr "زرین پلاس"
 
-#: inc/Gateways.php:1358
+#: inc/Gateways.php:1358 inc/compatibility/ZarinPlus.php:85
 msgid "Merchant token"
 msgstr "توکن فروشنده"
 
-#: inc/Gateways.php:1361
+#: inc/Gateways.php:1361 inc/compatibility/ZarinPlus.php:88
 msgid "Please enter the gateway merchant token."
 msgstr "لطفا توکن فروشنده را وارد نمایید."
 
@@ -462,29 +462,29 @@ msgstr "شناسه سفارش نامعتبر است."
 msgid "Payment Success, Transaction ID: %s"
 msgstr "پرداخت موفق, شناسه تراکنش: %s"
 
-#: inc/WooCommerce.php:157
+#: inc/WooCommerce.php:147
 msgid "Security verification failed. Invalid or expired nonce."
 msgstr "خطای اعتبارسنجی امنیتی رخ داده است."
 
-#: inc/WooCommerce.php:158
+#: inc/WooCommerce.php:148
 msgid "Security Error"
 msgstr "خطای امنیتی"
 
-#: inc/WooCommerce.php:167
+#: inc/WooCommerce.php:157
 msgid "Order ID is Invalid."
 msgstr "شناسه سفارش نامعتبر می باشد."
 
-#: inc/WooCommerce.php:171
+#: inc/WooCommerce.php:161
 msgid "Order Status is not pending payment."
 msgstr "وضعیت سفارش در انتظار پرداخت نمی باشد."
 
 #. translators: 1: Order number, 2: Customer name, 3: Website domain
-#: inc/WooCommerce.php:203
+#: inc/WooCommerce.php:193
 #, php-format
 msgid "Order ID: %1$d | By: %2$s | Site: %3$s"
 msgstr "سفارش: %1$d | خریدار: %2$s | سایت: %3$s"
 
-#: inc/compatibility/ZarinPlus.php:47
+#: inc/compatibility/ZarinPlus.php:48
 msgid "Gateways is found:"
 msgstr "درگاه یافت شد:"
 
