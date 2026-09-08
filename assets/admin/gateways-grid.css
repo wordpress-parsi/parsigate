@@ -1,0 +1,57 @@
+/**
+ * Desktop multi-column layout for ParsiGate gateway toggles
+ * on WP-Parsidate settings page (tab=parsigate).
+ */
+/* Multi-column grid for all setting groups on this tab */
+body.toplevel_page_wp-parsidate .wp-parsidate-wrap .wppd-grid .wppd-fields-wrap {
+	display: grid !important;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem 1.5rem !important;
+	align-items: start;
+}
+
+@media only screen and (min-width: 1200px) {
+	body.toplevel_page_wp-parsidate .wp-parsidate-wrap .wppd-grid .wppd-fields-wrap {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+
+/* Keep single column on smaller screens / mobile */
+@media only screen and (max-width: 961px) {
+	body.toplevel_page_wp-parsidate .wp-parsidate-wrap .wppd-grid .wppd-fields-wrap {
+		grid-template-columns: 1fr !important;
+	}
+}
+
+body.toplevel_page_wp-parsidate .wp-parsidate-wrap .wppd-grid .wppd-fields-wrap:has(.wppd-field-select) {
+	grid-template-columns: 1fr !important;
+}
+
+body.toplevel_page_wp-parsidate .wp-parsidate-wrap .wppd-grid .wppd-fields-wrap .wppd-field-wrap.wppd-field-toggle {
+	min-width: 0;
+	box-shadow: 0 0 10px -9px;
+	padding: 4px 2px 4px 6px;
+	border-left: 1px solid rgb(196 221 241);
+	border-radius: 0 20px 20px 0;
+}
+
+html[dir="rtl"] body.toplevel_page_wp-parsidate .wp-parsidate-wrap .wppd-grid .wppd-fields-wrap .wppd-field-wrap.wppd-field-toggle {
+	border-radius: 20px 0 0 20px;
+}
+
+body.toplevel_page_wp-parsidate .wp-parsidate-wrap .wppd-grid .wppd-fields-wrap .wppd-field-wrap .wppd-field-head {
+	max-width: 100%;
+}
+
+body.toplevel_page_wp-parsidate .wp-parsidate-wrap .wppd-grid .wppd-fields-wrap .wppd-field-wrap img {
+	width: 30px;
+	height: auto;
+	vertical-align: -10px;
+	margin-inline-end: 5px;
+	margin-inline-start: 0;
+}
+
+.wp-parsidate-wrap .wppd-toggle {
+	align-self: center !important;
+}

@@ -11,6 +11,7 @@ use ParsiGate\gateways\Jibit;
 use ParsiGate\gateways\Mellat;
 use ParsiGate\gateways\Melli;
 use ParsiGate\gateways\Parsian;
+use ParsiGate\gateways\ParsPal;
 use ParsiGate\gateways\Pasargad;
 use ParsiGate\gateways\PayPing;
 use ParsiGate\gateways\Saderat;
@@ -716,6 +717,58 @@ class Gateways
                             'PaymentRefId' => trim((string)$data['paymentRefId']),
                             "paymentCode" => trim((string)$data['paymentCode']),
                             "amount" => $amount
+                        ];
+                    }
+                ]
+            ],
+            'parspal' => [
+                'title' => __('ParsPal', 'parsigate'),
+                'class' => ParsPal::class,
+                'website' => 'parspal.com',
+                'type' => 'intermediary',
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'sandbox' => true,
+                    'settings' => [
+                        'merchant_id' => [
+                            'title' => __('API Key', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Please enter the gateway API Key', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
+
+                        $name = $order->get_billing_company();
+                        if (!empty($order->get_billing_first_name()) || !empty($order->get_billing_last_name())) {
+                            $name = trim($order->get_billing_first_name() . ' ' . $order->get_billing_last_name());
+                        }
+
+                        return [
+                            'sandbox'     => isset($option['sandbox']) && $option['sandbox'] === 'yes',
+                            'merchant_id' => $option['merchant_id'] ?? '',
+                            'amount'      => $amount,
+                            'return_url'  => $callback_url,
+                            'order_id'    => (string) $order->get_id(),
+                            'description' => WooCommerce::get_order_description($order, 'parspal'),
+                            'name'        => $name,
+                            'mobile'      => eng_number($order->get_billing_phone()),
+                            'email'       => $order->get_billing_email(),
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option, $class, $request) {
+
+                        $status         = isset($request['get']['status']) ? sanitize_text_field($request['get']['status']) : '';
+                        $receipt_number = isset($request['get']['receipt_number']) ? sanitize_text_field($request['get']['receipt_number']) : '';
+
+                        return [
+                            'sandbox'        => isset($option['sandbox']) && $option['sandbox'] === 'yes',
+                            'merchant_id'    => $option['merchant_id'] ?? '',
+                            'amount'         => $amount,
+                            'status'         => $status,
+                            'receipt_number' => $receipt_number,
                         ];
                     }
                 ]
