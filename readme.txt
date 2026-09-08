@@ -30,7 +30,7 @@ Built with WordPress and WooCommerce standards in mind, ParsiGate focuses on per
 ## Supported Gateways:
 * Bank gateways: Mellat, Parsian, Pasargad, Sadaad, Melli, Behpardakht, Asan Pardakht, Saman, Saderat, Eghtesad Novin, Iran Kish, Sepehr
 * Installment gateways: SnappPay, Tara, Digipay, Azki
-* Intermediary gateways: Zibal, Zarinpal, PayPing, Aghayepardakht
+* Intermediary gateways: Zibal, Zarinpal, PayPing, ParsPal, Aghayepardakht
 * Test gateway for simulating purchases without a bank account
 * Unified settings interface integrated with the Parsidate plugin
 
@@ -196,6 +196,20 @@ The plugin sends the order amount, order ID, callback URL, merchant credentials 
 Website: https://payping.ir/
 Terms: https://payping.ir/terms/
 Privacy: https://payping.ir/terms/
+
+= ParsPal =
+
+Used to process online payments through ParsPal.
+
+Payment requests are sent to:
+https://api.parspal.com/
+Sandbox: https://sandbox.api.parspal.com/
+
+The plugin sends the order amount (Rial), order ID, callback URL, API Key and payer details required to create and verify the transaction.
+
+Website: https://parspal.com/
+Terms: https://parspal.com/
+Privacy: https://parspal.com/
 
 = Saman Electronic Payment (SEP) =
 
