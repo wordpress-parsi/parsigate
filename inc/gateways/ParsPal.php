@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace ParsiGate\gateways;
 
 /**
@@ -20,104 +18,83 @@ class ParsPal extends Base
 
     public static string $sandbox_verify_url = 'https://sandbox.api.parspal.com/v1/payment/verify';
 
-    /**
-     * Request payment and get redirect link.
-     *
-     * @param array $args {
-     *     @type bool   $sandbox
-     *     @type string $merchant_id  API Key
-     *     @type int    $amount       Amount in Rial
-     *     @type string $return_url
-     *     @type string $order_id
-     *     @type string $description
-     *     @type string $name
-     *     @type string $mobile
-     *     @type string $email
-     * }
-     * @return array
-     */
     public function pay(array $args = []): array
     {
         $is_sandbox = isset($args['sandbox']) && $args['sandbox'] === true;
 
         $body = [
-            'amount'     => (int) ($args['amount'] ?? 0),
-            'return_url' => (string) ($args['return_url'] ?? ''),
-            'order_id'   => (string) ($args['order_id'] ?? ''),
-            'description'=> (string) ($args['description'] ?? ''),
-            'payer'      => [
-                'name'   => (string) ($args['name'] ?? ''),
-                'mobile' => (string) ($args['mobile'] ?? ''),
-                'email'  => (string) ($args['email'] ?? ''),
+            'amount' => (int)($args['amount'] ?? 0),
+            'return_url' => (string)($args['return_url'] ?? ''),
+            'order_id' => (string)($args['order_id'] ?? ''),
+            'description' => (string)($args['description'] ?? ''),
+            'payer' => [
+                'name' => (string)($args['name'] ?? ''),
+                'mobile' => (string)($args['mobile'] ?? ''),
+                'email' => (string)($args['email'] ?? ''),
             ],
         ];
 
         $headers = [
-            'ApiKey'       => (string) ($args['merchant_id'] ?? ''),
+            'ApiKey' => (string)($args['merchant_id'] ?? ''),
             'Content-Type' => 'application/json',
-            'Accept'       => 'application/json',
+            'Accept' => 'application/json',
         ];
 
         $request = [
-            'body'        => wp_json_encode($body),
-            'timeout'     => 30,
+            'body' => wp_json_encode($body),
+            'timeout' => 30,
             'redirection' => 5,
             'httpversion' => '1.0',
-            'blocking'    => true,
-            'headers'     => $headers,
-            'cookies'     => [],
+            'blocking' => true,
+            'headers' => $headers,
+            'cookies' => [],
         ];
 
-        $url      = $is_sandbox ? static::$sandbox_request_url : static::$request_url;
+        $url = $is_sandbox ? static::$sandbox_request_url : static::$request_url;
         $response = wp_remote_post($url, $request);
-        $status_code = (int) wp_remote_retrieve_response_code($response);
+        $status_code = (int)wp_remote_retrieve_response_code($response);
 
         if (is_wp_error($response)) {
             return $this->error(
                 $response->get_error_message(),
                 [
-                    'url'      => $url,
-                    'body'     => $body,
-                    'response' => (array) $response->get_error_message(),
-                    'header'   => $headers,
+                    'url' => $url,
+                    'body' => $body,
+                    'response' => (array)$response->get_error_message(),
+                    'header' => $headers,
                 ],
                 $status_code
             );
         }
 
         $response_body = wp_remote_retrieve_body($response);
-        $json          = json_decode($response_body, true);
+        $json = json_decode($response_body, true);
 
         if (!is_array($json)) {
             return $this->error(
                 __('Invalid gateway settings input.', 'parsigate'),
                 [
-                    'url'      => $url,
-                    'body'     => $body,
+                    'url' => $url,
+                    'body' => $body,
                     'response' => $response_body,
-                    'header'   => $headers,
+                    'header' => $headers,
                 ],
                 $status_code
             );
         }
 
         // Success: status === ACCEPTED and link + payment_id exist
-        if (
-            isset($json['status'])
-            && $json['status'] === 'ACCEPTED'
-            && !empty($json['link'])
-            && !empty($json['payment_id'])
-        ) {
+        if (isset($json['status']) and $json['status'] === 'ACCEPTED' and !empty($json['link']) and !empty($json['payment_id'])) {
             return $this->success(
                 [
-                    'authority' => (string) $json['payment_id'],
-                    'redirect'  => (string) $json['link'],
+                    'authority' => (string)$json['payment_id'],
+                    'redirect' => (string)$json['link'],
                 ],
                 [
-                    'url'      => $url,
-                    'body'     => $body,
+                    'url' => $url,
+                    'body' => $body,
                     'response' => $json,
-                    'header'   => $headers,
+                    'header' => $headers,
                 ],
                 $status_code
             );
@@ -131,33 +108,21 @@ class ParsPal extends Base
         return $this->error(
             $error_message,
             [
-                'url'      => $url,
-                'body'     => $body,
+                'url' => $url,
+                'body' => $body,
                 'response' => $json,
-                'header'   => $headers,
+                'header' => $headers,
             ],
             $status_code
         );
     }
 
-    /**
-     * Verify payment after callback.
-     *
-     * @param array $args {
-     *     @type bool   $sandbox
-     *     @type string $merchant_id
-     *     @type int    $amount
-     *     @type string $status          Callback status (100 = success)
-     *     @type string $receipt_number  From callback
-     * }
-     * @return array
-     */
     public function verify(array $args = []): array
     {
         $is_sandbox = isset($args['sandbox']) && $args['sandbox'] === true;
 
-        $callback_status = isset($args['status']) ? (string) $args['status'] : '';
-        $receipt_number  = isset($args['receipt_number']) ? (string) $args['receipt_number'] : '';
+        $callback_status = isset($args['status']) ? (string)$args['status'] : '';
+        $receipt_number = isset($args['receipt_number']) ? (string)$args['receipt_number'] : '';
 
         // User cancelled or failed payment
         if ($callback_status !== '100' || empty($receipt_number)) {
@@ -165,64 +130,64 @@ class ParsPal extends Base
             return $this->error(
                 $message,
                 [
-                    'url'      => '',
-                    'body'     => $args,
+                    'url' => '',
+                    'body' => $args,
                     'response' => [],
-                    'header'   => [],
+                    'header' => [],
                 ],
                 0
             );
         }
 
         $body = [
-            'amount'         => (int) ($args['amount'] ?? 0),
+            'amount' => (int)($args['amount'] ?? 0),
             'receipt_number' => $receipt_number,
         ];
 
         $headers = [
-            'ApiKey'       => (string) ($args['merchant_id'] ?? ''),
+            'ApiKey' => (string)($args['merchant_id'] ?? ''),
             'Content-Type' => 'application/json',
-            'Accept'       => 'application/json',
+            'Accept' => 'application/json',
         ];
 
         $request = [
-            'body'        => wp_json_encode($body),
-            'timeout'     => 30,
+            'body' => wp_json_encode($body),
+            'timeout' => 30,
             'redirection' => 5,
             'httpversion' => '1.0',
-            'blocking'    => true,
-            'headers'     => $headers,
-            'cookies'     => [],
+            'blocking' => true,
+            'headers' => $headers,
+            'cookies' => [],
         ];
 
-        $url      = $is_sandbox ? static::$sandbox_verify_url : static::$verify_url;
+        $url = $is_sandbox ? static::$sandbox_verify_url : static::$verify_url;
         $response = wp_remote_post($url, $request);
-        $status_code = (int) wp_remote_retrieve_response_code($response);
+        $status_code = (int)wp_remote_retrieve_response_code($response);
 
         if (is_wp_error($response)) {
             return $this->error(
                 $response->get_error_message(),
                 [
-                    'url'      => $url,
-                    'body'     => $body,
-                    'response' => (array) $response->get_error_message(),
-                    'header'   => $headers,
+                    'url' => $url,
+                    'body' => $body,
+                    'response' => (array)$response->get_error_message(),
+                    'header' => $headers,
                 ],
                 $status_code
             );
         }
 
         $response_body = wp_remote_retrieve_body($response);
-        $json          = json_decode($response_body, true);
+        $json = json_decode($response_body, true);
 
         if (!is_array($json)) {
             return $this->error(
                 __('Invalid gateway settings input.', 'parsigate'),
                 [
-                    'url'      => $url,
-                    'body'     => $body,
+                    'url' => $url,
+                    'body' => $body,
                     'response' => $response_body,
-                    'header'   => $headers,
+                    'header' => $headers,
                 ],
                 $status_code
             );
@@ -233,14 +198,14 @@ class ParsPal extends Base
             return $this->success(
                 [
                     'transaction_id' => $receipt_number,
-                    'paid_amount'    => $json['paid_amount'] ?? null,
-                    'id'             => $json['id'] ?? null,
+                    'paid_amount' => $json['paid_amount'] ?? null,
+                    'id' => $json['id'] ?? null,
                 ],
                 [
-                    'url'      => $url,
-                    'body'     => $body,
+                    'url' => $url,
+                    'body' => $body,
                     'response' => $json,
-                    'header'   => $headers,
+                    'header' => $headers,
                 ],
                 $status_code
             );
@@ -254,21 +219,15 @@ class ParsPal extends Base
         return $this->error(
             $error_message,
             [
-                'url'      => $url,
-                'body'     => $body,
+                'url' => $url,
+                'body' => $body,
                 'response' => $json,
-                'header'   => $headers,
+                'header' => $headers,
             ],
             $status_code
         );
     }
 
-    /**
-     * Translate callback status codes to human-readable messages.
-     *
-     * @param string $status
-     * @return string
-     */
     private function translate_callback_status(string $status): string
     {
         $messages = [

@@ -748,27 +748,27 @@ class Gateways
                         }
 
                         return [
-                            'sandbox'     => isset($option['sandbox']) && $option['sandbox'] === 'yes',
+                            'sandbox' => isset($option['sandbox']) && $option['sandbox'] === 'yes',
                             'merchant_id' => $option['merchant_id'] ?? '',
-                            'amount'      => $amount,
-                            'return_url'  => $callback_url,
-                            'order_id'    => (string) $order->get_id(),
+                            'amount' => $amount,
+                            'return_url' => $callback_url,
+                            'order_id' => (string)$order->get_id(),
                             'description' => WooCommerce::get_order_description($order, 'parspal'),
-                            'name'        => $name,
-                            'mobile'      => eng_number($order->get_billing_phone()),
-                            'email'       => $order->get_billing_email(),
+                            'name' => $name,
+                            'mobile' => eng_number($order->get_billing_phone()),
+                            'email' => $order->get_billing_email(),
                         ];
                     },
                     'verify' => function ($amount, $order, $option, $class, $request) {
 
-                        $status         = isset($request['get']['status']) ? sanitize_text_field($request['get']['status']) : '';
+                        $status = isset($request['get']['status']) ? sanitize_text_field($request['get']['status']) : '';
                         $receipt_number = isset($request['get']['receipt_number']) ? sanitize_text_field($request['get']['receipt_number']) : '';
 
                         return [
-                            'sandbox'        => isset($option['sandbox']) && $option['sandbox'] === 'yes',
-                            'merchant_id'    => $option['merchant_id'] ?? '',
-                            'amount'         => $amount,
-                            'status'         => $status,
+                            'sandbox' => isset($option['sandbox']) && $option['sandbox'] === 'yes',
+                            'merchant_id' => $option['merchant_id'] ?? '',
+                            'amount' => $amount,
+                            'status' => $status,
                             'receipt_number' => $receipt_number,
                         ];
                     }
