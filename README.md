@@ -74,7 +74,8 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 - Shepa
 - Jibit
 
-### Test Gateway
+### Offline Gateway
+- Card to Card
 - Test payment gateway for development and debugging
 
 ## Developer Guide
