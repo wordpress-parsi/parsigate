@@ -1239,7 +1239,7 @@ class Gateways
                     'pay' => function ($amount, $order, $option, $callback_url, $class) {
 
                         // Get Mobile Number
-                        $mobile = $order->get_billing_phone();
+                        $mobile = eng_number($order->get_billing_phone());
 
                         // Items
                         $items = [];
