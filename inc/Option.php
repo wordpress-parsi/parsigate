@@ -37,32 +37,27 @@ class ParsiGateOption extends Addon
         add_action('admin_enqueue_scripts', [$this, 'admin_enqueue_scripts']);
     }
 
-    /**
-     * Load admin CSS only on ParsiGate settings tab.
-     *
-     * @param string $hook
-     * @return void
-     */
     public function admin_enqueue_scripts($hook): void
     {
+        // phpcs:disable WordPress.Security.NonceVerification.Missing
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended
+
         $page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
         $tab  = isset($_GET['tab']) ? sanitize_text_field(wp_unslash($_GET['tab'])) : '';
 
-        if ($page !== 'wp-parsidate' || $tab !== $this->addonID) {
-            return;
-        }
-
-        $css_file = \ParsiGate::$plugin_path . '/assets/admin/gateways-grid.css';
-        if (!file_exists($css_file)) {
+        if ($page !== WP_PARSI_KEY_SLUG || $tab !== $this->addonID) {
             return;
         }
 
         wp_enqueue_style(
             'parsigate-gateways-grid',
-            \ParsiGate::$plugin_url . '/assets/admin/gateways-grid.css',
+            \ParsiGate::$plugin_url . '/assets/admin/gateways-grid.min.css',
             [],
-            (string) filemtime($css_file)
+            \ParsiGate::$plugin_version
         );
+
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
     }
 
     /* @hook */
