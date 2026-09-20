@@ -5,6 +5,7 @@ namespace ParsiGate;
 use ParsiGate\gateways\AqayePardakht;
 use ParsiGate\gateways\AsanPardakht;
 use ParsiGate\gateways\Azkivam;
+use ParsiGate\gateways\CardToCard;
 use ParsiGate\gateways\DigiPay;
 use ParsiGate\gateways\IranKish;
 use ParsiGate\gateways\Jibit;
@@ -38,7 +39,7 @@ class Gateways
             'bank' => __('Bank Gateway', 'parsigate'),
             'intermediary' => __('Intermediary Gateway', 'parsigate'),
             'installment' => __('Installment Gateway', 'parsigate'),
-            'test' => __('Test Gateway', 'parsigate'),
+            'offline' => __('Offline Gateway', 'parsigate')
         ];
 
         return apply_filters('parsigate_gateways_types', $list);
@@ -1388,12 +1389,84 @@ class Gateways
                 ]
             ],
 
-            // Test Gateway
+            // Offline Gateway
+            'cardtocard' => [
+                'title' => __('Card To Card', 'parsigate'),
+                'class' => CardToCard::class,
+                'website' => '',
+                'type' => 'offline',
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'sandbox' => false,
+                    'settings' => [
+                        'account_name' => array(
+                            'title' => __('Full Name / Company Name', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                        ),
+                        'bank_name' => array(
+                            'title' => __('Bank Name', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                        ),
+                        'bank_account' => array(
+                            'title' => __('Bank Account Number', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'class' => 'pg-ltr-input'
+                        ),
+                        'iban' => array(
+                            'title' => __('IBAN', 'parsigate'),
+                            'type' => 'text',
+                            'description' => __('Example: IR...', 'parsigate'),
+                            'default' => '',
+                            'class' => 'pg-ltr-input'
+                        ),
+                        'card_number' => array(
+                            'title' => __('Card Number', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'class' => 'pg-ltr-input'
+                        ),
+                        'max_file_size' => array(
+                            'title' => __('Max Image size (MB)', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '5',
+                            'class' => 'pg-ltr-input'
+                        ),
+                        'instructions' => array(
+                            'title' => __('Instructions for the Information Form', 'parsigate'),
+                            'type' => 'textarea',
+                            'default' => __('Please transfer the desired amount using the bank information below, then attach the payment receipt.', 'parsigate'),
+                            'desc_tip' => false,
+                        ),
+                        'success_message' => array(
+                            'title' => __('Message After Receipt Submission', 'parsigate'),
+                            'type' => 'textarea',
+                            'default' => __('Your payment information has been received and will be reviewed shortly.', 'parsigate'),
+                            'desc_tip' => false,
+                        )
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
+
+                        return [
+                            "authority" => $order->get_id(),
+                            "redirect" => $callback_url,
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option, $class, $request) {
+
+                        return [
+                            'transaction_id' => '',
+                        ];
+                    }
+                ]
+            ],
             'test' => [
                 'title' => __('Test Gateway', 'parsigate'),
                 'class' => Test::class,
                 'website' => 'wp-parsi.com',
-                'type' => 'test',
+                'type' => 'offline',
                 'usage' => ['woocommerce'],
                 'woocommerce' => [
                     'pay' => function ($amount, $order, $option, $callback_url, $class) {

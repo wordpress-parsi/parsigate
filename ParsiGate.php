@@ -216,6 +216,7 @@ class ParsiGate
         require_once self::$plugin_path . '/inc/gateways/Zibal.php';
         require_once self::$plugin_path . '/inc/gateways/ZarinPlus.php';
         require_once self::$plugin_path . '/inc/gateways/Jibit.php';
+        require_once self::$plugin_path . '/inc/gateways/CardToCard.php';
         require_once self::$plugin_path . '/inc/gateways/Test.php';
 
         // WooCommerce
@@ -229,6 +230,7 @@ class ParsiGate
         // Compatibility
         require_once self::$plugin_path . '/inc/compatibility/Base.php';
         require_once self::$plugin_path . '/inc/compatibility/ZarinPlus.php';
+        require_once self::$plugin_path . '/inc/compatibility/CardToCard.php';
         require_once self::$plugin_path . '/inc/compatibility/Test.php';
 
         // Custom Table
