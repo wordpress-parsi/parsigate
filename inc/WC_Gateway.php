@@ -111,12 +111,13 @@ class WC_Gateway extends \WC_Payment_Gateway
                 'title' => __('Gateway description', 'parsigate'),
                 'type' => 'textarea',
                 'description' => __('The description that will be displayed during the purchase process for the gateway', 'parsigate'),
-                'default' => ((isset($this->gateway['type']) and $this->gateway['type'] == "installment") ?
-                    /* translators: %s: Gateway name for credit/installment payments */
-                    sprintf(__("Credit and installment payments through %s", 'parsigate'), $this->method_title) :
-                    /* translators: %s: Payment gateway name for Shetab card payments */
-                    sprintf(__("Secure payment by all Shetab's cards through %s", 'parsigate'), $this->method_title)
-                )
+                'default' => (!empty($this->gateway['description']) ? $this->gateway['description'] :
+                    ((isset($this->gateway['type']) and $this->gateway['type'] == "installment") ?
+                        /* translators: %s: Gateway name for credit/installment payments */
+                        sprintf(__("Credit and installment payments through %s", 'parsigate'), $this->method_title) :
+                        /* translators: %s: Payment gateway name for Shetab card payments */
+                        sprintf(__("Secure payment by all Shetab's cards through %s", 'parsigate'), $this->method_title)
+                    ))
             ]
         ];
 
