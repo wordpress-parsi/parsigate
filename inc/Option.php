@@ -34,6 +34,35 @@ class ParsiGateOption extends Addon
     public function initAction(): void
     {
         add_filter('plugin_action_links', [$this, 'plugin_action_links'], 10, 2);
+        add_action('admin_enqueue_scripts', [$this, 'admin_enqueue_scripts']);
+    }
+
+    /**
+     * Load admin CSS only on ParsiGate settings tab.
+     *
+     * @param string $hook
+     * @return void
+     */
+    public function admin_enqueue_scripts($hook): void
+    {
+        $page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
+        $tab  = isset($_GET['tab']) ? sanitize_text_field(wp_unslash($_GET['tab'])) : '';
+
+        if ($page !== 'wp-parsidate' || $tab !== $this->addonID) {
+            return;
+        }
+
+        $css_file = \ParsiGate::$plugin_path . '/assets/admin/gateways-grid.css';
+        if (!file_exists($css_file)) {
+            return;
+        }
+
+        wp_enqueue_style(
+            'parsigate-gateways-grid',
+            \ParsiGate::$plugin_url . '/assets/admin/gateways-grid.css',
+            [],
+            (string) filemtime($css_file)
+        );
     }
 
     /* @hook */
