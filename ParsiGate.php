@@ -295,7 +295,7 @@ class ParsiGate
         $table_name = esc_sql($wpdb->prefix . 'pg_log');
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-        $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %s", $table_name));
+        $wpdb->query("DROP TABLE IF EXISTS `{$table_name}`");
     }
 
 }
