@@ -73,6 +73,7 @@ Parsigate is a free and open-source WooCommerce plugin that supports multiple Ir
 - AghaPardakht
 - Shepa
 - Jibit
+- ParsPal
 
 ### Offline Gateway
 - Card to Card
