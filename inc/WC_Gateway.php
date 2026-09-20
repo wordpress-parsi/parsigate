@@ -580,7 +580,7 @@ class WC_Gateway extends \WC_Payment_Gateway
 
     public function set_completed_payment($order, $transaction_id, $verify)
     {
-        $pre = apply_filters('parsigate_gateway_set_completed', null, $order, $transaction_id, $this->id);
+        $pre = apply_filters('parsigate_gateway_set_completed', null, $order, $transaction_id, $this->id, $this);
         if (!is_null($pre)) {
             return $pre;
         }
