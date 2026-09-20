@@ -94,7 +94,7 @@ class Azkivam extends Base
     {
 
         // Check Status
-        if (strtolower($args['status']) == 'done') {
+        if (strtolower($args['status']) != 'done') {
             return $this->error();
         }
 
