@@ -14,9 +14,7 @@ class ParsPal extends Base
 
     public static string $verify_url = 'https://api.parspal.com/v1/payment/verify';
 
-    public static string $sandbox_request_url = 'https://sandbox.api.parspal.com/v1/payment/request';
-
-    public static string $sandbox_verify_url = 'https://sandbox.api.parspal.com/v1/payment/verify';
+    public static string $sandbox_token = '00000000aaaabbbbcccc000000000000';
 
     public function pay(array $args = []): array
     {
@@ -35,7 +33,7 @@ class ParsPal extends Base
         ];
 
         $headers = [
-            'ApiKey' => (string)($args['merchant_id'] ?? ''),
+            'ApiKey' => ($is_sandbox ? static::$sandbox_token : (string)($args['merchant_id'] ?? '')),
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
         ];
@@ -50,7 +48,7 @@ class ParsPal extends Base
             'cookies' => [],
         ];
 
-        $url = $is_sandbox ? static::$sandbox_request_url : static::$request_url;
+        $url = static::$request_url;
         $response = wp_remote_post($url, $request);
         $status_code = (int)wp_remote_retrieve_response_code($response);
 
@@ -145,7 +143,7 @@ class ParsPal extends Base
         ];
 
         $headers = [
-            'ApiKey' => (string)($args['merchant_id'] ?? ''),
+            'ApiKey' => ($is_sandbox ? static::$sandbox_token : (string)($args['merchant_id'] ?? '')),
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
         ];
@@ -160,7 +158,7 @@ class ParsPal extends Base
             'cookies' => [],
         ];
 
-        $url = $is_sandbox ? static::$sandbox_verify_url : static::$verify_url;
+        $url = static::$verify_url;
         $response = wp_remote_post($url, $request);
         $status_code = (int)wp_remote_retrieve_response_code($response);
 
