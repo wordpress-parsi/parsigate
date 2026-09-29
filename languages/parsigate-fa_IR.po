@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Parsi Gate\n"
-"POT-Creation-Date: 2026-09-20 10:46+0330\n"
-"PO-Revision-Date: 2026-09-20 10:48+0330\n"
+"POT-Creation-Date: 2026-09-29 11:04+0330\n"
+"PO-Revision-Date: 2026-09-29 11:04+0330\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fa_IR\n"
@@ -21,31 +21,54 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: ParsiGate.php:122
-msgid "Download from WordPress"
-msgstr "دانلود از مخزن وردپرس"
-
-#: ParsiGate.php:129
-msgid "Install directly"
-msgstr "دانلود بطور مستقیم"
-
 #. translators: %1$s is the plugin name (Parsigate), %2$s is the required plugin name
-#: ParsiGate.php:135
+#: ParsiGate.php:148
 #, php-format
 msgid "%1$s plugin requires %2$s plugin to function properly."
 msgstr "افزونه %1$s نیازمند افزونه %2$s برای اجرا می باشد."
 
 #. Plugin Name of the plugin/theme
-#: ParsiGate.php:136
+#: ParsiGate.php:149
 msgid "Parsigate"
 msgstr "پارسی گیت"
 
+#. translators: %1$s is the required plugin name, %2$s is the minimum required version
+#: ParsiGate.php:162
+#, php-format
+msgid "Please update %1$s to version %2$s or later to access all features."
+msgstr ""
+"لطفا افزونه  %1$s به نسخه ی %2$s یا بالاتر جهت دسترسی به تمامی امکانات "
+"بروزرسانی نمایید.."
+
+#: ParsiGate.php:171 ParsiGate.php:216
+msgid "Download from WordPress"
+msgstr "دانلود از مخزن وردپرس"
+
+#: ParsiGate.php:178
+msgid "Update directly"
+msgstr "بروزرسانی  بطور مستقیم"
+
 #. translators: %s is the required plugin name
-#: ParsiGate.php:143
+#: ParsiGate.php:189
+#, php-format
+msgid "Please activate %s plugin to access all features."
+msgstr ""
+"لطفا افزونه %s  را نصب و فعال کنید تا به همه ی امکانات دسترسی داشته باشید."
+
+#: ParsiGate.php:197
+msgid "Activate"
+msgstr ""
+
+#. translators: %s is the required plugin name
+#: ParsiGate.php:208
 #, php-format
 msgid "Please install and activate %s plugin first to access all features."
 msgstr ""
 "لطفا افزونه %s  را نصب و فعال کنید تا به همه ی امکانات دسترسی داشته باشید."
+
+#: ParsiGate.php:223
+msgid "Install directly"
+msgstr "دانلود بطور مستقیم"
 
 #: inc/Gateway.php:86
 msgid "Gateway class not found"
@@ -378,39 +401,39 @@ msgstr "درگاه تست"
 msgid "Settings"
 msgstr "تنظیمات"
 
-#: inc/Option.php:119
+#: inc/Option.php:128
 msgid "Gateways log"
 msgstr "لاگ درگاه"
 
-#: inc/Option.php:126 inc/custom-table/pg-log/Log.php:26
+#: inc/Option.php:135 inc/custom-table/pg-log/Log.php:26
 msgid "ParsiGate Log"
 msgstr "لاگ پارسی گیت"
 
-#: inc/Option.php:129 inc/WC_Gateway.php:137
+#: inc/Option.php:138 inc/WC_Gateway.php:138
 msgid "Yes"
 msgstr "آری"
 
-#: inc/Option.php:130 inc/WC_Gateway.php:136
+#: inc/Option.php:139 inc/WC_Gateway.php:137
 msgid "No"
 msgstr "خیر"
 
-#: inc/Option.php:134
+#: inc/Option.php:143
 msgid "Show logs list"
 msgstr "نمایش لیست لاگ"
 
-#: inc/Option.php:142 inc/Option.php:157 inc/Option.php:158
+#: inc/Option.php:151 inc/Option.php:166 inc/Option.php:167
 msgid "Parsi Gate"
 msgstr "پارسی گیت"
 
-#: inc/Option.php:143
+#: inc/Option.php:152
 msgid "Parsi Gate Tools"
 msgstr "تنظیمات پارسی گیت"
 
-#: inc/Option.php:162
+#: inc/Option.php:171
 msgid "Payment gateways"
 msgstr "درگاه پرداخت"
 
-#: inc/Option.php:167
+#: inc/Option.php:176
 msgid "Payment gateway"
 msgstr "درگاه پرداخت"
 
@@ -447,30 +470,30 @@ msgid ""
 msgstr "لطفا توضیحات نمایشی برای این درگاه در صفحه پرداخت ووکامرس وارد نمایید"
 
 #. translators: %s: Gateway name for credit/installment payments
-#: inc/WC_Gateway.php:116
+#: inc/WC_Gateway.php:117
 #, php-format
 msgid "Credit and installment payments through %s"
 msgstr "پرداخت اقساط و اعتباری منطبق بر %s"
 
 #. translators: %s: Payment gateway name for Shetab card payments
-#: inc/WC_Gateway.php:118
+#: inc/WC_Gateway.php:119
 #, php-format
 msgid "Secure payment by all Shetab's cards through %s"
 msgstr "پرداخت توسط تمامی کارت های عضو شتاب بانکی بوسیله %s"
 
-#: inc/WC_Gateway.php:129
+#: inc/WC_Gateway.php:130
 msgid "Sandbox"
 msgstr "حالت تست"
 
-#: inc/WC_Gateway.php:132
+#: inc/WC_Gateway.php:133
 msgid "is Enable SandBox?"
 msgstr "آیا حالت تست فعال باشد؟"
 
-#: inc/WC_Gateway.php:144
+#: inc/WC_Gateway.php:145
 msgid "Payment failed message"
 msgstr "پیام در زمان پرداخت ناموفق"
 
-#: inc/WC_Gateway.php:146
+#: inc/WC_Gateway.php:147
 msgid ""
 "Enter the text of the message you want to display to the user after an "
 "unsuccessful payment."
@@ -478,38 +501,38 @@ msgstr ""
 "لطفا متنی را که مشتریان بعد از پرداخت ناموفق در صفحه بازگشت از درگاه مشاهده "
 "می کنند را وارد نمایید."
 
-#: inc/WC_Gateway.php:147
+#: inc/WC_Gateway.php:148
 msgid ""
 "Your payment has failed. Please try again or contact us in case of problems."
 msgstr ""
 "پرداخت شما ناموفق بوده است ، لطفا مجدد تلاش کنید یا موضوع را به پشتیبان سایت "
 "در میان بگذارید."
 
-#: inc/WC_Gateway.php:150
+#: inc/WC_Gateway.php:151
 msgid "Display for User Roles"
 msgstr "نمایش برای نقش های کاربری"
 
-#: inc/WC_Gateway.php:153
+#: inc/WC_Gateway.php:154
 msgid "Gateway will only be displayed for selected user roles."
 msgstr "این درگاه تنها برای نقش هایی که انتخاب می کنید نمایش داده شود."
 
-#: inc/WC_Gateway.php:158
+#: inc/WC_Gateway.php:159
 msgid "Minimum Cart Amount"
 msgstr "حداقل مبلغ سبد خرید"
 
 #. translators: %s: Current currency symbol (e.g. $, €, ﷼)
-#: inc/WC_Gateway.php:161
+#: inc/WC_Gateway.php:162
 #, php-format
 msgid "Minimum cart amount to display the gateway. Current currency: %s"
 msgstr ""
 "این درگاه تنها برای سبد های خریدی با حداقل مبلغ خرید ذکر شده نمایش داده "
 "خواهد شد. واحد پولی شما: %s"
 
-#: inc/WC_Gateway.php:168
+#: inc/WC_Gateway.php:169
 msgid "Allowed Products Categories"
 msgstr "دسته بندی محصولات ووکامرس"
 
-#: inc/WC_Gateway.php:171
+#: inc/WC_Gateway.php:172
 msgid ""
 "Gateway will only be displayed if cart contains products from selected "
 "categories."
@@ -517,11 +540,11 @@ msgstr ""
 "این درگاه پرداخت تنها برای سبد های خریدی که شامل محصولاتی در این دسته بندی "
 "ها باشد نمایش داده خواهد شد."
 
-#: inc/WC_Gateway.php:176
+#: inc/WC_Gateway.php:177
 msgid "Product IDs"
 msgstr "شناسه محصولات ووکامرس"
 
-#: inc/WC_Gateway.php:178
+#: inc/WC_Gateway.php:179
 msgid ""
 "Enter product IDs separated by commas. Gateway will be displayed only if ALL "
 "products in cart are from this list."
@@ -529,16 +552,16 @@ msgstr ""
 "این درگاه پرداخت تنها برای سبد های خریدی که شامل این لیست از شناسه محصولات "
 "باشد نمایش داده خواهد شد."
 
-#: inc/WC_Gateway.php:180
+#: inc/WC_Gateway.php:181
 msgid "e.g., 123, 456, 789"
 msgstr "به عنوان مثال: 123,265,4595"
 
-#: inc/WC_Gateway.php:473 inc/WC_Gateway.php:479
+#: inc/WC_Gateway.php:474 inc/WC_Gateway.php:480
 msgid "Invalid order id."
 msgstr "شناسه سفارش نامعتبر است."
 
 #. translators: %s: Transaction ID number
-#: inc/WC_Gateway.php:595
+#: inc/WC_Gateway.php:596
 #, php-format
 msgid "Payment Success, Transaction ID: %s"
 msgstr "پرداخت موفق, شناسه تراکنش: %s"
@@ -725,8 +748,8 @@ msgstr "جستجو"
 #: inc/gateways/AqayePardakht.php:80 inc/gateways/AqayePardakht.php:166
 #: inc/gateways/AsanPardakht.php:360 inc/gateways/Azkivam.php:78
 #: inc/gateways/Azkivam.php:162 inc/gateways/IranKish.php:269
-#: inc/gateways/Mellat.php:294 inc/gateways/ParsPal.php:105
-#: inc/gateways/ParsPal.php:216 inc/gateways/Parsian.php:151
+#: inc/gateways/Mellat.php:294 inc/gateways/ParsPal.php:103
+#: inc/gateways/ParsPal.php:214 inc/gateways/Parsian.php:151
 #: inc/gateways/Pasargad.php:168 inc/gateways/Pasargad.php:238
 #: inc/gateways/Pasargad.php:333 inc/gateways/PayPing.php:89
 #: inc/gateways/PayPing.php:179 inc/gateways/Saderat.php:191
@@ -739,26 +762,26 @@ msgid "Error Code: "
 msgstr "کد خطا: "
 
 #: inc/gateways/DigiPay.php:84 inc/gateways/Jibit.php:70
-#: inc/gateways/ParsPal.php:75 inc/gateways/ParsPal.php:185
+#: inc/gateways/ParsPal.php:73 inc/gateways/ParsPal.php:183
 #: inc/gateways/Pasargad.php:77 inc/gateways/SnappPay.php:73
 #: inc/gateways/Tara.php:72
 msgid "Invalid gateway settings input."
 msgstr "تنظیمات ورودی درگاه اشتباه می باشد."
 
-#: inc/gateways/ParsPal.php:103 inc/gateways/ParsPal.php:214
-#: inc/gateways/ParsPal.php:235 inc/templates/test-gateway.php:15
+#: inc/gateways/ParsPal.php:101 inc/gateways/ParsPal.php:212
+#: inc/gateways/ParsPal.php:233 inc/templates/test-gateway.php:15
 msgid "Failed Payment"
 msgstr "پرداخت ناموفق"
 
-#: inc/gateways/ParsPal.php:234
+#: inc/gateways/ParsPal.php:232
 msgid "User cancelled the payment."
 msgstr "کاربر پرداخت را لغو کرد."
 
-#: inc/gateways/ParsPal.php:236
+#: inc/gateways/ParsPal.php:234
 msgid "Payment cancelled by user."
 msgstr "پیام در زمان لغو پرداخت توسط کاربر"
 
-#: inc/gateways/ParsPal.php:239
+#: inc/gateways/ParsPal.php:237
 msgid ""
 "Unknown error occurred. If the amount was deducted, it will be refunded "
 "within 72 hours."
