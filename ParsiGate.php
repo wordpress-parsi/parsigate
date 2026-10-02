@@ -285,6 +285,7 @@ class ParsiGate
         require_once self::$plugin_path . '/inc/gateways/Mellat.php';
         require_once self::$plugin_path . '/inc/gateways/Melli.php';
         require_once self::$plugin_path . '/inc/gateways/Parsian.php';
+        require_once self::$plugin_path . '/inc/gateways/ParsPal.php';
         require_once self::$plugin_path . '/inc/gateways/Pasargad.php';
         require_once self::$plugin_path . '/inc/gateways/PayPing.php';
         require_once self::$plugin_path . '/inc/gateways/Saderat.php';
@@ -293,6 +294,9 @@ class ParsiGate
         require_once self::$plugin_path . '/inc/gateways/SnappPay.php';
         require_once self::$plugin_path . '/inc/gateways/Tara.php';
         require_once self::$plugin_path . '/inc/gateways/Zibal.php';
+        require_once self::$plugin_path . '/inc/gateways/ZarinPlus.php';
+        require_once self::$plugin_path . '/inc/gateways/Jibit.php';
+        require_once self::$plugin_path . '/inc/gateways/CardToCard.php';
         require_once self::$plugin_path . '/inc/gateways/Test.php';
 
         // WooCommerce
@@ -302,6 +306,12 @@ class ParsiGate
             require_once self::$plugin_path . '/inc/WC_Gateway.php';
             require_once self::$plugin_path . '/inc/WC_Gateway_Block.php';
         }
+
+        // Compatibility
+        require_once self::$plugin_path . '/inc/compatibility/Base.php';
+        require_once self::$plugin_path . '/inc/compatibility/ZarinPlus.php';
+        require_once self::$plugin_path . '/inc/compatibility/CardToCard.php';
+        require_once self::$plugin_path . '/inc/compatibility/Test.php';
 
         // Custom Table
         if (is_admin() and !class_exists('WP_List_Table')) {
