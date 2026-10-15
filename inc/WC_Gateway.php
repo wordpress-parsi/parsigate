@@ -565,7 +565,11 @@ class WC_Gateway extends \WC_Payment_Gateway
         }
 
         if ($params instanceof \WP_Error) {
-            $this->set_failed_payment($order, ['message' => $params->get_error_message()]);
+            $this->set_failed_payment(
+                $order,
+                ['message' => $params->get_error_message()]
+            );
+            return;
         }
 
         $verify = $class->verify(apply_filters('parsigate_gateway_verify_payment_params', $params, $order, $this->id));

@@ -286,6 +286,7 @@ class ParsiGate
         require_once self::$plugin_path . '/inc/gateways/Melli.php';
         require_once self::$plugin_path . '/inc/gateways/Parsian.php';
         require_once self::$plugin_path . '/inc/gateways/ParsPal.php';
+        require_once self::$plugin_path . '/inc/gateways/Vandar.php';
         require_once self::$plugin_path . '/inc/gateways/Pasargad.php';
         require_once self::$plugin_path . '/inc/gateways/PayPing.php';
         require_once self::$plugin_path . '/inc/gateways/Saderat.php';

@@ -13,6 +13,7 @@ use ParsiGate\gateways\Mellat;
 use ParsiGate\gateways\Melli;
 use ParsiGate\gateways\Parsian;
 use ParsiGate\gateways\ParsPal;
+use ParsiGate\gateways\Vandar;
 use ParsiGate\gateways\Pasargad;
 use ParsiGate\gateways\PayPing;
 use ParsiGate\gateways\Saderat;
@@ -718,6 +719,72 @@ class Gateways
                             'PaymentRefId' => trim((string)$data['paymentRefId']),
                             "paymentCode" => trim((string)$data['paymentCode']),
                             "amount" => $amount
+                        ];
+                    }
+                ]
+            ],
+            'vandar' => [
+                'title' => __('Vandar', 'parsigate'),
+                'class' => Vandar::class,
+                'website' => 'vandar.io',
+                'type' => 'intermediary',
+                'usage' => ['woocommerce'],
+                'woocommerce' => [
+                    'sandbox' => false,
+                    'settings' => [
+                        'api_key' => [
+                            'title' => __('API Key', 'parsigate'),
+                            'type' => 'text',
+                            'default' => '',
+                            'description' => __('Enter the Vandar IPG API key.', 'parsigate'),
+                            'desc_tip' => false,
+                            'class' => 'pg-ltr-input'
+                        ]
+                    ],
+                    'pay' => function ($amount, $order, $option, $callback_url, $class) {
+                        $mobile = $order->get_billing_phone();
+
+                        if (function_exists('eng_number')) {
+                            $mobile = eng_number($mobile);
+                        }
+
+                        return [
+                            'api_key' => $option['api_key'] ?? '',
+                            'amount' => $amount,
+                            'callback_url' => $callback_url,
+                            'mobile_number' => $mobile,
+                            'factorNumber' => (string)$order->get_id(),
+                            'description' => WooCommerce::get_order_description($order, 'vandar'),
+                        ];
+                    },
+                    'verify' => function ($amount, $order, $option, $class, $request) {
+                        $token = isset($request['get']['token'])
+                            ? sanitize_text_field($request['get']['token'])
+                            : '';
+
+                        $payment_status = isset($request['get']['payment_status'])
+                            ? sanitize_text_field($request['get']['payment_status'])
+                            : '';
+
+                        $authority = (string)$order->get_meta('authority', true);
+
+                        if (
+                            empty($token) ||
+                            empty($authority) ||
+                            !hash_equals($authority, $token)
+                        ) {
+                            return new \WP_Error(
+                                'invalid_vandar_callback',
+                                __('Invalid Vandar callback token.', 'parsigate')
+                            );
+                        }
+
+                        return [
+                            'api_key' => $option['api_key'] ?? '',
+                            'token' => $token,
+                            'payment_status' => $payment_status,
+                            'amount' => $amount,
+                            'order_id' => (string)$order->get_id(),
                         ];
                     }
                 ]
