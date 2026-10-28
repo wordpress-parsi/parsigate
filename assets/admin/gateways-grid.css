@@ -56,3 +56,63 @@ body.toplevel_page_wp-parsidate .wp-parsidate-wrap .wppd-grid .wppd-fields-wrap 
 .wp-parsidate-wrap .wppd-toggle {
     align-self: center !important;
 }
+
+
+
+/* Compact gateway configuration link */
+body.toplevel_page_wp-parsidate .wp-parsidate-wrap .pg-gateway-toggle {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Keep the existing markup but arrange its children in one row */
+body.toplevel_page_wp-parsidate .wp-parsidate-wrap .pg-gateway-toggle > .wppd-field-head {
+    display: contents;
+}
+
+body.toplevel_page_wp-parsidate .wp-parsidate-wrap .pg-gateway-toggle .wppd-input-title {
+    order: 1;
+    min-width: 0;
+    margin-inline-end: auto;
+}
+
+body.toplevel_page_wp-parsidate .wp-parsidate-wrap .pg-gateway-toggle > .wppd-description {
+    order: 2;
+    display: block;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+body.toplevel_page_wp-parsidate .wp-parsidate-wrap .pg-gateway-toggle > .wppd-field-head > .wppd-toggle {
+    order: 3;
+    flex-shrink: 0;
+}
+
+/* Match the existing toggle's compact appearance */
+body.toplevel_page_wp-parsidate .wp-parsidate-wrap .pg-gateway-settings-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: 24px;
+    padding: 0 9px;
+    border: 1px solid #d9e9fa;
+    border-radius: 20px;
+    background: #f0f7ff;
+    color: #2271b1;
+    font-size: 12px;
+    line-height: 1;
+    text-decoration: none;
+}
+
+body.toplevel_page_wp-parsidate .wp-parsidate-wrap .pg-gateway-settings-link:hover {
+    background: #e2effc;
+    color: #135e96;
+}
+
+body.toplevel_page_wp-parsidate .wp-parsidate-wrap .pg-gateway-settings-link:focus-visible {
+    outline: 2px solid #2271b1;
+    outline-offset: 2px;
+}
