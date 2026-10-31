@@ -2,6 +2,8 @@
 
 namespace ParsiGate\gateways;
 
+if (!defined('ABSPATH')) exit;
+
 use ParsiGate\Utility;
 
 class Parsian extends Base

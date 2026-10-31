@@ -2,6 +2,8 @@
 
 namespace ParsiGate\gateways;
 
+if (!defined('ABSPATH')) exit;
+
 class Azkivam extends Base
 {
     public function pay(array $args = []): array

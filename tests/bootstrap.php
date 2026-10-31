@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    define('ABSPATH', __DIR__ . '/');
+}
+
 class WP_Error
 {
     public function __construct(

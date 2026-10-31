@@ -1,0 +1,12 @@
+# Files excluded from the WordPress.org release package
+/.git
+/.github
+/.gitignore
+/.distignore
+/.phpunit.result.cache
+/composer.json
+/composer.lock
+/phpunit.xml
+/tests
+/vendor
+/README.md

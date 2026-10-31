@@ -2,6 +2,8 @@
 
 namespace ParsiGate\gateways;
 
+if (!defined('ABSPATH')) exit;
+
 class SnappPay extends Base
 {
 

@@ -2,6 +2,8 @@
 
 namespace ParsiGate\Gateways;
 
+if (!defined('ABSPATH')) exit;
+
 abstract class Base
 {
     // @see \ParsiGate\CustomTable\Log::get_type_list

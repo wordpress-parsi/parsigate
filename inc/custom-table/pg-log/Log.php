@@ -2,6 +2,8 @@
 
 namespace ParsiGate\CustomTable;
 
+if (!defined('ABSPATH')) exit;
+
 use ParsiGate\Gateways;
 
 if ( ! defined( 'ABSPATH' ) ) exit;

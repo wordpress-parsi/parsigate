@@ -106,7 +106,7 @@ class ParsiGateOption extends Addon
                     }
 
                     if (!empty($logo)) {
-                        $img = wp_kses_post('<img src="' . esc_attr($logo) . '" alt="' . esc_attr($gateway_title) . '" style="width: 30px;height: auto;vertical-align: -10px; margin-left: 5px;">');
+                        $img = wp_kses_post('<img src="' . esc_url($logo) . '" alt="' . esc_attr($gateway_title) . '" style="width: 30px;height: auto;vertical-align: -10px; margin-left: 5px;">');
                     }
 
                     $settings[$gateway_key] = [

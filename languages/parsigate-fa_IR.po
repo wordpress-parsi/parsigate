@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Parsi Gate\n"
 "POT-Creation-Date: 2026-09-29 11:04+0330\n"
-"PO-Revision-Date: 2026-09-29 11:04+0330\n"
+"PO-Revision-Date: 2026-10-31 02:30+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fa_IR\n"
@@ -57,7 +57,7 @@ msgstr ""
 
 #: ParsiGate.php:197
 msgid "Activate"
-msgstr ""
+msgstr "فعال‌سازی"
 
 #. translators: %s is the required plugin name
 #: ParsiGate.php:208
@@ -839,3 +839,39 @@ msgstr ""
 
 #~ msgid "Always display"
 #~ msgstr "همیشه نمایش بده"
+
+#: inc/Gateways.php
+msgid "Vandar"
+msgstr "وندار"
+
+#: inc/Gateways.php
+msgid "Enter the Vandar IPG API key."
+msgstr "کلید API درگاه وندار (IPG) را وارد کنید."
+
+#: inc/Gateways.php
+msgid "Invalid Vandar callback token."
+msgstr "توکن بازگشتی وندار نامعتبر است."
+
+#: inc/Gateways.php
+msgid "Invalid Jibit callback."
+msgstr "اطلاعات بازگشتی جیبیت نامعتبر است."
+
+#: inc/gateways/Vandar.php
+msgid "Invalid response from Vandar."
+msgstr "پاسخ نامعتبر از وندار دریافت شد."
+
+#: inc/gateways/Vandar.php
+msgid "Vandar payment request failed."
+msgstr "درخواست پرداخت وندار ناموفق بود."
+
+#: inc/gateways/Vandar.php
+msgid "Vandar payment was cancelled or failed."
+msgstr "پرداخت وندار لغو شد یا ناموفق بود."
+
+#: inc/gateways/Vandar.php
+msgid "Vandar payment amount is invalid."
+msgstr "مبلغ پرداخت وندار نامعتبر است."
+
+#: inc/gateways/Vandar.php
+msgid "Vandar verification failed."
+msgstr "تأیید پرداخت وندار ناموفق بود."

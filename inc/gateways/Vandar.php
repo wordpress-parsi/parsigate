@@ -2,6 +2,8 @@
 
 namespace ParsiGate\gateways;
 
+if (!defined('ABSPATH')) exit;
+
 class Vandar extends Base
 {
     private const REQUEST_URL = 'https://ipg.vandar.io/api/v4/send';

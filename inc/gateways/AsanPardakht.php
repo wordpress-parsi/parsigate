@@ -2,6 +2,8 @@
 
 namespace ParsiGate\gateways;
 
+if (!defined('ABSPATH')) exit;
+
 use ParsiGate\Option;
 use WPParsidate\Addons\ParsiGateOption\ParsiGateOption;
 

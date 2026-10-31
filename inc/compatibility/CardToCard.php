@@ -173,7 +173,10 @@ class CardToCard extends Base
         }
 
         $wc_settings = $this->wc();
-        $max_size_mb = $wc_settings['max_file_size'] ?? '2';
+        $max_size_mb = (float)($wc_settings['max_file_size'] ?? 2);
+        if ($max_size_mb <= 0) {
+            $max_size_mb = 2;
+        }
         $attachment_id = absint($order->get_meta(static::$attachment_id, true));
 
         $message = '';
@@ -282,8 +285,11 @@ class CardToCard extends Base
     public function parsigate_limit_upload_size($file)
     {
         $wc_settings = $this->wc();
-        $max_size_mb = $wc_settings['max_file_size'] ?? 2;
-        $max_size_bytes = $max_size_mb * 1024 * 1024;
+        $max_size_mb = (float)($wc_settings['max_file_size'] ?? 2);
+        if ($max_size_mb <= 0) {
+            $max_size_mb = 2;
+        }
+        $max_size_bytes = (int)($max_size_mb * 1024 * 1024);
 
         if ($file['size'] > $max_size_bytes) {
             $file['error'] = __('File size exceeds the allowed limit.', 'parsigate');

@@ -2,6 +2,8 @@
 
 namespace ParsiGate;
 
+if (!defined('ABSPATH')) exit;
+
 class WC_Gateway_Block extends \Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType
 {
 

@@ -2,6 +2,8 @@
 
 namespace ParsiGate\gateways;
 
+if (!defined('ABSPATH')) exit;
+
 /**
  * @Document: http://docs.zarinplus.com/
  */

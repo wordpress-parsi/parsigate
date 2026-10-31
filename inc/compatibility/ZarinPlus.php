@@ -14,7 +14,7 @@ class ZarinPlus extends Base
     public function __construct()
     {
 
-        add_action('woocommerce_update_options_payment_gateways_' . $this->gateway_id, [$this, 'save_option']);
+        add_action('woocommerce_update_options_payment_gateways_' . $this->gateway_id, [$this, 'save_option'], 20);
         add_filter('parsigate_' . $this->gateway_id . '_token_description', [$this, 'description'], 30);
         add_filter('parsigate_gateways_list', [$this, 'setup_gateways'], 30);
     }
@@ -49,7 +49,7 @@ class ZarinPlus extends Base
                     __('Gateways is found:', 'parsigate')
                 );
                 foreach ($settings['lists'] as $list) {
-                    $desc .= wp_kses_post('<div style="display: inline-block;margin-left: 15px;"><img src="' . $list['icon'] . '" alt="' . $list['title'] . '" style="width: 40px;height: 40px;background: #ffffff;border-radius: 5px;margin-left: 10px;padding:2px;"><span style="vertical-align: 20px;">' . $list['title'] . '</span></div>');
+                    $desc .= wp_kses_post('<div style="display: inline-block;margin-left: 15px;"><img src="' . esc_url($list['icon'] ?? '') . '" alt="' . esc_attr($list['title'] ?? '') . '" style="width: 40px;height: 40px;background: #ffffff;border-radius: 5px;margin-left: 10px;padding:2px;"><span style="vertical-align: 20px;">' . esc_html($list['title'] ?? '') . '</span></div>');
                 }
             }
         }
@@ -69,13 +69,13 @@ class ZarinPlus extends Base
         if (isset($settings['lists']) and is_array($settings['lists']) and !empty($settings['lists'])) {
             foreach ($settings['lists'] as $item) {
 
-                if ($item['slug'] == $this->gateway_id) {
+                if (empty($item['slug']) || $item['slug'] == $this->gateway_id) {
                     continue;
                 }
 
-                $title = $item['title'];
-                $icon = $item['icon'];
-                $slug = $this->gateway_id . '_' . $item['slug'];
+                $title = sanitize_text_field($item['title'] ?? $item['slug']);
+                $icon = esc_url_raw($item['icon'] ?? '');
+                $slug = $this->gateway_id . '_' . sanitize_key($item['slug']);
                 $lists[$slug] = [
                     'title' => $title,
                     'logo' => $icon,

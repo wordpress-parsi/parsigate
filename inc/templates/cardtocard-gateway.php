@@ -23,11 +23,11 @@ if (!defined('ABSPATH')) exit;
     <table class="shop_table shop_table_responsive">
         <?php
         $parsigate_cardtocard_lists = [
-            __('Full Name / Company Name', 'parsigate') => $wc_settings['account_name'],
-            __('Bank Account Number', 'parsigate') => $wc_settings['bank_account'],
-            __('IBAN', 'parsigate') => $wc_settings['iban'],
-            __('Card Number', 'parsigate') => $wc_settings['card_number'],
-            __('Bank Name', 'parsigate') => $wc_settings['bank_name'],
+            __('Full Name / Company Name', 'parsigate') => ($wc_settings['account_name'] ?? ''),
+            __('Bank Account Number', 'parsigate') => ($wc_settings['bank_account'] ?? ''),
+            __('IBAN', 'parsigate') => ($wc_settings['iban'] ?? ''),
+            __('Card Number', 'parsigate') => ($wc_settings['card_number'] ?? ''),
+            __('Bank Name', 'parsigate') => ($wc_settings['bank_name'] ?? ''),
         ];
 
         foreach ($parsigate_cardtocard_lists as $parsigate_cardtocard_item_label => $parsigate_cardtocard_item_value) {
@@ -52,7 +52,7 @@ if (!defined('ABSPATH')) exit;
 
         <br />
         <div class="woocommerce-message">
-            <?php echo wp_kses_post(wpautop(do_shortcode($wc_settings['success_message']))); ?>
+            <?php echo wp_kses_post(wpautop(do_shortcode($wc_settings['success_message'] ?? ''))); ?>
         </div>
 
         <?php

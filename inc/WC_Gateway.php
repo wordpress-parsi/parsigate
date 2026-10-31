@@ -2,6 +2,8 @@
 
 namespace ParsiGate;
 
+if (!defined('ABSPATH')) exit;
+
 /**
  * @reference:
  * https://woocommerce.github.io/code-reference/files/woocommerce-includes-abstracts-abstract-wc-payment-gateway.html

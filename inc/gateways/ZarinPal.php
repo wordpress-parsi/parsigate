@@ -2,6 +2,8 @@
 
 namespace ParsiGate\Gateways;
 
+if (!defined('ABSPATH')) exit;
+
 /**
  * Document: https://next.zarinpal.com/paymentGateway/sandbox.html
  */

@@ -2,6 +2,8 @@
 
 namespace ParsiGate\CustomTable;
 
+if (!defined('ABSPATH')) exit;
+
 class Base
 {
 

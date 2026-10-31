@@ -5,7 +5,7 @@ Tags: woocommerce, payment, gateway, درگاه, ووکامرس
 Requires at least: 5.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,8 +29,9 @@ Built with WordPress and WooCommerce standards in mind, ParsiGate focuses on per
 
 ## Supported Gateways:
 * Bank gateways: Mellat, Parsian, Pasargad, Sadaad, Melli, Behpardakht, Asan Pardakht, Saman, Saderat, Eghtesad Novin, Iran Kish, Sepehr
-* Installment gateways: SnappPay, Tara, Digipay, Azki
-* Intermediary gateways: Zibal, Zarinpal, PayPing, ParsPal, Aghayepardakht
+* Installment gateways: SnappPay, Tara, Digipay, Azki, ZarinPlus
+* Intermediary gateways: Zibal, Zarinpal, PayPing, ParsPal, Jibit, Vandar, Aghayepardakht, Shepa
+* Offline gateways: Card to Card (customer uploads the payment receipt, the order is put on hold for manual review)
 * Test gateway for simulating purchases without a bank account
 * Unified settings interface integrated with the Parsidate plugin
 
@@ -66,6 +67,8 @@ Depending on the selected gateway, the plugin may transmit the following informa
 * Other payment parameters required by the selected payment provider
 
 No payment-related data is transmitted unless a customer initiates a payment.
+
+The Card to Card and Test gateways do not contact any external service. Card to Card payment receipts uploaded by customers are stored in the site's own Media Library and attached to the order.
 
 = AqayePardakht =
 
@@ -144,6 +147,19 @@ The plugin sends payment request and payment confirmation data required by the g
 Website: https://www.irankish.com/
 Terms: https://www.irankish.com/Page/buyers
 Privacy: https://www.irankish.com/Page/buyers
+
+= Jibit =
+
+Used to process online payments through Jibit.
+
+Payment requests are sent to:
+https://napi.jibit.ir/
+
+The plugin sends the API key and secret key (to obtain an access token), the order amount, order ID, callback URL, order description, and — when available — the customer's mobile number and username, as required to create and verify the transaction.
+
+Website: https://jibit.ir/
+Terms: https://jibit.ir/
+Privacy: https://jibit.ir/
 
 = Melli (Sadad) =
 
@@ -276,6 +292,19 @@ Website: https://tara360.ir/
 Terms: https://tara360.ir/termscondition/
 Privacy: https://tara360.ir/termscondition/
 
+= Vandar =
+
+Used to process online payments through Vandar.
+
+Payment requests are sent to:
+https://ipg.vandar.io/
+
+The plugin sends the API key, order amount, order ID, callback URL, order description and the customer's mobile number required to create and verify the transaction.
+
+Website: https://vandar.io/
+Terms: https://vandar.io/
+Privacy: https://vandar.io/
+
 = ZarinPal =
 
 Used to process online payments through ZarinPal.
@@ -288,6 +317,19 @@ The plugin sends the order amount, order ID, callback URL, merchant credentials 
 Website: https://www.zarinpal.com/
 Terms: https://www.zarinpal.com/terms
 Privacy: https://www.zarinpal.com/policy
+
+= ZarinPlus =
+
+Used to process installment payments through ZarinPlus.
+
+Payment requests are sent to:
+https://api.zarinplus.com/
+
+The plugin sends the merchant token (also used to fetch the list of gateways available to the merchant when settings are saved), the order amount, order description, callback URL and the customer's mobile number and email required to create and verify the transaction.
+
+Website: https://zarinplus.com/
+Terms: https://zarinplus.com/
+Privacy: https://zarinplus.com/
 
 = Zibal =
 
@@ -317,7 +359,10 @@ Yes. Parsigate includes a test gateway so you can simulate the checkout process 
 Parsigate is designed for Iranian Rials (IRR) and Tomans (IRT). Make sure your WooCommerce currency setting matches your desired usage.
 
 = How do I add new gateways in the future? =
-Parsigate has a modular structure. Developers can add new gateways by creating a new gateway class in the `includes/gateways/` folder and registering it in the main plugin class.
+Parsigate has a modular structure. Developers can add new gateways by creating a new gateway class in the `inc/gateways/` folder and registering it in the main plugin class.
+
+= How does the Card to Card gateway work? =
+The customer sees your bank account / card details after placing the order and uploads an image of the payment receipt (JPG, PNG or WebP). The order is set to "On hold" so you can check the receipt from the order page and complete it manually.
 
 = Is Parsigate free? =
 Yes. Parsigate is open-source and free to use under the GPLv2 license.
@@ -329,6 +374,27 @@ Yes. Parsigate is open-source and free to use under the GPLv2 license.
 
 == Changelog ==
 
+= 1.1.0 =
+* New: Vandar payment gateway
+* New: Jibit payment gateway
+* New: ParsPal payment gateway (with sandbox mode)
+* New: ZarinPlus installment gateway, including the merchant's sub-gateways
+* New: Card to Card offline gateway with receipt upload and admin review
+* New: Gateway logos on the settings page and a new "Offline" gateway category
+* New: Custom default description per gateway
+* New: Admin notice detects missing, inactive or outdated (below 6.0) Parsidate and offers install / activate / update buttons
+* New: Developer hooks `parsigate_enable_gateway`, `parsigate_before_woocommerce_gateway_loaded`, `parsigate_after_woocommerce_gateway_loaded`; `parsigate_gateway_set_completed` now receives the gateway object
+* Fixed: Azki successful payments were treated as failed
+* Fixed: Asan Pardakht token parsing, request parameter types and error messages
+* Fixed: Mellat error message handling
+* Fixed: ParsPal sandbox mode
+* Fixed: Payment verification continued after an invalid callback
+* Fixed: PHP notice in WooCommerce Blocks when a gateway had no saved settings
+* Security: Payment callbacks are rejected when the order was not placed with that gateway, and already-paid orders are never processed again
+* Security: Jibit callbacks must match the purchase created for the order
+* Security: Card to Card callbacks can no longer change the status of orders that are not awaiting payment
+* Security: The test gateway page is only available while the test gateway is enabled
+
 = 1.0.1 =
 * Update readme
 * Fixed: parsigate icon
@@ -337,3 +403,8 @@ Yes. Parsigate is open-source and free to use under the GPLv2 license.
 * Initial release with Zarinpal and Zibal support
 * Modular structure for easy gateway expansion
 * Integrated with Parsidate settings
+
+== Upgrade Notice ==
+
+= 1.1.0 =
+Adds Vandar, Jibit, ParsPal, ZarinPlus and Card to Card gateways, fixes Azki payments and includes security hardening for payment callbacks. Requires Parsidate 6.0 or later for full functionality.
