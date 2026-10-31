@@ -305,4 +305,130 @@ final class LogRedactionTest extends TestCase
         $this->assertStringNotContainsString('secret-filter-escaped-456', json_encode($row));
         $this->assertStringNotContainsString('secret-filter-789', json_encode($row));
     }
+
+    public function test_insert_redacts_double_encoded_json_error_string(): void
+    {
+        $message = 'Provider error: {"apiKey":"double-json-secret-123","status":"FAIL"}';
+        Log::insert([
+            'gateway' => 'jibit',
+            'response' => wp_json_encode($message),
+        ]);
+
+        $row = $this->inserted();
+        $encodedMessage = json_decode($row['response'], true);
+        $decodedMessage = json_decode($encodedMessage, true);
+        $this->assertSame(JSON_ERROR_NONE, json_last_error());
+        $this->assertIsString($decodedMessage);
+        $this->assertStringNotContainsString('double-json-secret-123', json_encode($row));
+        $this->assertStringContainsString('"apiKey":"[REDACTED]"', $decodedMessage);
+        $this->assertStringContainsString('"status":"FAIL"', $decodedMessage);
+    }
+
+    public function test_insert_redacts_raw_http_header_credentials(): void
+    {
+        Log::insert([
+            'gateway' => 'payping',
+            'header' => "X-Auth-Token: synthetic-header-secret\nSet-Cookie: session=synthetic-cookie-secret",
+        ]);
+        $row = $this->inserted();
+        $this->assertStringNotContainsString('synthetic-header-secret', $row['header']);
+        $this->assertStringNotContainsString('synthetic-cookie-secret', $row['header']);
+    }
+
+    public function test_insert_masks_entire_quoted_secret_with_spaces(): void
+    {
+        Log::insert([
+            'response' => 'Provider error: {"apiKey": "secret with several words", "status":"FAIL"}',
+        ]);
+        $row = $this->inserted();
+        $this->assertStringNotContainsString('secret with several words', $row['response']);
+        $this->assertStringNotContainsString('several words', $row['response']);
+        $this->assertStringContainsString('[REDACTED]', $row['response']);
+        $this->assertStringContainsString('FAIL', $row['response']);
+    }
+
+    public function test_insert_redacts_private_key_text_and_url_userinfo(): void
+    {
+        Log::insert([
+            'url' => 'https://synthetic-user:synthetic-pass@api.example.test/?amount=125',
+            'response' => 'privateKey=synthetic-private-key',
+        ]);
+        $row = $this->inserted();
+        $this->assertStringNotContainsString('synthetic-pass', $row['url']);
+        $this->assertStringNotContainsString('synthetic-private-key', $row['response']);
+        $this->assertStringContainsString('amount=125', $row['url']);
+    }
+
+
+    public function test_insert_redacts_escaped_json_fragment_in_plain_error(): void
+    {
+        Log::insert([
+            'response' => 'Provider error: {\\"apiKey\\":\\"escaped-fragment-secret\\",\\"status\\":\\"FAIL\\"}',
+        ]);
+        $row = $this->inserted();
+        $this->assertStringNotContainsString('escaped-fragment-secret', $row['response']);
+        $this->assertStringContainsString('[REDACTED]', $row['response']);
+        $this->assertStringContainsString('FAIL', $row['response']);
+    }
+
+
+    public function test_insert_redacts_extended_secret_header_names_in_arrays(): void
+    {
+        $secrets = [
+            'X-Access-Key' => 'synthetic-access-key-491',
+            'X-Signature' => 'synthetic-signature-492',
+            'X-Merchant-Key' => 'synthetic-merchant-key-493',
+            'session_key' => 'synthetic-session-key-494',
+        ];
+
+        Log::insert([
+            'gateway' => 'payping',
+            'header' => $secrets + ['Content-Type' => 'application/json'],
+            'body' => ['amount' => 19000],
+        ]);
+        $row = $this->inserted();
+        $headers = json_decode($row['header'], true);
+        foreach ($secrets as $key => $secret) {
+            $this->assertSame('[REDACTED]', $headers[$key]);
+            $this->assertStringNotContainsString($secret, json_encode($row));
+        }
+        $this->assertSame('application/json', $headers['Content-Type']);
+        $this->assertSame(19000, json_decode($row['body'], true)['amount']);
+    }
+
+    public function test_raw_header_variants_are_redacted_for_insert_and_update(): void
+    {
+        $secrets = [
+            'synthetic-raw-access-501',
+            'synthetic-raw-signature-502',
+            'synthetic-raw-merchant-503',
+            'synthetic-raw-api-token-504',
+            'synthetic-raw-auth-token-505',
+            'synthetic-raw-session-506',
+        ];
+        $raw = "X-Access-Key: {$secrets[0]}\r\n"
+            . "X-Signature: {$secrets[1]}\r\n"
+            . "X-Merchant-Key: {$secrets[2]}\r\n"
+            . "Api-Token: {$secrets[3]}\r\n"
+            . "auth_token={$secrets[4]}\r\n"
+            . "session_key={$secrets[5]}\r\n"
+            . 'Content-Type: application/json';
+
+        Log::insert(['gateway' => 'jibit', 'header' => $raw, 'body' => ['amount' => 4000]]);
+        foreach (['insert', 'update'] as $operation) {
+            if ($operation === 'update') {
+                Log::update(1, ['header' => $raw], false);
+            }
+            $row = $this->inserted();
+            foreach ($secrets as $secret) {
+                $this->assertStringNotContainsString($secret, json_encode($row));
+            }
+            $decodedHeader = json_decode($row['header'], true);
+            $this->assertSame(JSON_ERROR_NONE, json_last_error());
+            $this->assertIsString($decodedHeader);
+            $this->assertStringContainsString('Content-Type: application/json', $decodedHeader);
+            $this->assertSame(4000, json_decode($row['body'], true)['amount']);
+        }
+    }
+
 }

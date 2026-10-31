@@ -37,23 +37,23 @@ class Log extends Base
             return true;
         }
 
-        return (bool) preg_match('/(?:password|secret|apikey|token)$/', $key);
+        return (bool) preg_match('/(?:password|secret|apikey|token|accesskey|merchantkey|signature|sessionkey)$/', $key);
     }
 
-    private static function redact_log_value($value)
+    private static function redact_log_value($value, int $json_string_depth = 0)
     {
         if (is_array($value)) {
             $redacted = [];
             foreach ($value as $key => $item) {
                 $redacted[$key] = self::is_secret_key($key)
                     ? '[REDACTED]'
-                    : self::redact_log_value($item);
+                    : self::redact_log_value($item, $json_string_depth);
             }
             return $redacted;
         }
 
         if (is_object($value)) {
-            return self::redact_log_value((array) $value);
+            return self::redact_log_value((array) $value, $json_string_depth);
         }
 
         if (!is_string($value)) {
@@ -61,22 +61,59 @@ class Log extends Base
         }
 
         $json = json_decode($value, true);
-        if (JSON_ERROR_NONE === json_last_error() && is_array($json)) {
-            return self::redact_log_value($json);
+        if (JSON_ERROR_NONE === json_last_error()) {
+            if (is_array($json)) {
+                return self::redact_log_value($json);
+            }
+            if (is_string($json) && $json !== $value) {
+                // Limit recursive decoding of deeply nested JSON strings.
+                if ($json_string_depth >= 4) {
+                    return '[REDACTED]';
+                }
+                // Sanitize the decoded content and retain the original JSON layer.
+                $inner = self::redact_log_value($json, $json_string_depth + 1);
+                if ($inner === $json) {
+                    return $value;
+                }
+                return wp_json_encode($inner, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            }
         }
 
         // Protect a credential if it appears as plain text, a URL query parameter
         // or a serialized HTTP Authorization header.
+        // URLs may contain HTTP Basic Auth credentials in their userinfo part.
+        $value = preg_replace('~(https?://)[^/\s@?#]+@~i', '$1[REDACTED]@', $value);
         $value = preg_replace('/(Bearer\s+)\S+/i', '$1[REDACTED]', $value);
         $value = preg_replace('/((?:Proxy-)?Authorization\s*:\s*(?:Basic|Token)\s+)\S+/i', '$1[REDACTED]', $value);
-        $name = '(?:x[_-]?api[_-]?key|api[_-]?key|secret[_-]?key|client[_-]?secret|access[_-]?token|'
-            . 'refresh[_-]?token|authorization|auth[_-]?key|merchant[_-]?(?:id|key|token)|'
-            . 'terminal[_-]?id|user[_-]?password|password|secret|signature|'
-            . 'cookie|session[_-]?id|token|authority|pin|key)';
+        $name = '(?:(?:x[_-]?)?(?:api[_-]?(?:key|token|secret)|secret[_-]?key|'
+            . 'client[_-]?secret|access[_-]?(?:token|key)|private[_-]?key|'
+            . 'refresh[_-]?token|authorization|auth[_-]?(?:key|token)|'
+            . 'merchant[_-]?(?:id|key|token|password)|terminal[_-]?id|'
+            . 'user[_-]?(?:password|name)|password|secret|signature|'
+            . 'set[_-]?cookie|cookie|session[_-]?(?:id|key)|token|authority|pin|key))';
 
-        // Handle key=value and quoted JSON fragments embedded in error messages.
+        // Some provider error messages embed escaped JSON fragments in plain text.
         $value = preg_replace_callback(
-            '/((?:^|[?&;,\s{])["\']?' . $name . '["\']?\s*[:=]\s*["\']?)[^&;,\s"\'<>}]+/i',
+            '/((?:^|[?&;,\s{])\\\\"' . $name . '\\\\"\s*:\s*\\\\")(.*?)(\\\\")/i',
+            static function ($matches) {
+                return $matches[1] . '[REDACTED]' . $matches[3];
+            },
+            $value
+        );
+
+        // First mask complete quoted values, including spaces and punctuation.
+        // Plain-token matching alone can leave part of a credential exposed.
+        $value = preg_replace_callback(
+            '/((?:^|[?&;,\s{])["\']?' . $name . '["\']?\s*[:=]\s*)(["\'])((?:\\\\.|(?!\2)[^\r\n])*)\2/i',
+            static function ($matches) {
+                return $matches[1] . $matches[2] . '[REDACTED]' . $matches[2];
+            },
+            $value
+        );
+
+        // Handle unquoted key=value and JSON fragments in error messages.
+        $value = preg_replace_callback(
+            '/((?:^|[?&;,\s{])["\']?' . $name . '["\']?\s*[:=]\s*)[^&;,\s"\'<>}]+/i',
             static function ($matches) {
                 return $matches[1] . '[REDACTED]';
             },
