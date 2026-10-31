@@ -30,9 +30,9 @@ class Log extends Base
             'key', 'apikey', 'xapikey', 'secretkey', 'accesskey', 'privatekey', 'clientsecret',
             'secret', 'token', 'accesstoken', 'refreshtoken', 'bearertoken',
             'authorization', 'proxyauthorization', 'authkey', 'credential',
-            'credentials', 'password', 'pass', 'pwd', 'pin', 'username',
+            'credentials', 'password', 'pass', 'pwd', 'pin', 'username', 'usr',
             'merchantid', 'merchantkey', 'merchanttoken', 'terminalid',
-            'signature', 'cookie', 'setcookie', 'sessionid', 'authority',
+            'signature', 'signdata', 'tokenidentity', 'cookie', 'setcookie', 'sessionid', 'authority',
         ], true)) {
             return true;
         }
@@ -89,8 +89,9 @@ class Log extends Base
             . 'client[_-]?secret|access[_-]?(?:token|key)|private[_-]?key|'
             . 'refresh[_-]?token|authorization|auth[_-]?(?:key|token)|'
             . 'merchant[_-]?(?:id|key|token|password)|terminal[_-]?id|'
-            . 'user[_-]?(?:password|name)|password|secret|signature|'
-            . 'set[_-]?cookie|cookie|session[_-]?(?:id|key)|token|authority|pin|key))';
+            . 'user[_-]?(?:password|name)|usr|sign[_-]?data|token[_-]?identity|'
+            . 'password|secret|signature|set[_-]?cookie|cookie|'
+            . 'session[_-]?(?:id|key)|token|authority|pin|key))';
 
         // Some provider error messages embed escaped JSON fragments in plain text.
         $value = preg_replace_callback(

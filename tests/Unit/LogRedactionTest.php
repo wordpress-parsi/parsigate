@@ -431,4 +431,59 @@ final class LogRedactionTest extends TestCase
         }
     }
 
+    public function test_actual_gateway_credential_aliases_are_masked_on_insert(): void
+    {
+        Log::insert([
+            'gateway' => 'asanpardakht',
+            'header' => [
+                'Usr' => 'synthetic-asan-username-701',
+                'Pwd' => 'synthetic-asan-password-702',
+                'Content-Type' => 'application/json',
+            ],
+            'body' => [
+                'SignData' => 'synthetic-melli-signature-703',
+                'tokenIdentity' => 'synthetic-irankish-token-704',
+                'amount' => 50000,
+            ],
+        ]);
+
+        $row = $this->inserted();
+        $header = json_decode($row['header'], true);
+        $body = json_decode($row['body'], true);
+        foreach (['Usr', 'Pwd'] as $key) {
+            $this->assertSame('[REDACTED]', $header[$key]);
+        }
+        foreach (['SignData', 'tokenIdentity'] as $key) {
+            $this->assertSame('[REDACTED]', $body[$key]);
+        }
+        $this->assertSame('application/json', $header['Content-Type']);
+        $this->assertSame(50000, $body['amount']);
+        foreach (['synthetic-asan-username-701', 'synthetic-asan-password-702',
+                  'synthetic-melli-signature-703', 'synthetic-irankish-token-704'] as $secret) {
+            $this->assertStringNotContainsString($secret, json_encode($row));
+        }
+    }
+
+    public function test_gateway_credential_aliases_are_masked_in_text_and_update(): void
+    {
+        Log::insert(['gateway' => 'irankish', 'body' => ['amount' => 9900]]);
+        Log::update(1, [
+            'header' => "Usr: synthetic-asanu-711\r\nContent-Type: application/json",
+            'body' => 'SignData=synthetic-sign-712&tokenIdentity=synthetic-token-713&amount=9900',
+            'response' => '<soap:SignData>synthetic-xml-sign-714</soap:SignData>',
+        ], false);
+
+        $row = $this->inserted();
+        $header = json_decode($row['header'], true);
+        $body = json_decode($row['body'], true);
+        $response = json_decode($row['response'], true);
+        foreach (['synthetic-asanu-711', 'synthetic-sign-712',
+                  'synthetic-token-713', 'synthetic-xml-sign-714'] as $secret) {
+            $this->assertStringNotContainsString($secret, json_encode($row));
+        }
+        $this->assertStringContainsString('Content-Type: application/json', $header);
+        $this->assertStringContainsString('amount=9900', $body);
+        $this->assertStringContainsString('[REDACTED]', $response);
+    }
+
 }
