@@ -369,8 +369,11 @@ Yes. Parsigate is open-source and free to use under the GPLv2 license.
 
 == Screenshots ==
 
-1. Setting page
-2. Gateway settings
+1. Enable the gateways you need from the Parsidate settings, grouped into bank, intermediary, installment and offline gateways.
+2. Each gateway's WooCommerce settings: title, description, merchant code, test mode, failure message and display rules (user roles, minimum cart total, categories, products).
+3. Enabled gateways with their logos on the checkout page.
+4. Card to Card: the customer sees your bank details and uploads the payment receipt.
+5. Card to Card: the uploaded receipt on the order screen; the order is put on hold for your review.
 
 == Changelog ==
 
