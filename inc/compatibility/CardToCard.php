@@ -34,7 +34,15 @@ class CardToCard extends Base
             return $return;
         }
 
-        if (!$order->has_status('pending')) {
+        // Only orders still awaiting payment may (re)enter the receipt step.
+        // Orders that are on-hold / processing / completed must never be reset to pending
+        // by someone hitting the callback URL.
+        if (!$order->has_status(['pending', 'failed'])) {
+            wp_safe_redirect($order->get_checkout_order_received_url());
+            exit;
+        }
+
+        if ($order->has_status('failed')) {
             $order->update_status('pending');
         }
 

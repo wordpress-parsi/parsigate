@@ -1015,6 +1015,15 @@ class Gateways
                         $status = (isset($request['post']['status']) ? sanitize_text_field($request['post']['status']) : '');
                         $purchaseId = (isset($request['post']['purchaseId']) ? sanitize_text_field($request['post']['purchaseId']) : '');
 
+                        // The purchase must be the one created for this order
+                        $authority = (string)$order->get_meta('authority', true);
+                        if (empty($purchaseId) || empty($authority) || !hash_equals($authority, (string)$purchaseId)) {
+                            return new \WP_Error(
+                                'invalid_jibit_callback',
+                                __('Invalid Jibit callback.', 'parsigate')
+                            );
+                        }
+
                         // Get Token
                         $tokens = new Tokens('jibit');
 

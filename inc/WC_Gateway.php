@@ -544,6 +544,17 @@ class WC_Gateway extends \WC_Payment_Gateway
 
     public function verify_payment($order, $request)
     {
+        // The callback must belong to an order that was placed with this gateway.
+        if ($order->get_payment_method() !== $this->id) {
+            wp_die(esc_html__('Invalid order id.', 'parsigate'), '', ['response' => 403]);
+        }
+
+        // Never re-process an order that is already paid (e.g. a refreshed or replayed callback).
+        if ($order->is_paid()) {
+            wp_safe_redirect($this->get_return_url($order));
+            exit;
+        }
+
         $option = WooCommerce::get_gateway_option($this->id);
         $amount = $this->get_amount($order);
 
