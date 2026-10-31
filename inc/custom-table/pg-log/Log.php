@@ -10,6 +10,102 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class Log extends Base
 {
+    // Final log-only redaction, after write filters and before database storage.
+    protected static function sanitize_before_write(array $row): array
+    {
+        foreach (['url', 'header', 'body', 'response', 'meta'] as $field) {
+            if (array_key_exists($field, $row)) {
+                $row[$field] = self::redact_log_value($row[$field]);
+            }
+        }
+
+        return $row;
+    }
+
+    private static function is_secret_key($key): bool
+    {
+        $key = strtolower((string) preg_replace('/[^a-z0-9]/i', '', (string) $key));
+
+        if (in_array($key, [
+            'key', 'apikey', 'xapikey', 'secretkey', 'accesskey', 'privatekey', 'clientsecret',
+            'secret', 'token', 'accesstoken', 'refreshtoken', 'bearertoken',
+            'authorization', 'proxyauthorization', 'authkey', 'credential',
+            'credentials', 'password', 'pass', 'pwd', 'pin', 'username',
+            'merchantid', 'merchantkey', 'merchanttoken', 'terminalid',
+            'signature', 'cookie', 'setcookie', 'sessionid', 'authority',
+        ], true)) {
+            return true;
+        }
+
+        return (bool) preg_match('/(?:password|secret|apikey|token)$/', $key);
+    }
+
+    private static function redact_log_value($value)
+    {
+        if (is_array($value)) {
+            $redacted = [];
+            foreach ($value as $key => $item) {
+                $redacted[$key] = self::is_secret_key($key)
+                    ? '[REDACTED]'
+                    : self::redact_log_value($item);
+            }
+            return $redacted;
+        }
+
+        if (is_object($value)) {
+            return self::redact_log_value((array) $value);
+        }
+
+        if (!is_string($value)) {
+            return $value;
+        }
+
+        $json = json_decode($value, true);
+        if (JSON_ERROR_NONE === json_last_error() && is_array($json)) {
+            return self::redact_log_value($json);
+        }
+
+        // Protect a credential if it appears as plain text, a URL query parameter
+        // or a serialized HTTP Authorization header.
+        $value = preg_replace('/(Bearer\s+)\S+/i', '$1[REDACTED]', $value);
+        $value = preg_replace('/((?:Proxy-)?Authorization\s*:\s*(?:Basic|Token)\s+)\S+/i', '$1[REDACTED]', $value);
+        $name = '(?:x[_-]?api[_-]?key|api[_-]?key|secret[_-]?key|client[_-]?secret|access[_-]?token|'
+            . 'refresh[_-]?token|authorization|auth[_-]?key|merchant[_-]?(?:id|key|token)|'
+            . 'terminal[_-]?id|user[_-]?password|password|secret|signature|'
+            . 'cookie|session[_-]?id|token|authority|pin|key)';
+
+        // Handle key=value and quoted JSON fragments embedded in error messages.
+        $value = preg_replace_callback(
+            '/((?:^|[?&;,\s{])["\']?' . $name . '["\']?\s*[:=]\s*["\']?)[^&;,\s"\'<>}]+/i',
+            static function ($matches) {
+                return $matches[1] . '[REDACTED]';
+            },
+            $value
+        );
+
+        // Encoded query parameter names (for example api%5Fkey) also need masking.
+        $value = preg_replace_callback(
+            '/([?&]([^=&#\s]+)=)([^&#\s]*)/i',
+            static function ($matches) {
+                return self::is_secret_key(rawurldecode($matches[2]))
+                    ? $matches[1] . '[REDACTED]'
+                    : $matches[0];
+            },
+            $value
+        );
+
+        // SOAP elements can carry namespace declarations and xsi:type attributes.
+        $value = preg_replace_callback(
+            '/(<(?P<tag>(?:[\w.-]+:)?' . $name . ')(?:\s[^>]*)?>)(.*?)(<\/(?P=tag)\s*>)/is',
+            static function ($matches) {
+                return $matches[1] . '[REDACTED]' . $matches[4];
+            },
+            $value
+        );
+
+        return $value;
+    }
+
 
     public function __construct()
     {
