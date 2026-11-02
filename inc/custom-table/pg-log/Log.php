@@ -10,6 +10,140 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class Log extends Base
 {
+    // Final log-only redaction, after write filters and before database storage.
+    protected static function sanitize_before_write(array $row): array
+    {
+        foreach (['url', 'header', 'body', 'response', 'meta'] as $field) {
+            if (array_key_exists($field, $row)) {
+                $row[$field] = self::redact_log_value($row[$field]);
+            }
+        }
+
+        return $row;
+    }
+
+    private static function is_secret_key($key): bool
+    {
+        $key = strtolower((string) preg_replace('/[^a-z0-9]/i', '', (string) $key));
+
+        if (in_array($key, [
+            'key', 'apikey', 'xapikey', 'secretkey', 'accesskey', 'privatekey', 'clientsecret',
+            'secret', 'token', 'accesstoken', 'refreshtoken', 'bearertoken',
+            'authorization', 'proxyauthorization', 'authkey', 'credential',
+            'credentials', 'password', 'pass', 'pwd', 'pin', 'username', 'usr',
+            'merchantid', 'merchantkey', 'merchanttoken', 'terminalid',
+            'signature', 'signdata', 'tokenidentity', 'cookie', 'setcookie', 'sessionid', 'authority',
+        ], true)) {
+            return true;
+        }
+
+        return (bool) preg_match('/(?:password|secret|apikey|token|accesskey|merchantkey|signature|sessionkey)$/', $key);
+    }
+
+    private static function redact_log_value($value, int $json_string_depth = 0)
+    {
+        if (is_array($value)) {
+            $redacted = [];
+            foreach ($value as $key => $item) {
+                $redacted[$key] = self::is_secret_key($key)
+                    ? '[REDACTED]'
+                    : self::redact_log_value($item, $json_string_depth);
+            }
+            return $redacted;
+        }
+
+        if (is_object($value)) {
+            return self::redact_log_value((array) $value, $json_string_depth);
+        }
+
+        if (!is_string($value)) {
+            return $value;
+        }
+
+        $json = json_decode($value, true);
+        if (JSON_ERROR_NONE === json_last_error()) {
+            if (is_array($json)) {
+                return self::redact_log_value($json);
+            }
+            if (is_string($json) && $json !== $value) {
+                // Limit recursive decoding of deeply nested JSON strings.
+                if ($json_string_depth >= 4) {
+                    return '[REDACTED]';
+                }
+                // Sanitize the decoded content and retain the original JSON layer.
+                $inner = self::redact_log_value($json, $json_string_depth + 1);
+                if ($inner === $json) {
+                    return $value;
+                }
+                return wp_json_encode($inner, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            }
+        }
+
+        // Protect a credential if it appears as plain text, a URL query parameter
+        // or a serialized HTTP Authorization header.
+        // URLs may contain HTTP Basic Auth credentials in their userinfo part.
+        $value = preg_replace('~(https?://)[^/\s@?#]+@~i', '$1[REDACTED]@', $value);
+        $value = preg_replace('/(Bearer\s+)\S+/i', '$1[REDACTED]', $value);
+        $value = preg_replace('/((?:Proxy-)?Authorization\s*:\s*(?:Basic|Token)\s+)\S+/i', '$1[REDACTED]', $value);
+        $name = '(?:(?:x[_-]?)?(?:api[_-]?(?:key|token|secret)|secret[_-]?key|'
+            . 'client[_-]?secret|access[_-]?(?:token|key)|private[_-]?key|'
+            . 'refresh[_-]?token|authorization|auth[_-]?(?:key|token)|'
+            . 'merchant[_-]?(?:id|key|token|password)|terminal[_-]?id|'
+            . 'user[_-]?(?:password|name)|usr|sign[_-]?data|token[_-]?identity|'
+            . 'password|secret|signature|set[_-]?cookie|cookie|'
+            . 'session[_-]?(?:id|key)|token|authority|pin|key))';
+
+        // Some provider error messages embed escaped JSON fragments in plain text.
+        $value = preg_replace_callback(
+            '/((?:^|[?&;,\s{])\\\\"' . $name . '\\\\"\s*:\s*\\\\")(.*?)(\\\\")/i',
+            static function ($matches) {
+                return $matches[1] . '[REDACTED]' . $matches[3];
+            },
+            $value
+        );
+
+        // First mask complete quoted values, including spaces and punctuation.
+        // Plain-token matching alone can leave part of a credential exposed.
+        $value = preg_replace_callback(
+            '/((?:^|[?&;,\s{])["\']?' . $name . '["\']?\s*[:=]\s*)(["\'])((?:\\\\.|(?!\2)[^\r\n])*)\2/i',
+            static function ($matches) {
+                return $matches[1] . $matches[2] . '[REDACTED]' . $matches[2];
+            },
+            $value
+        );
+
+        // Handle unquoted key=value and JSON fragments in error messages.
+        $value = preg_replace_callback(
+            '/((?:^|[?&;,\s{])["\']?' . $name . '["\']?\s*[:=]\s*)[^&;,\s"\'<>}]+/i',
+            static function ($matches) {
+                return $matches[1] . '[REDACTED]';
+            },
+            $value
+        );
+
+        // Encoded query parameter names (for example api%5Fkey) also need masking.
+        $value = preg_replace_callback(
+            '/([?&]([^=&#\s]+)=)([^&#\s]*)/i',
+            static function ($matches) {
+                return self::is_secret_key(rawurldecode($matches[2]))
+                    ? $matches[1] . '[REDACTED]'
+                    : $matches[0];
+            },
+            $value
+        );
+
+        // SOAP elements can carry namespace declarations and xsi:type attributes.
+        $value = preg_replace_callback(
+            '/(<(?P<tag>(?:[\w.-]+:)?' . $name . ')(?:\s[^>]*)?>)(.*?)(<\/(?P=tag)\s*>)/is',
+            static function ($matches) {
+                return $matches[1] . '[REDACTED]' . $matches[4];
+            },
+            $value
+        );
+
+        return $value;
+    }
+
 
     public function __construct()
     {
