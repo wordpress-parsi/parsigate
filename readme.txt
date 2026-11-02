@@ -5,7 +5,7 @@ Tags: woocommerce, payment, gateway, درگاه, ووکامرس
 Requires at least: 5.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,7 +68,7 @@ Depending on the selected gateway, the plugin may transmit the following informa
 
 No payment-related data is transmitted unless a customer initiates a payment.
 
-The Card to Card and Test gateways do not contact any external service. Card to Card payment receipts uploaded by customers are stored in the site's own Media Library and attached to the order.
+The Card to Card and Test gateways do not contact any external service. Card to Card payment receipts uploaded by customers are stored privately on your own server (in `wp-content/uploads/parsigate-receipts`, outside the Media Library) and are only shown to shop managers on the order screen.
 
 = AqayePardakht =
 
@@ -364,6 +364,11 @@ Parsigate has a modular structure. Developers can add new gateways by creating a
 = How does the Card to Card gateway work? =
 The customer sees your bank account / card details after placing the order and uploads an image of the payment receipt (JPG, PNG or WebP). The order is set to "On hold" so you can check the receipt from the order page and complete it manually.
 
+= Are Card to Card receipts private? =
+Yes. Receipts are not added to the Media Library. They are saved with random file names in `wp-content/uploads/parsigate-receipts`, and only users who can manage orders can view them from the order screen. On Apache and LiteSpeed the folder is blocked by an `.htaccess` file. On Nginx, add this rule to your server configuration to block direct access as well:
+
+`location ^~ /wp-content/uploads/parsigate-receipts/ { deny all; }`
+
 = Is Parsigate free? =
 Yes. Parsigate is open-source and free to use under the GPLv2 license.
 
@@ -376,6 +381,12 @@ Yes. Parsigate is open-source and free to use under the GPLv2 license.
 5. Card to Card: the uploaded receipt on the order screen; the order is put on hold for your review.
 
 == Changelog ==
+
+= 1.1.1 =
+* Security: Card to Card receipts are no longer stored in the public media library. They are saved with random file names in a protected folder (`uploads/parsigate-receipts`) and can only be viewed by shop managers from the order screen
+* Security: Receipts uploaded with earlier versions are moved to the protected folder automatically and removed from the media library
+* Security: Uploaded receipts must be real JPG, PNG or WebP images, and can only be submitted while the order is awaiting payment
+* Fixed: Deleting an order now always removes its receipt file
 
 = 1.1.0 =
 * New: Vandar payment gateway
@@ -408,6 +419,9 @@ Yes. Parsigate is open-source and free to use under the GPLv2 license.
 * Integrated with Parsidate settings
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+Security update: Card to Card payment receipts were publicly accessible through the media library. Receipts are now stored privately; existing receipts are moved automatically. Update immediately if you use Card to Card.
 
 = 1.1.0 =
 Adds Vandar, Jibit, ParsPal, ZarinPlus and Card to Card gateways, fixes Azki payments and includes security hardening for payment callbacks. Requires Parsidate 6.0 or later for full functionality.
