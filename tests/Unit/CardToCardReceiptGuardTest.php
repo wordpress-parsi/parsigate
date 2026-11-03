@@ -11,7 +11,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound -- This isolated test intentionally groups minimal stub classes with its test case.
+// phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound, Universal.Files.SeparateFunctionsFromOO.Mixed -- Isolated PHPUnit test groups WordPress/WooCommerce stubs with its test case.
 
 if ( ! defined( 'DB_NAME' ) ) {
 	define( 'DB_NAME', 'pg9_isolated_tests' );
@@ -32,7 +32,7 @@ class PG9_Stop extends \RuntimeException {
 	 * Initialize the isolated exception or handler stub.
 	 *
 	 * @param mixed $message Exception message used only in this test.
-	 * @param int $status Captured HTTP status.
+	 * @param int   $status Captured HTTP status.
 	 *
 	 * @return void
 	 */
@@ -52,28 +52,32 @@ class PG9_Order {
 	 *
 	 * @var string
 	 */
-	public $status    = 'pending';
+	public $status = 'pending';
 	/**
 	 * Simulated payment method ID.
 	 *
 	 * @var string
 	 */
-	public $method    = 'cardtocard';
+	public $method = 'cardtocard';
 	/**
 	 * Simulated saved attachment ID.
 	 *
 	 * @var int
 	 */
-	public $receipt   = 0;
+	public $receipt = 0;
 
-	/** @var string Protected private receipt filename. */
+	/**
+	 * Protected private receipt filename.
+	 *
+	 * @var string
+	 */
 	public $protected_receipt = '';
 	/**
 	 * Customer ID owning the simulated order.
 	 *
 	 * @var int
 	 */
-	public $owner     = 0;
+	public $owner = 0;
 	/**
 	 * Simulated guest order key.
 	 *
@@ -115,15 +119,15 @@ class PG9_Order {
 	 * Return the simulated receipt attachment meta.
 	 *
 	 * @param string $name Meta key to retrieve.
-	 * @param bool $single Whether to return a single value.
+	 * @param bool   $single Whether to return a single value.
 	 *
 	 * @return mixed
 	 */
-	public function get_meta( $name, $single = true ) {
-		if ('_cardtocard_receipt_image_id' === $name) {
-            return $this->receipt;
-        }
-        return '_cardtocard_receipt_file' === $name ? $this->protected_receipt : null;
+	public function get_meta( $name, $single = true ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The test stub preserves the WooCommerce method signature.
+		if ( '_cardtocard_receipt_image_id' === $name ) {
+			return $this->receipt;
+		}
+		return '_cardtocard_receipt_file' === $name ? $this->protected_receipt : null;
 	}
 }
 
@@ -137,19 +141,19 @@ class PG9_DB {
 	 *
 	 * @var string
 	 */
-	public $prefix         = 'pg9_';
+	public $prefix = 'pg9_';
 	/**
 	 * Number of advisory lock acquisition attempts.
 	 *
 	 * @var int
 	 */
-	public $acquires       = 0;
+	public $acquires = 0;
 	/**
 	 * Number of advisory lock release attempts.
 	 *
 	 * @var int
 	 */
-	public $releases       = 0;
+	public $releases = 0;
 	/**
 	 * Whether named-lock acquisition is successful.
 	 *
@@ -160,7 +164,7 @@ class PG9_DB {
 	 * Substitute a parameter in the test-only SQL statement.
 	 *
 	 * @param string $query SQL statement containing a placeholder.
-	 * @param mixed $value Value substituted into the placeholder.
+	 * @param mixed  $value Value substituted into the placeholder.
 	 *
 	 * @return string
 	 */
@@ -192,14 +196,14 @@ if ( ! function_exists( 'add_filter' ) ) {
 	/**
 	 * Stub WordPress filter registration and record the filter name.
 	 *
-	 * @param string $name Filter name to record.
+	 * @param string   $name Filter name to record.
 	 * @param callable $callback Registered callback, unused by this stub.
-	 * @param int $priority Hook priority, unused by this stub.
-	 * @param int $accepted_args Accepted argument count, unused by this stub.
+	 * @param int      $priority Hook priority, unused by this stub.
+	 * @param int      $accepted_args Accepted argument count, unused by this stub.
 	 *
 	 * @return bool
 	 */
-	function add_filter( $name, $callback, $priority = 10, $accepted_args = 1 ) {
+	function add_filter( $name, $callback, $priority = 10, $accepted_args = 1 ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The test stub preserves the WordPress hook signature.
 		$GLOBALS['pg9_registered_filters'][] = $name;
 		return true;
 	}
@@ -208,14 +212,14 @@ if ( ! function_exists( 'add_action' ) ) {
 	/**
 	 * Stub WordPress action registration.
 	 *
-	 * @param string $name Hook name, unused by this stub.
+	 * @param string   $name Hook name, unused by this stub.
 	 * @param callable $callback Registered callback, unused by this stub.
-	 * @param int $priority Hook priority, unused by this stub.
-	 * @param int $accepted_args Accepted argument count, unused by this stub.
+	 * @param int      $priority Hook priority, unused by this stub.
+	 * @param int      $accepted_args Accepted argument count, unused by this stub.
 	 *
 	 * @return bool
 	 */
-	function add_action( $name, $callback, $priority = 10, $accepted_args = 1 ) {
+	function add_action( $name, $callback, $priority = 10, $accepted_args = 1 ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The test stub preserves the WordPress hook signature.
 		return true; }
 }
 if ( ! function_exists( 'absint' ) ) {
@@ -322,7 +326,7 @@ if ( ! function_exists( 'esc_html__' ) ) {
 	 *
 	 * @return string
 	 */
-	function esc_html__( $value, $domain = null ) {
+	function esc_html__( $value, $domain = null ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The test translation stub intentionally ignores the text domain.
 		return (string) $value; }
 }
 if ( ! function_exists( 'wp_die' ) ) {
@@ -330,14 +334,15 @@ if ( ! function_exists( 'wp_die' ) ) {
 	 * Replace WordPress request termination with a test exception.
 	 *
 	 * @param string $message Request termination message.
-	 * @param mixed $title Optional title or numeric status.
-	 * @param array $args Optional response arguments.
+	 * @param mixed  $title Optional title or numeric status.
+	 * @param array  $args Optional response arguments.
 	 *
 	 * @return void
 	 * @throws PG9_Stop When the stub intercepts a request termination.
 	 */
 	function wp_die( $message = '', $title = '', $args = array() ) {
 		$code = is_int( $title ) ? $title : ( isset( $args['response'] ) ? (int) $args['response'] : 500 );
+		// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Test-only exception captures the raw message; no HTML is rendered.
 		throw new PG9_Stop( $message, $code );
 	}
 }
@@ -398,8 +403,8 @@ final class CardToCardReceiptGuardTest extends TestCase {
 	 * Assert the expected rejection status and lock counts.
 	 *
 	 * @param int|null $status Expected HTTP status, or null for any error status.
-	 * @param int $acquires Expected number of lock acquisitions.
-	 * @param int $releases Expected number of lock releases.
+	 * @param int      $acquires Expected number of lock acquisitions.
+	 * @param int      $releases Expected number of lock releases.
 	 *
 	 * @return void
 	 */
@@ -516,14 +521,14 @@ final class CardToCardReceiptGuardTest extends TestCase {
 	}
 
 	/**
-     * A receipt recorded in the new protected storage must block re-upload.
-     *
-     * @return void
-     */
-    public function test_existing_private_receipt_is_not_replaced(): void {
-        $GLOBALS['pg9_order']->protected_receipt = 'ABC12345678901234567890123456789.png';
-        $this->expectRejection(409, 1, 1);
-    }
+	 * A receipt recorded in the new protected storage must block re-upload.
+	 *
+	 * @return void
+	 */
+	public function test_existing_private_receipt_is_not_replaced(): void {
+		$GLOBALS['pg9_order']->protected_receipt = 'ABC12345678901234567890123456789.png';
+		$this->expectRejection( 409, 1, 1 );
+	}
 
 	/**
 	 * Recheck order status after taking the advisory lock.
