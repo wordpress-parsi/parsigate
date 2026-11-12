@@ -35,6 +35,9 @@ class ParsiGateOption extends Addon
     {
         add_filter('plugin_action_links', [$this, 'plugin_action_links'], 10, 2);
         add_action('admin_enqueue_scripts', [$this, 'admin_enqueue_scripts']);
+        // Allow other successful-save callbacks to run before redirecting.
+        add_action('wp_parsidate_save_settings_success', [$this, 'redirect_after_settings_save'], PHP_INT_MAX);
+        add_action('wp_parsidate_admin_init', [$this, 'show_saved_notice'], 20);
     }
 
     public function admin_enqueue_scripts($hook): void
@@ -76,12 +79,52 @@ class ParsiGateOption extends Addon
         return $links;
     }
 
+    public function redirect_after_settings_save($tab): void
+    {
+        if ($tab !== $this->addonID) {
+            return;
+        }
+
+        $url = add_query_arg(
+            [
+                'page' => WP_PARSI_KEY_SLUG,
+                'tab' => $this->addonID,
+                'parsigate_updated' => '1',
+            ],
+            admin_url('admin.php')
+        );
+
+        wp_safe_redirect($url, 303);
+        exit;
+    }
+
+    public function show_saved_notice($tab): void
+    {
+        if (
+            $tab !== $this->addonID ||
+            !isset($_GET['parsigate_updated']) ||
+            '1' !== sanitize_text_field(
+                wp_unslash($_GET['parsigate_updated'])
+            )
+        ) {
+            return;
+        }
+
+        \WPParsidate\Helper\Notice::add(
+            $this->addonID,
+            esc_html__('Settings saved.', 'wp-parsidate'),
+            'success'
+        );
+    }
+
     /* @class */
     public function settings(): ?array
     {
         if (self::$settings === null) {
 
             $settings = [];
+            $saved_options = self::get(null, []);
+            $saved_options = is_array($saved_options) ? $saved_options : [];
 
             // Gateways
             foreach (Gateways::types() as $key => $label) {
@@ -115,8 +158,27 @@ class ParsiGateOption extends Addon
                         'type' => 'toggle',
                         'value' => 1,
                         'default' => false,
-                        'sanitize' => 'bool'
+                        'sanitize' => 'bool',
+                        'class' => 'pg-gateway-toggle',
                     ];
+
+                    if (1 === (int) ($saved_options[$gateway_key] ?? 0) && in_array('woocommerce', $gateway['usage'] ?? [], true) ) {
+                        $settings_url = add_query_arg(
+                            [
+                                'page' => 'wc-settings',
+                                'tab' => 'checkout',
+                                'section' => $gateway_key,
+                            ],
+                            admin_url('admin.php')
+                        );
+
+                        $settings[$gateway_key]['desc'] = sprintf(
+                            '<a class="pg-gateway-settings-link" href="%s" target="_blank" rel="noopener noreferrer" aria-label="%s">%s</a>',
+                            esc_url($settings_url),
+                            esc_attr(sprintf('%s: %s', __('Settings', 'parsigate'), wp_strip_all_tags($gateway_title))),
+                            esc_html__('Settings', 'parsigate')
+                        );
+                    }
                 }
 
                 $settings['gateways_' . $key . '_end'] = [
