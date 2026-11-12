@@ -112,7 +112,7 @@ class ParsiGateOption extends Addon
 
         \WPParsidate\Helper\Notice::add(
             $this->addonID,
-            esc_html__('Settings saved.', 'wp-parsidate'),
+            esc_html__('Settings saved.', 'parsigate'),
             'success'
         );
     }
