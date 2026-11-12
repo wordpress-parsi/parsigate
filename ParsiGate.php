@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Parsigate
  * Description: Persian Gateways for WooCommerce/WordPress
- * Version:     1.1.1
+ * Version:     1.2.0
  * Author:      Parsidate Teams
  * Author URI:  https://wp-parsi.com
  * Text Domain: parsigate
@@ -50,6 +50,11 @@ class ParsiGate
 
         // Wrap After ParsiDate
         add_action('wp_parsidate_addons_load', [$this, 'wpp_init']);
+
+        // Take over the gateways that used to ship with Parsi Date. Loaded here, not in
+        // wpp_init(): Parsi Date reads the list on before_woocommerce_init (init/0),
+        // before wp_parsidate_addons_load fires.
+        require_once self::$plugin_path . '/inc/LegacyParsidateGateways.php';
     }
 
     public function required_plugins(): array

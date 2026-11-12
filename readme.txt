@@ -5,7 +5,7 @@ Tags: woocommerce, payment, gateway, درگاه, ووکامرس
 Requires at least: 5.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.1
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -381,6 +381,9 @@ Yes. Parsigate is open-source and free to use under the GPLv2 license.
 5. Card to Card: the uploaded receipt on the order screen; the order is put on hold for your review.
 
 == Changelog ==
+
+= 1.2.0 =
+* Add: Takes over the Parsian, Pasargad, Mellat and Melli gateways of Parsi Date. Their settings are kept and the gateway is switched on in ParsiGate automatically (Pasargad needs the username and password of the bank's new API). Payments started with the old gateways are still completed.
 
 = 1.1.1 =
 * Security: Card to Card receipts are no longer stored in the public media library. They are saved with random file names in a protected folder (`uploads/parsigate-receipts`) and can only be viewed by shop managers from the order screen
