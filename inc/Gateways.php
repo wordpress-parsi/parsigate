@@ -85,6 +85,12 @@ class Gateways
 
                         $token = (isset($request['post']['Token']) ? sanitize_text_field($request['post']['Token']) : '');
 
+                        // The token must be one that was issued for this order, otherwise the
+                        // receipt of another (cheaper) order could be confirmed for this one.
+                        if (!Gateways::is_issued_for_order($order, $token, '_wpp_parsian_tokens')) {
+                            return Gateways::not_issued_for_order_error();
+                        }
+
                         return [
                             'LoginAccount' => $option['merchant_id'],
                             'Token' => $token
@@ -295,6 +301,19 @@ class Gateways
                         $CardHolderPan = (isset($request['post']['CardHolderPan']) ? sanitize_text_field($request['post']['CardHolderPan']) : '');
                         $FinalAmount = (isset($request['post']['FinalAmount']) ? sanitize_text_field($request['post']['FinalAmount']) : '');
 
+                        // ParsiGate sends the order ID as orderId, so the bank returns it as
+                        // SaleOrderId. Payments started by Parsi Date stored theirs in order meta.
+                        // Anything else is the receipt of another order and must not be verified.
+                        $issued_sale_order_ids = [(string)$order->get_id()];
+                        $legacy_sale_order_id = $order->get_meta('_wpp_mellat_sale_order_id', true);
+                        if (is_scalar($legacy_sale_order_id) && (string)$legacy_sale_order_id !== '') {
+                            $issued_sale_order_ids[] = (string)$legacy_sale_order_id;
+                        }
+
+                        if ($resCode == '0' && ($saleOrderId === '' || !in_array($saleOrderId, $issued_sale_order_ids, true))) {
+                            return Gateways::not_issued_for_order_error();
+                        }
+
                         return [
                             'ResCode' => $resCode,
                             'terminalId' => $option['terminal'],
@@ -361,6 +380,12 @@ class Gateways
                         $OrderId = (isset($request["post"]["OrderId"]) ? sanitize_text_field($request["post"]["OrderId"]) : '');
                         $Token = (isset($request["post"]["token"]) ? sanitize_text_field($request["post"]["token"]) : '');
                         $ResCode = (isset($request["post"]["ResCode"]) ? sanitize_text_field($request["post"]["ResCode"]) : '');
+
+                        // The token must be one that was issued for this order, otherwise the
+                        // receipt of another (cheaper) order could be verified for this one.
+                        if ($ResCode == '0' && !Gateways::is_issued_for_order($order, $Token, '_wpp_melli_tokens')) {
+                            return Gateways::not_issued_for_order_error();
+                        }
 
                         return [
                             'ResCode' => $ResCode,
@@ -1660,6 +1685,57 @@ class Gateways
         ];
 
         return apply_filters('parsigate_gateways_list', $list);
+    }
+
+    /**
+     * Whether a bank token/authority was issued for this order
+     *
+     * ParsiGate saves the authority of the payment it starts in the "authority" order
+     * meta. Payments started by the old Parsi Date gateways saved their tokens in their
+     * own meta (a list of tokens), which is checked too so those callbacks still work.
+     *
+     * @param \WC_Order $order Order
+     * @param mixed $value Token/authority returned by the bank
+     * @param string $legacy_meta_key Parsi Date meta key holding issued tokens
+     *
+     * @return bool
+     */
+    public static function is_issued_for_order($order, $value, string $legacy_meta_key = ''): bool
+    {
+        $value = is_scalar($value) ? trim((string)$value) : '';
+        if ($value === '' || !is_object($order) || !method_exists($order, 'get_meta')) {
+            return false;
+        }
+
+        $issued = [];
+
+        $authority = $order->get_meta('authority', true);
+        if (is_scalar($authority) && (string)$authority !== '') {
+            $issued[] = trim((string)$authority);
+        }
+
+        if ($legacy_meta_key !== '') {
+            $legacy = $order->get_meta($legacy_meta_key, true);
+            $legacy = is_array($legacy) ? $legacy : [$legacy];
+            foreach ($legacy as $token) {
+                if (is_scalar($token) && (string)$token !== '') {
+                    $issued[] = trim((string)$token);
+                }
+            }
+        }
+
+        return in_array($value, $issued, true);
+    }
+
+    /**
+     * @return \WP_Error Error for a bank receipt that does not belong to the order
+     */
+    public static function not_issued_for_order_error(): \WP_Error
+    {
+        return new \WP_Error(
+            'parsigate_not_issued_for_order',
+            __('This payment does not belong to this order.', 'parsigate')
+        );
     }
 
     public static function get($name)

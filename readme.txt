@@ -384,6 +384,7 @@ Yes. Parsigate is open-source and free to use under the GPLv2 license.
 
 = 1.2.0 =
 * Add: Takes over the Parsian, Pasargad, Mellat and Melli gateways of Parsi Date. Their settings are kept and the gateway is switched on in ParsiGate automatically (Pasargad needs the username and password of the bank's new API). Payments started with the old gateways are still completed.
+* Security: Parsian, Melli and Mellat payments are now verified only for the order they were started for.
 
 = 1.1.1 =
 * Security: Card to Card receipts are no longer stored in the public media library. They are saved with random file names in a protected folder (`uploads/parsigate-receipts`) and can only be viewed by shop managers from the order screen
