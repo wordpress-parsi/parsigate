@@ -486,4 +486,257 @@ final class LogRedactionTest extends TestCase
         $this->assertStringContainsString('[REDACTED]', $response);
     }
 
+    public static function review_cases(): iterable
+    {
+        $mask = '************3456';
+        $authority = 'A000-TEST-AUTHORITY';
+        $cases = [
+            'authority and existing token policy' => [
+                'body',
+                ['authority' => '1234567890123456', 'Authority' => $authority, 'token' => 'test-access-token', 'amount' => 12500],
+                ['authority' => '1234567890123456', 'Authority' => $authority, 'token' => '[REDACTED]', 'amount' => 12500],
+            ],
+            'authority in JSON' => [
+                'response',
+                json_encode(['data' => ['authority' => $authority, 'code' => 100]]),
+                ['data' => ['authority' => $authority, 'code' => 100]],
+            ],
+            'authority in text and XML' => [
+                'response',
+                'authority=' . $authority . ' <soap:Authority>' . $authority . '</soap:Authority> status=OK',
+                'authority=' . $authority . ' <soap:Authority>' . $authority . '</soap:Authority> status=OK',
+            ],
+            'authority in URL' => [
+                'url',
+                'https://example.test/?authority=' . $authority . '&amount=12500',
+                'https://example.test/?authority=' . $authority . '&amount=12500',
+            ],
+            'Parsian request and aliases' => [
+                'body',
+                ['requestData' => ['LoginAccount' => 'test-pin-1', 'login_account' => 'test-pin-2', 'LOGIN-ACCOUNT' => 'test-pin-3', 'Amount' => 12500]],
+                ['requestData' => ['LoginAccount' => '[REDACTED]', 'login_account' => '[REDACTED]', 'LOGIN-ACCOUNT' => '[REDACTED]', 'Amount' => 12500]],
+            ],
+            'Parsian SOAP element' => [
+                'response',
+                '<soap:LoginAccount xsi:type="xsd:string">test-pin-4</soap:LoginAccount><soap:Status>0</soap:Status>',
+                '<soap:LoginAccount xsi:type="xsd:string">[REDACTED]</soap:LoginAccount><soap:Status>0</soap:Status>',
+            ],
+            'quoted PIN with spaces' => [
+                'response',
+                'Provider error: {"login_account":"test pin with spaces","status":"FAIL"}',
+                'Provider error: {"login_account":"[REDACTED]","status":"FAIL"}',
+            ],
+            'encoded PIN query key' => [
+                'url',
+                'https://example.test/?login%5Faccount=test-pin-5&authority=' . $authority,
+                'https://example.test/?login%5Faccount=[REDACTED]&authority=' . $authority,
+            ],
+            'card aliases and numeric value' => [
+                'body',
+                ['card_number' => '0000123400003456', 'cardNumber' => 1234567890123456, 'CARD-NUMBER' => '1234-5678-9012-3456'],
+                ['card_number' => $mask, 'cardNumber' => $mask, 'CARD-NUMBER' => $mask],
+            ],
+            'Vandar response and nested object' => [
+                'response',
+                (object) ['cardNumber' => '1234567890123456', 'transId' => '1234567890123456', 'status' => 1, 'amount' => 12500],
+                ['cardNumber' => $mask, 'transId' => '1234567890123456', 'status' => 1, 'amount' => 12500],
+            ],
+            'nested JSON card field' => [
+                'response',
+                json_encode(['data' => ['card_number' => '1234 5678 9012 3456', 'authority' => $authority]]),
+                ['data' => ['card_number' => $mask, 'authority' => $authority]],
+            ],
+            'already masked cards' => [
+                'meta',
+                ['card_number' => '123456******3456', 'cardNumber' => '**** **** **** 3456', 'card-number' => '123456******34**'],
+                ['card_number' => $mask, 'cardNumber' => $mask, 'card-number' => '[REDACTED]'],
+            ],
+            'empty and unexpected values' => [
+                'body',
+                ['missing' => ['card_number' => null, 'cardNumber' => ''], 'card_number' => ['unexpected' => '1234567890123456'], 'cardNumber' => 'not-a-card', 'card-number' => false],
+                ['missing' => ['card_number' => null, 'cardNumber' => ''], 'card_number' => '[REDACTED]', 'cardNumber' => '[REDACTED]', 'card-number' => '[REDACTED]'],
+            ],
+            'unrelated fields are not card numbers' => [
+                'body',
+                ['card_count' => 2, 'card_number_hash' => 'test-hash', 'transaction_id' => '1234567890123456'],
+                ['card_count' => 2, 'card_number_hash' => 'test-hash', 'transaction_id' => '1234567890123456'],
+            ],
+            'plain grouped card number' => [
+                'response',
+                'card_number=1234 5678 9012 3456&status=OK',
+                'card_number=' . $mask . '&status=OK',
+            ],
+            'quoted card in text' => [
+                'response',
+                'Provider error: {"cardNumber":"1234-5678-9012-3456","status":"FAIL"}',
+                'Provider error: {"cardNumber":"' . $mask . '","status":"FAIL"}',
+            ],
+            'numeric JSON fragment remains valid' => [
+                'response',
+                'Provider error: {"cardNumber":1234567890123456,"status":"FAIL"}',
+                'Provider error: {"cardNumber":"' . $mask . '","status":"FAIL"}',
+            ],
+            'escaped JSON fragment' => [
+                'response',
+                'Provider error: {\"card_number\":\"1234567890123456\",\"LoginAccount\":\"test-pin-6\",\"authority\":\"' . $authority . '\"}',
+                'Provider error: {\"card_number\":\"' . $mask . '\",\"LoginAccount\":\"[REDACTED]\",\"authority\":\"' . $authority . '\"}',
+            ],
+            'card in SOAP element' => [
+                'response',
+                '<soap:cardNumber xsi:type="xsd:string">1234 5678 9012 3456</soap:cardNumber>',
+                '<soap:cardNumber xsi:type="xsd:string">' . $mask . '</soap:cardNumber>',
+            ],
+            'encoded card query key and value' => [
+                'url',
+                'https://example.test/?card%5Fnumber=1234%205678%209012%203456&authority=' . $authority,
+                'https://example.test/?card%5Fnumber=' . $mask . '&authority=' . $authority,
+            ],
+            'ordinary query key and encoded separators' => [
+                'url',
+                'https://example.test/?cardNumber=1234%2D5678%2D9012%2D3456&amount=12500',
+                'https://example.test/?cardNumber=' . $mask . '&amount=12500',
+            ],
+            'truncated card JSON fragment' => [
+                'response',
+                'Provider error: {"cardNumber":"1234567890123456',
+                '[REDACTED]',
+            ],
+            'truncated Parsian JSON fragment' => [
+                'response',
+                'Provider error: {"LoginAccount":"test-pin-truncated',
+                '[REDACTED]',
+            ],
+            'encoded form body without URL prefix' => [
+                'body',
+                'card%5Fnumber=1234567890123456&login%5Faccount=test-pin-form&authority=' . $authority,
+                'card%5Fnumber=' . $mask . '&login%5Faccount=[REDACTED]&authority=' . $authority,
+            ],
+            'bracketed plain card field' => [
+                'response',
+                '[card_number=1234567890123456]',
+                '[card_number=' . $mask . ']',
+            ],
+            'bracketed secret: LoginAccount' => [
+                'response',
+                '[LoginAccount=synthetic-bracket-pin]',
+                '[LoginAccount=[REDACTED]]',
+            ],
+            'bracketed secret: alias with internal bracket' => [
+                'response',
+                '[LOGIN-ACCOUNT=synthetic]pin-tail]',
+                '[LOGIN-ACCOUNT=[REDACTED]]',
+            ],
+            'bracketed secret: preserve authority' => [
+                'response',
+                '[login_account=synthetic-bracket-pin;authority=' . $authority . ']',
+                '[login_account=[REDACTED];authority=' . $authority . ']',
+            ],
+            'bracketed secret: already redacted' => [
+                'response',
+                '[LoginAccount=[REDACTED]]',
+                '[LoginAccount=[REDACTED]]',
+            ],
+            'card PAN alias: provider JSON response' => [
+                'response',
+                '{"data":{"card_pan":"123456******3456","card_hash":"synthetic-card-hash","ref_id":82491,"authority":"' . $authority . '"}}',
+                ['data' => ['card_pan' => $mask, 'card_hash' => 'synthetic-card-hash', 'ref_id' => 82491, 'authority' => $authority]],
+            ],
+            'card PAN alias: structured values and unrelated keys' => [
+                'body',
+                ['card_pan' => '1234567890123456', 'cardPan' => 1234567890123456, 'CARD-PAN' => '1234-5678-9012-3456', 'card_pan_hash' => 'test-hash', 'authority' => $authority],
+                ['card_pan' => $mask, 'cardPan' => $mask, 'CARD-PAN' => $mask, 'card_pan_hash' => 'test-hash', 'authority' => $authority],
+            ],
+            'card PAN alias: encoded URL parameter' => [
+                'url',
+                'https://example.test/?card%5Fpan=1234%205678%209012%203456&authority=' . $authority,
+                'https://example.test/?card%5Fpan=' . $mask . '&authority=' . $authority,
+            ],
+            'card PAN alias: XML and text' => [
+                'response',
+                '<soap:cardPan>1234567890123456</soap:cardPan> card-pan=123456******3456&authority=' . $authority,
+                '<soap:cardPan>' . $mask . '</soap:cardPan> card-pan=' . $mask . '&authority=' . $authority,
+            ],
+            'bracketed secret: unrelated key' => [
+                'response',
+                '[LoginAccountHash=synthetic-hash;authority=' . $authority . ']',
+                '[LoginAccountHash=synthetic-hash;authority=' . $authority . ']',
+            ],
+        ];
+
+        foreach ($cases as $name => $case) {
+            foreach (['insert', 'update'] as $operation) {
+                yield $operation . ': ' . $name => array_merge([$operation], $case);
+            }
+        }
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('review_cases')]
+    public function test_review_redaction_policy(string $operation, string $field, $input, $expected): void
+    {
+        $payload = [$field => $input];
+        $original = serialize($payload);
+
+        if ($operation === 'update') {
+            Log::insert(['gateway' => 'vandar'], false);
+            $result = Log::update(1, $payload, false);
+        } else {
+            $result = Log::insert($payload, false);
+        }
+
+        $this->assertTrue($result['status']);
+        $row = $this->inserted();
+        $this->assertArrayHasKey($field, $row);
+        $actual = $row[$field];
+        if ($field !== 'url') {
+            $actual = json_decode($actual, true);
+            $this->assertSame(JSON_ERROR_NONE, json_last_error());
+        }
+        $this->assertSame($expected, $actual);
+        $this->assertSame($original, serialize($payload));
+    }
+
+    public static function review_write_operations(): iterable
+    {
+        yield 'insert' => ['insert'];
+        yield 'update' => ['update'];
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('review_write_operations')]
+    public function test_review_redaction_after_write_filter(string $operation): void
+    {
+        if ($operation === 'update') {
+            Log::insert(['gateway' => 'vandar', 'body' => ['amount' => 1000]], false);
+        }
+
+        $filter = static function ($row) {
+            $row['response'] = wp_json_encode([
+                'cardNumber' => '1234567890123456',
+                'LoginAccount' => 'synthetic-late-pin',
+                'authority' => 'TEST-LATE-AUTHORITY',
+            ]);
+            return $row;
+        };
+
+        try {
+            if ($operation === 'update') {
+                $GLOBALS['log_redaction_update_filter'] = $filter;
+                $result = Log::update(1, ['body' => ['amount' => 2000]], false);
+            } else {
+                $GLOBALS['log_redaction_filter'] = $filter;
+                $result = Log::insert(['body' => ['amount' => 2000]], false);
+            }
+
+            $this->assertTrue($result['status']);
+            $row = $this->inserted();
+            $this->assertSame([
+                'cardNumber' => '************3456',
+                'LoginAccount' => '[REDACTED]',
+                'authority' => 'TEST-LATE-AUTHORITY',
+            ], json_decode($row['response'], true));
+            $this->assertSame(['amount' => 2000], json_decode($row['body'], true));
+        } finally {
+            unset($GLOBALS['log_redaction_filter'], $GLOBALS['log_redaction_update_filter']);
+        }
+    }
+
 }

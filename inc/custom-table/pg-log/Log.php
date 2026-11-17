@@ -10,6 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class Log extends Base
 {
+    private const CARD_NUMBER_NAME = 'card[_-]?(?:number|pan)';
+
     // Final log-only redaction, after write filters and before database storage.
     protected static function sanitize_before_write(array $row): array
     {
@@ -32,7 +34,7 @@ class Log extends Base
             'authorization', 'proxyauthorization', 'authkey', 'credential',
             'credentials', 'password', 'pass', 'pwd', 'pin', 'username', 'usr',
             'merchantid', 'merchantkey', 'merchanttoken', 'terminalid',
-            'signature', 'signdata', 'tokenidentity', 'cookie', 'setcookie', 'sessionid', 'authority',
+            'signature', 'signdata', 'tokenidentity', 'cookie', 'setcookie', 'sessionid', 'loginaccount',
         ], true)) {
             return true;
         }
@@ -40,11 +42,35 @@ class Log extends Base
         return (bool) preg_match('/(?:password|secret|apikey|token|accesskey|merchantkey|signature|sessionkey)$/', $key);
     }
 
+    private static function is_card_number_key($key): bool
+    {
+        return (bool) preg_match('/^' . self::CARD_NUMBER_NAME . '$/iD', (string) $key);
+    }
+
+    private static function mask_card_number($value)
+    {
+        if ($value === null || $value === '') {
+            return $value;
+        }
+        if (!is_string($value) && !is_int($value)) {
+            return '[REDACTED]';
+        }
+
+        $number = str_replace([' ', '-'], '', (string) $value);
+        return preg_match('/^[0-9*xX]{12}[0-9]{4}$/D', $number)
+            ? '************' . substr($number, -4)
+            : '[REDACTED]';
+    }
+
     private static function redact_log_value($value, int $json_string_depth = 0)
     {
         if (is_array($value)) {
             $redacted = [];
             foreach ($value as $key => $item) {
+                if (self::is_card_number_key($key)) {
+                    $redacted[$key] = self::mask_card_number($item);
+                    continue;
+                }
                 $redacted[$key] = self::is_secret_key($key)
                     ? '[REDACTED]'
                     : self::redact_log_value($item, $json_string_depth);
@@ -91,42 +117,92 @@ class Log extends Base
             . 'merchant[_-]?(?:id|key|token|password)|terminal[_-]?id|'
             . 'user[_-]?(?:password|name)|usr|sign[_-]?data|token[_-]?identity|'
             . 'password|secret|signature|set[_-]?cookie|cookie|'
-            . 'session[_-]?(?:id|key)|token|authority|pin|key))';
+            . 'session[_-]?(?:id|key)|token|login[_-]?account|pin|key))';
+
+        $field = '(?P<field>' . $name . '|' . self::CARD_NUMBER_NAME . ')';
+
+        // Fail closed if a sensitive quoted value has no closing quote.
+        $incomplete = false;
 
         // Some provider error messages embed escaped JSON fragments in plain text.
         $value = preg_replace_callback(
-            '/((?:^|[?&;,\s{])\\\\"' . $name . '\\\\"\s*:\s*\\\\")(.*?)(\\\\")/i',
-            static function ($matches) {
-                return $matches[1] . '[REDACTED]' . $matches[3];
+            '/((?:^|[\[?&;,\s{])\\\\"' . $field . '\\\\"\s*:\s*\\\\")([^\r\n]*?)(\\\\"|(?=[\r\n]|\z))/i',
+            static function ($matches) use (&$incomplete) {
+                if ($matches[4] === '') {
+                    $incomplete = true;
+                }
+                return $matches[1] . (self::is_card_number_key($matches['field'])
+                    ? self::mask_card_number($matches[3]) : '[REDACTED]') . $matches[4];
             },
             $value
         );
+
+        if ($incomplete || $value === null) {
+            return '[REDACTED]';
+        }
 
         // First mask complete quoted values, including spaces and punctuation.
         // Plain-token matching alone can leave part of a credential exposed.
         $value = preg_replace_callback(
-            '/((?:^|[?&;,\s{])["\']?' . $name . '["\']?\s*[:=]\s*)(["\'])((?:\\\\.|(?!\2)[^\r\n])*)\2/i',
-            static function ($matches) {
-                return $matches[1] . $matches[2] . '[REDACTED]' . $matches[2];
+            '/((?:^|[\[?&;,\s{])["\']?' . $field . '["\']?\s*[:=]\s*)(["\'])((?:\\\\.|(?!\3)[^\r\n])*)(\3|(?=[\r\n]|\z))/i',
+            static function ($matches) use (&$incomplete) {
+                if ($matches[5] === '') {
+                    $incomplete = true;
+                }
+                return $matches[1] . $matches[3] . (self::is_card_number_key($matches['field'])
+                    ? self::mask_card_number($matches[4]) : '[REDACTED]') . $matches[3];
             },
             $value
         );
+
+        if ($incomplete || $value === null) {
+            return '[REDACTED]';
+        }
 
         // Handle unquoted key=value and JSON fragments in error messages.
         $value = preg_replace_callback(
-            '/((?:^|[?&;,\s{])["\']?' . $name . '["\']?\s*[:=]\s*)[^&;,\s"\'<>}]+/i',
+            '/((?:^|[\[?&;,\s{])["\']?' . $name . '["\']?\s*[:=]\s*)([^&;,\s"\'<>}]+)/i',
             static function ($matches) {
-                return $matches[1] . '[REDACTED]';
+                // Consume the whole token; preserve the closing bracket of a bracketed field.
+                $closing = '[' === $matches[1][0] && ']' === substr($matches[2], -1)
+                    && '[REDACTED]' !== $matches[2] ? ']' : '';
+                return $matches[1] . '[REDACTED]' . $closing;
             },
             $value
         );
 
-        // Encoded query parameter names (for example api%5Fkey) also need masking.
+        // Redact an ambiguous embedded complex card value rather than risk partial exposure.
+        $card_prefix = '((?:^|[\[?&;,\s{])(?P<quote>\\\\"|["\']?)' . self::CARD_NUMBER_NAME . '\k<quote>\s*(?P<separator>[:=])\s*)';
+        if (preg_match('/' . $card_prefix . '(?:\{|\[(?!REDACTED\]))/i', $value)) {
+            return '[REDACTED]';
+        }
+
+        // A card value can contain spaces; consume it before masking, not just its first token.
+        // Preserve JSON syntax when replacing an unquoted numeric value with a string.
         $value = preg_replace_callback(
-            '/([?&]([^=&#\s]+)=)([^&#\s]*)/i',
+            '/' . $card_prefix . '(?![\s"\'\\\\])(\[REDACTED\]|(?:(?![ \t]+["\']?[\w.-]+["\']?\s*[:=])[^&#;,\r\n"\'<>}\]])+)/i',
             static function ($matches) {
-                return self::is_secret_key(rawurldecode($matches[2]))
-                    ? $matches[1] . '[REDACTED]'
+                $raw = trim($matches[4]);
+                $json = $matches['quote'] !== '' && $matches['separator'] === ':';
+                if ($json && $raw === 'null') {
+                    return $matches[0];
+                }
+                $masked = self::mask_card_number(urldecode($raw));
+                return $matches[1] . ($json ? $matches['quote'] . $masked . $matches['quote'] : $masked);
+            },
+            $value
+        );
+
+        // Mask encoded parameter names in URLs and at the start of form bodies.
+        $value = preg_replace_callback(
+            '/((?:^(?=[\w%.+\-]*%[0-9a-f]{2}[\w%.+\-]*=)|[?&])([^?=&#\s]+)=)([^&#\s]*)((?:[ \t]+[0-9*xX%+-]+)*)/i',
+            static function ($matches) {
+                $key = rawurldecode($matches[2]);
+                if (self::is_card_number_key($key)) {
+                    return $matches[1] . self::mask_card_number(urldecode($matches[3] . $matches[4]));
+                }
+                return self::is_secret_key($key)
+                    ? $matches[1] . '[REDACTED]' . $matches[4]
                     : $matches[0];
             },
             $value
@@ -134,9 +210,10 @@ class Log extends Base
 
         // SOAP elements can carry namespace declarations and xsi:type attributes.
         $value = preg_replace_callback(
-            '/(<(?P<tag>(?:[\w.-]+:)?' . $name . ')(?:\s[^>]*)?>)(.*?)(<\/(?P=tag)\s*>)/is',
+            '/(<(?P<tag>(?:[\w.-]+:)?' . $field . ')(?:\s[^>]*)?>)(.*?)(<\/(?P=tag)\s*>)/is',
             static function ($matches) {
-                return $matches[1] . '[REDACTED]' . $matches[4];
+                return $matches[1] . (self::is_card_number_key($matches['field'])
+                    ? self::mask_card_number($matches[4]) : '[REDACTED]') . $matches[5];
             },
             $value
         );
