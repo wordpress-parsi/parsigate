@@ -667,7 +667,10 @@ class Gateways
                     'verify' => function ($amount, $order, $option, $class, $request) {
 
                         $success = (isset($request['get']['success']) ? sanitize_text_field($request['get']['success']) : '');
-                        $trackId = (isset($request['get']['trackId']) ? sanitize_text_field($request['get']['trackId']) : '');
+
+                        // Zibal trackId is always numeric. Keep digits only so nothing else
+                        // from the callback URL is sent to the bank or stored in the log.
+                        $trackId = ((isset($request['get']['trackId']) && is_scalar($request['get']['trackId'])) ? preg_replace('/\D/', '', (string)$request['get']['trackId']) : '');
 
                         return [
                             'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',

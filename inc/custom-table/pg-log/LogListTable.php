@@ -313,7 +313,7 @@ class LogListTable extends \WP_List_Table
                 if (in_array(substr($item['code'], 0, 1), ['4', '5'])) {
                     $class = 'error';
                 }
-                return '<span class="pg-log-column-status pg-log-column-status-' . $class . '">' . trim($item['code']) . '</span>';
+                return '<span class="pg-log-column-status pg-log-column-status-' . esc_attr($class) . '">' . esc_html(trim((string)$item['code'])) . '</span>';
                 break;
 
             case 'created_at':
@@ -340,7 +340,7 @@ class LogListTable extends \WP_List_Table
                     return $unknown;
                 }
 
-                return '<span dir="ltr" style="text-align: left; font-size: 12px !important;">' . $item['url'] . '</span>';
+                return '<span dir="ltr" style="text-align: left; font-size: 12px !important;">' . esc_html($item['url']) . '</span>';
                 break;
 
             case 'request':

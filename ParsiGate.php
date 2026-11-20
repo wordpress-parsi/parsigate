@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Parsigate
  * Description: Persian Gateways for WooCommerce/WordPress
- * Version:     1.2.0
+ * Version:     1.2.1
  * Author:      Parsidate Teams
  * Author URI:  https://wp-parsi.com
  * Text Domain: parsigate

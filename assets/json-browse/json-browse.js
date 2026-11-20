@@ -8,17 +8,29 @@
         return regexp.test(string);
     }
 
+    // Log values come from bank callbacks and responses, so they must never be
+    // inserted as HTML. Escape everything, quotes included, because values are
+    // also placed inside the href attribute of links.
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/`/g, '&#96;');
+    }
+
     function json2html(json, options) {
         html = '';
         if (typeof json === 'string') {
-            // Escape tags
-            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            if (isUrl(json))
-                html += '<a href="' + json + '" class="json-string">' + json + '</a>';
+            var escaped = escapeHtml(json);
+            if (isUrl(json) && !/[\s"'<>`]/.test(json))
+                html += '<a href="' + escaped + '" class="json-string" target="_blank" rel="noopener noreferrer">' + escaped + '</a>';
             else
-                html += '<span class="json-string">"' + json + '"</span>';
+                html += '<span class="json-string">"' + escaped + '"</span>';
         } else if (typeof json === 'number') {
-            html += '<span class="json-literal">' + json + '</span>';
+            html += '<span class="json-literal">' + escapeHtml(json) + '</span>';
         } else if (typeof json === 'boolean') {
             html += '<span class="json-literal">' + json + '</span>';
         } else if (json === null) {
@@ -51,7 +63,7 @@
                     if (json.hasOwnProperty(key)) {
                         html += '<li>';
                         var keyRepr = options.withQuotes ?
-                            '<span class="json-string">"' + key + '"</span>' : key;
+                            '<span class="json-string">"' + escapeHtml(key) + '"</span>' : escapeHtml(key);
                         // Add toggle button if item is collapsable
                         if (isCollapsable(json[key])) {
                             html += '<a href class="json-toggle">' + keyRepr + '</a>';
