@@ -672,6 +672,13 @@ class Gateways
                         // from the callback URL is sent to the bank or stored in the log.
                         $trackId = ((isset($request['get']['trackId']) && is_scalar($request['get']['trackId'])) ? preg_replace('/\D/', '', (string)$request['get']['trackId']) : '');
 
+                        // Zibal verify does not check the amount and also accepts an already
+                        // verified trackId (result 201), so the trackId must be the one issued
+                        // for this order. Otherwise a paid cheap order could settle this one.
+                        if ($success == '1' && !Gateways::is_issued_for_order($order, $trackId)) {
+                            return Gateways::not_issued_for_order_error();
+                        }
+
                         return [
                             'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',
                             "merchant" => $option['merchant_id'],

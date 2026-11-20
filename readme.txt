@@ -384,6 +384,7 @@ Yes. Parsigate is open-source and free to use under the GPLv2 license.
 
 = 1.2.1 =
 * Security: Fixed a stored cross-site scripting (XSS) issue in the Gateway Log page. Values received from bank callbacks (such as the Zibal `trackId`) are now fully escaped when the log is displayed.
+* Security: Zibal payments are now verified only for the order they were started for.
 
 = 1.2.0 =
 * Add: Takes over the Parsian, Pasargad, Mellat and Melli gateways of Parsi Date. Their settings are kept and the gateway is switched on in ParsiGate automatically (Pasargad needs the username and password of the bank's new API). Payments started with the old gateways are still completed.
