@@ -385,6 +385,8 @@ Yes. Parsigate is open-source and free to use under the GPLv2 license.
 = 1.2.2 =
 * Security: Pasargad, Saman, Iran Kish, ZarinPal, ZarinPlus, PayPing, Aqaye Pardakht, Shepa, DigiPay, Azkivam and Tara payments are now verified only for the order they were started for.
 * Security: Gateway callback URLs no longer reveal the order key or change the order status for visitors who are not the order's customer (legacy Parsi Date Pasargad callback, already paid orders, Card to Card).
+* Security: Credentials (API keys, passwords, merchant IDs, Parsian LoginAccount) are no longer stored in the gateway log, and card numbers are masked.
+* Fix: Card to Card: uploading a receipt no longer marks the order as paid; the order goes on-hold until the shop manager approves it.
 
 = 1.2.1 =
 * Security: Fixed a stored cross-site scripting (XSS) issue in the Gateway Log page. Values received from bank callbacks (such as the Zibal `trackId`) are now fully escaped when the log is displayed.
