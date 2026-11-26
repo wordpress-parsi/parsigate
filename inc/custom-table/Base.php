@@ -49,6 +49,11 @@ class Base
         return $wpdb->prefix . static::slug();
     }
 
+    protected static function sanitize_before_write(array $row): array
+    {
+        return $row;
+    }
+
     public static function insert($arg = [], $fire_after_hook = true): array
     {
         global $wpdb;
@@ -57,6 +62,7 @@ class Base
         $args = wp_parse_args($arg, $defaults);
 
         $args = apply_filters('parsigate_insert_data_' . static::table(), $args);
+        $args = static::sanitize_before_write($args);
 
         foreach (static::get_json_fields() as $key) {
             $args[$key] = wp_json_encode($args[$key], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -175,10 +181,33 @@ class Base
                 $changed[$updated_at['name']] = $updated_at['value'];
             }
 
+            // Redact after all update filters, immediately before the database write.
+            $data = apply_filters('parsigate_update_data_' . static::table(), $changed, $item, $id);
+
+            // Update values were JSON-encoded earlier. Decode all valid JSON types,
+            // including strings, so secrets inside escaped text can be redacted.
+            foreach (static::get_json_fields() as $key) {
+                if (isset($data[$key]) && is_string($data[$key])) {
+                    $decoded = json_decode($data[$key], true);
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $data[$key] = $decoded;
+                    }
+                }
+            }
+
+            $data = static::sanitize_before_write($data);
+
+            // Persist all updated JSON columns as valid JSON (including strings).
+            foreach (static::get_json_fields() as $key) {
+                if (array_key_exists($key, $data)) {
+                    $data[$key] = wp_json_encode($data[$key], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                }
+            }
+
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $wpdb->update(
                 static::table(),
-                apply_filters('parsigate_update_data_' . static::table(), $changed, $item, $id),
+                $data,
                 array(static::primary_key() => $id)
             );
 
