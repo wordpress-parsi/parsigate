@@ -287,7 +287,7 @@ class CardToCard extends Base
         }
 
         if (!$this->can_access_order($order)) {
-            wp_die(esc_html__('You do not have permission to access this order.', 'parsigate'), 403);
+            wp_die(esc_html__('You do not have permission to access this order.', 'parsigate'), '', ['response' => 403]);
         }
 
         if ($this->has_receipt($order)) {
@@ -341,7 +341,15 @@ class CardToCard extends Base
 
         $order->update_meta_data(static::$receipt_file, wp_basename($upload['file']));
         $order->save();
-        $order->payment_complete();
+
+        // A receipt is not a payment: it still has to be checked by the shop manager.
+        // payment_complete() would set the paid date and fire woocommerce_payment_complete,
+        // so other plugins (SMS, licenses, downloads) would treat the order as paid.
+        // WooCommerce still reduces stock and sends the on-hold emails on this status change.
+        $order->update_status(
+            apply_filters('parsigate_' . $this->gateway_id . '_payment_completed_status', 'on-hold'),
+            __('Payment receipt submitted; awaiting manual verification.', 'parsigate')
+        );
 
         $return_url = $order->get_checkout_order_received_url();
         wp_safe_redirect($return_url);
