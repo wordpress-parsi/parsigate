@@ -233,6 +233,23 @@ class DigiPay extends Base
 
         if ($status_code == "200" and isset($json['trackingCode']) and !empty($json['trackingCode'])) {
 
+            // trackingCode comes from the callback, so the verified purchase must be the
+            // one created for this order (providerId) and for this order's amount.
+            $wrong_order = (isset($args['order_id'], $json['providerId']) && (string)$json['providerId'] !== (string)$args['order_id']);
+            $wrong_amount = (isset($args['amount'], $json['amount']) && (int)$json['amount'] !== (int)$args['amount']);
+            if ($wrong_order || $wrong_amount) {
+                return $this->error(
+                    __('This payment does not belong to this order.', 'parsigate'),
+                    [
+                        'url' => $url,
+                        'body' => $body,
+                        'response' => $json,
+                        'header' => $headers,
+                    ],
+                    $status_code
+                );
+            }
+
             return $this->success(
                 array_merge(
                     [

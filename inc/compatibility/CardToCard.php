@@ -33,6 +33,7 @@ class CardToCard extends Base
     {
 
         add_filter('parsigate_gateway_set_completed', [$this, 'parsigate_gateway_set_completed'], 30, 5);
+        add_filter('parsigate_get_callback_query', [$this, 'add_order_key_to_callback'], 10, 3);
         add_filter('woocommerce_payment_complete_order_status', [$this, 'payment_completed_status'], 20, 3);
         add_action('woocommerce_admin_order_data_after_billing_address', [$this, 'render_admin_receipt'], 20);
         add_action('woocommerce_before_delete_order', [$this, 'delete_receipt_attachment'], 10, 2);
@@ -42,6 +43,29 @@ class CardToCard extends Base
         add_action('template_redirect', [$this, 'handle_upload']);
         add_action('admin_post_parsigate_cardtocard_receipt', [$this, 'serve_receipt']);
         add_action('admin_init', [$this, 'migrate_legacy_receipts']);
+    }
+
+    /**
+     * Card to Card does not go to a bank: its "callback" is opened by the customer's
+     * own browser right after checkout. Carry the order key in it, so the callback
+     * can tell the customer apart from someone who only guessed the order ID.
+     */
+    public function add_order_key_to_callback($args, $order, $gateway_id)
+    {
+        if ($gateway_id == $this->gateway_id && is_array($args) && is_object($order)) {
+            $args['key'] = $order->get_order_key();
+        }
+
+        return $args;
+    }
+
+    private function callback_has_order_key($order): bool
+    {
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended
+        $key = (isset($_GET['key']) && is_scalar($_GET['key'])) ? wc_clean(wp_unslash($_GET['key'])) : '';
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+        return $key !== '' && hash_equals((string)$order->get_order_key(), (string)$key);
     }
 
     public function parsigate_gateway_set_completed($return, $order, $transaction_id, $gateway_id, $gateway)
@@ -58,7 +82,14 @@ class CardToCard extends Base
         // Orders that are on-hold / processing / completed must never be reset to pending
         // by someone hitting the callback URL.
         if (!$order->has_status(['pending', 'failed'])) {
-            wp_safe_redirect($order->get_checkout_order_received_url());
+            wp_safe_redirect($this->callback_has_order_key($order) ? $order->get_checkout_order_received_url() : \ParsiGate\WC_Gateway::order_received_url_for_visitor($order));
+            exit;
+        }
+
+        // Anyone can open the callback URL with any order ID. The receipt page URL
+        // contains the order key, so only the order's customer may continue.
+        if (!$this->callback_has_order_key($order) && !\ParsiGate\WC_Gateway::visitor_owns_order($order)) {
+            wp_safe_redirect(wc_get_checkout_url());
             exit;
         }
 

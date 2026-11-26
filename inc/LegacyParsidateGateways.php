@@ -154,7 +154,8 @@ class LegacyParsidateGateways
         // Parsi Date's own "go to the bank" page (Mellat): the bank token lived in
         // Parsi Date's session, so start the payment again with ParsiGate.
         if ($action === 'redirect') {
-            wp_safe_redirect($order->get_checkout_payment_url());
+            // The pay page URL contains the order key: only for the order's customer.
+            wp_safe_redirect(WC_Gateway::visitor_owns_order($order) ? $order->get_checkout_payment_url() : wc_get_checkout_url());
             exit;
         }
 
@@ -179,14 +180,25 @@ class LegacyParsidateGateways
      */
     private function hold_legacy_pasargad_order($order): void
     {
-        if (!$order->is_paid()) {
+        // The callback URL carries only the order ID, so anyone can open it. Only a
+        // callback for the invoice Parsi Date sent to the bank for this order may change
+        // the order, and only while the order is still waiting for its payment.
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Bank callback request, it cannot carry a nonce.
+        $invoice_number = isset($_REQUEST['iN']) && is_scalar($_REQUEST['iN']) ? sanitize_text_field(wp_unslash($_REQUEST['iN'])) : '';
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+        $expected_invoice = (string)$order->get_meta('_wpp_pasargad_invoice_number', true);
+
+        $is_this_orders_invoice = $invoice_number !== '' && $expected_invoice !== '' && hash_equals($expected_invoice, $invoice_number);
+
+        if ($is_this_orders_invoice && !$order->is_paid() && $order->has_status(['pending', 'failed'])) {
             $order->update_status(
                 'on-hold',
                 'بازگشت از درگاه پاسارگاد پارسی‌دیت (نسخه‌ی قدیمی) پس از انتقال درگاه به پارسی‌گیت. پرداخت به‌صورت خودکار تأیید نشد؛ لطفاً وضعیت تراکنش را در پنل بانک پاسارگاد بررسی کنید.'
             );
         }
 
-        wp_safe_redirect($order->get_checkout_order_received_url());
+        // The thank-you URL contains the order key: only for the order's customer.
+        wp_safe_redirect(WC_Gateway::order_received_url_for_visitor($order));
         exit;
     }
 

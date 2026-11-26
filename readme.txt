@@ -5,7 +5,7 @@ Tags: woocommerce, payment, gateway, درگاه, ووکامرس
 Requires at least: 5.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -381,6 +381,10 @@ Yes. Parsigate is open-source and free to use under the GPLv2 license.
 5. Card to Card: the uploaded receipt on the order screen; the order is put on hold for your review.
 
 == Changelog ==
+
+= 1.2.2 =
+* Security: Pasargad, Saman, Iran Kish, ZarinPal, ZarinPlus, PayPing, Aqaye Pardakht, Shepa, DigiPay, Azkivam and Tara payments are now verified only for the order they were started for.
+* Security: Gateway callback URLs no longer reveal the order key or change the order status for visitors who are not the order's customer (legacy Parsi Date Pasargad callback, already paid orders, Card to Card).
 
 = 1.2.1 =
 * Security: Fixed a stored cross-site scripting (XSS) issue in the Gateway Log page. Values received from bank callbacks (such as the Zibal `trackId`) are now fully escaped when the log is displayed.

@@ -179,6 +179,12 @@ class Gateways
                         $referenceNumber = (isset($request['get']['referenceNumber']) ? sanitize_text_field($request['get']['referenceNumber']) : '');
                         $trackId = (isset($request['get']['trackId']) ? sanitize_text_field($request['get']['trackId']) : '');
 
+                        // ParsiGate creates the invoice as time() followed by the order ID, so an
+                        // invoice of another order must not be inquired and confirmed for this one.
+                        if ($invoiceId !== '' && !preg_match('/^\d{10}' . preg_quote((string)$order->get_id(), '/') . '$/', $invoiceId)) {
+                            return Gateways::not_issued_for_order_error();
+                        }
+
                         $tokens = new Tokens('pasargad');
 
                         return [
@@ -240,6 +246,7 @@ class Gateways
                             'ResNum' => $ResNum,
                             'RefNum' => $RefNum,
                             'TerminalNumber' => $option['terminal_id'],
+                            'Amount' => $amount,
                         ];
                     }
                 ]
@@ -572,6 +579,11 @@ class Gateways
                         $systemTraceAuditNumber = (isset($request['post']['systemTraceAuditNumber']) ? sanitize_text_field($request['post']['systemTraceAuditNumber']) : '');
                         $tokenIdentity = (isset($request['post']['token']) ? sanitize_text_field($request['post']['token']) : '');
 
+                        // Must be the payment started for this order (see is_issued_for_order)
+                        if ($tokenIdentity !== '' && !Gateways::is_issued_for_order($order, $tokenIdentity)) {
+                            return Gateways::not_issued_for_order_error();
+                        }
+
                         return [
                             'terminalId' => $option['terminal_id'],
                             'responseCode' => $responseCode,
@@ -622,6 +634,11 @@ class Gateways
 
                         $authority = (isset($request['get']['Authority']) ? sanitize_text_field($request['get']['Authority']) : '');
                         $status = (isset($request['get']['Status']) ? sanitize_text_field($request['get']['Status']) : '');
+
+                        // Must be the payment started for this order (see is_issued_for_order)
+                        if ($authority !== '' && !Gateways::is_issued_for_order($order, $authority)) {
+                            return Gateways::not_issued_for_order_error();
+                        }
 
                         return [
                             'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',
@@ -747,6 +764,13 @@ class Gateways
                         $data = json_decode($sanitize, true);
                         if (!is_array($data) || empty($data) || !isset($data['paymentRefId']) || !isset($data['paymentCode'])) {
                             return ['success' => false];
+                        }
+
+                        $paymentCode = trim((string)$data['paymentCode']);
+
+                        // Must be the payment started for this order (see is_issued_for_order)
+                        if ($paymentCode !== '' && !Gateways::is_issued_for_order($order, $paymentCode)) {
+                            return Gateways::not_issued_for_order_error();
                         }
 
                         return [
@@ -911,6 +935,11 @@ class Gateways
                         $status = (isset($request['post']['status']) ? sanitize_text_field($request['post']['status']) : '');
                         $transid = (isset($request['post']['transid']) ? sanitize_text_field($request['post']['transid']) : '');
 
+                        // Must be the payment started for this order (see is_issued_for_order)
+                        if ($transid !== '' && !Gateways::is_issued_for_order($order, $transid)) {
+                            return Gateways::not_issued_for_order_error();
+                        }
+
                         return [
                             'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',
                             'pin' => $option['pin'],
@@ -954,6 +983,11 @@ class Gateways
 
                         $status = (isset($request['get']['status']) ? sanitize_text_field($request['get']['status']) : '');
                         $token = (isset($request['get']['token']) ? sanitize_text_field($request['get']['token']) : '');
+
+                        // Must be the payment started for this order (see is_issued_for_order)
+                        if ($token !== '' && !Gateways::is_issued_for_order($order, $token)) {
+                            return Gateways::not_issued_for_order_error();
+                        }
 
                         return [
                             'sandbox' => isset($option['sandbox']) and $option['sandbox'] == 'yes',
@@ -1290,7 +1324,9 @@ class Gateways
                         return [
                             'token' => $tokens->get_value(),
                             'trackingCode' => $trackingCode,
-                            'type' => $type
+                            'type' => $type,
+                            'order_id' => (string)$order->get_id(),
+                            'amount' => $amount,
                         ];
                     },
                     'completed' => function ($order, $transaction_id, $verify) {
@@ -1392,6 +1428,11 @@ class Gateways
 
                         $status = (isset($request['get']['status']) ? sanitize_text_field($request['get']['status']) : '');
                         $ticketId = (isset($request['get']['ticketId']) ? sanitize_text_field($request['get']['ticketId']) : '');
+
+                        // Must be the payment started for this order (see is_issued_for_order)
+                        if ($ticketId !== '' && !Gateways::is_issued_for_order($order, $ticketId)) {
+                            return Gateways::not_issued_for_order_error();
+                        }
 
                         return [
                             'api_url' => $option['api_url'],
@@ -1539,6 +1580,11 @@ class Gateways
                         $result = (isset($request['post']['result']) ? sanitize_text_field($request['post']['result']) : '');
                         $channelRefNumber = (isset($request['post']['channelRefNumber']) ? sanitize_text_field($request['post']['channelRefNumber']) : '');
 
+                        // Must be the payment started for this order (see is_issued_for_order)
+                        if ($token !== '' && !Gateways::is_issued_for_order($order, $token)) {
+                            return Gateways::not_issued_for_order_error();
+                        }
+
                         // Get Token
                         $tokens = new Tokens('tara');
 
@@ -1586,6 +1632,12 @@ class Gateways
                     'verify' => function ($amount, $order, $option, $class, $request) {
 
                         $authority = (isset($request['get']['authority']) ? sanitize_text_field($request['get']['authority']) : '');
+
+                        // Must be the payment started for this order (see is_issued_for_order)
+                        if ($authority !== '' && !Gateways::is_issued_for_order($order, $authority)) {
+                            return Gateways::not_issued_for_order_error();
+                        }
+
                         return [
                             'authority' => $authority,
                             "token" => $option['token'],

@@ -156,6 +156,21 @@ class Sep extends Base
 
         if (isset($json['ResultCode']) and $json['ResultCode'] == "0" and !empty($json['TransactionDetail']['RRN'])) {
 
+            // RefNum comes from the callback, so the verified transaction must be for
+            // this order's amount, otherwise a cheaper payment could settle this order.
+            if (isset($args['Amount'], $json['TransactionDetail']['OrginalAmount']) && (int)$json['TransactionDetail']['OrginalAmount'] !== (int)$args['Amount']) {
+                return $this->error(
+                    __('This payment does not belong to this order.', 'parsigate'),
+                    [
+                        'url' => $url,
+                        'body' => $body,
+                        'response' => $json,
+                        'header' => $headers,
+                    ],
+                    $status_code
+                );
+            }
+
             return $this->success(
                 [
                     'transaction_id' => $json['TransactionDetail']['RRN']

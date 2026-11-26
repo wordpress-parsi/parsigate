@@ -358,6 +358,54 @@ class WC_Gateway extends \WC_Payment_Gateway
         return apply_filters('parsigate_get_amount', WooCommerce::price($amount, $order, $this->id), $amount, $order, $this->id);
     }
 
+    /**
+     * Whether the current visitor is the customer of this order
+     *
+     * Callback URLs carry only the order ID, so anyone can open them. URLs that
+     * contain the order key (thank-you and pay pages) must only be handed to the
+     * customer: a logged-in owner, or the browser session that placed the order.
+     *
+     * @param \WC_Order $order
+     *
+     * @return bool
+     */
+    public static function visitor_owns_order($order): bool
+    {
+        $customer_id = (int)$order->get_customer_id();
+        if ($customer_id > 0 && get_current_user_id() === $customer_id) {
+            return true;
+        }
+
+        if (function_exists('WC') && WC()->session) {
+            $awaiting = (int)WC()->session->get('order_awaiting_payment');
+            if ($awaiting > 0 && $awaiting === (int)$order->get_id()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Thank-you page URL that only includes the order key for the order's customer
+     *
+     * Anyone else gets the thank-you page without the key, which WooCommerce shows
+     * without any order details.
+     *
+     * @param \WC_Order $order
+     * @param string $owner_url URL to use for the customer (defaults to the thank-you page)
+     *
+     * @return string
+     */
+    public static function order_received_url_for_visitor($order, string $owner_url = ''): string
+    {
+        if (self::visitor_owns_order($order)) {
+            return $owner_url !== '' ? $owner_url : $order->get_checkout_order_received_url();
+        }
+
+        return wc_get_endpoint_url('order-received', (string)$order->get_id(), wc_get_checkout_url());
+    }
+
     public function get_callback_url($order)
     {
         $args = apply_filters('parsigate_get_callback_query', [
@@ -552,8 +600,9 @@ class WC_Gateway extends \WC_Payment_Gateway
         }
 
         // Never re-process an order that is already paid (e.g. a refreshed or replayed callback).
+        // Anyone can open the callback URL, so the order key is only given to the customer.
         if ($order->is_paid()) {
-            wp_safe_redirect($this->get_return_url($order));
+            wp_safe_redirect(self::order_received_url_for_visitor($order, $this->get_return_url($order)));
             exit;
         }
 
