@@ -149,7 +149,7 @@ class Melli extends Base
         $response_body = wp_remote_retrieve_body($response);
         $json = json_decode($response_body, true);
 
-        if (array_key_exists('ResCode', $json) and $json['ResCode'] == 0 and !empty($json['SystemTraceNo'])) {
+        if (is_array($json) and array_key_exists('ResCode', $json) and $json['ResCode'] == 0 and !empty($json['SystemTraceNo'])) {
 
             return $this->success(
                 [
