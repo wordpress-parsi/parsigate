@@ -190,7 +190,7 @@ class Saderat extends Base
             -6 => 'عدم فعال بودن سرویس برگشت تراکنش برای پذیرنده',
         ];
 
-        return __('Error Code: ', 'parsigate') . $resCode . ($messages[$resCode] ? ' (' . $messages[$resCode] . ')' : '');
+        return __('Error Code: ', 'parsigate') . $resCode . (!empty($messages[$resCode]) ? ' (' . $messages[$resCode] . ')' : '');
     }
 
     public function get_verify_error_message($resCode): string
@@ -206,7 +206,7 @@ class Saderat extends Base
             -6 => 'عدم فعال بودن سرویس برگشت تراکنش برای پذیرنده'
         ];
 
-        return __('Error Code: ', 'parsigate') . $resCode . ($messages[$resCode] ? ' (' . $messages[$resCode] . ')' : '');
+        return __('Error Code: ', 'parsigate') . $resCode . (!empty($messages[$resCode]) ? ' (' . $messages[$resCode] . ')' : '');
     }
 
 }
